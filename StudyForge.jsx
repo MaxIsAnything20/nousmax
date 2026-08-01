@@ -4,7 +4,7 @@ import {
   BrainCircuit, ArrowRight, Check, X, ChevronLeft, ChevronRight,
   RotateCw, Play, GraduationCap, Zap, Library, Plus, CheckCircle2,
   Loader2, RefreshCw, Trophy, Lightbulb, ListChecks, StickyNote,
-  Clock, FileUp, MousePointerClick,
+  Clock, FileUp, MousePointerClick, ChevronDown, ArrowDown,
 } from "lucide-react";
 
 /* =========================================================================
@@ -160,8 +160,8 @@ const CSS = `
   --hover:#222842; --border:rgba(255,255,255,.08); --border2:rgba(255,255,255,.14);
   --text:#e8eaf4; --muted:#969db6; --faint:#636a85;
   --primary:#8b5cf6; --primary2:#a78bfa; --accent:#22d3ee; --accent2:#67e8f9;
-  --grad:linear-gradient(120deg,#8b5cf6,#22d3ee); --glow:rgba(139,92,246,.45);
-  --shadow:0 20px 60px -20px rgba(0,0,0,.7); --danger:#f87171; --ok:#34d399;
+  --grad:linear-gradient(120deg,#8b5cf6,#7c73ff 46%,#22d3ee); --glow:rgba(124,92,246,.5);
+  --shadow:0 26px 70px -26px rgba(0,0,0,.78); --danger:#f87171; --ok:#34d399;
   color-scheme:dark;
 }
 .sf.light{ --bg:#f6f7fc; --bg2:#eceffa; --surface:#ffffff; --surface2:#f4f6fd;
@@ -286,9 +286,49 @@ const CSS = `
 .sf .fade-in{ animation:fade .5s ease both; }
 .sf .pop-in{ animation:pop .45s cubic-bezier(.2,.8,.2,1.1) both; }
 
+/* ---- full-page slide sections ---- */
+.sf .fp{ height:100vh; overflow:hidden; position:relative; }
+.sf .fp-track{ will-change:transform; transition:transform 1s cubic-bezier(.16,.84,.28,1); }
+.sf .fp-sec{ height:100vh; width:100%; display:grid; place-items:center; position:relative;
+  padding:96px 22px 70px; overflow:hidden; }
+.sf .fp-inner{ width:100%; max-width:1120px; margin:0 auto; }
+/* content rises in only when its section is active */
+.sf .fp-sec .rise{ opacity:0; transform:translateY(38px); transition:opacity .85s cubic-bezier(.2,.7,.2,1), transform .85s cubic-bezier(.2,.7,.2,1); }
+.sf .fp-sec.on .rise{ opacity:1; transform:none; }
+.sf .fp-sec.on .rise.d1{ transition-delay:.06s; }
+.sf .fp-sec.on .rise.d2{ transition-delay:.14s; }
+.sf .fp-sec.on .rise.d3{ transition-delay:.22s; }
+.sf .fp-sec.on .rise.d4{ transition-delay:.30s; }
+.sf .fp-sec.on .rise.d5{ transition-delay:.38s; }
+.sf .fp-sec.on .rise.d6{ transition-delay:.46s; }
+
+/* fixed landing nav overlay */
+.sf .lnav{ position:fixed; top:0; left:0; right:0; z-index:55; }
+.sf .lnav-in{ max-width:1120px; margin:0 auto; padding:20px 22px; display:flex; align-items:center; justify-content:space-between; }
+
+/* side progress dots */
+.sf .dots{ position:fixed; right:26px; top:50%; transform:translateY(-50%); z-index:52;
+  display:flex; flex-direction:column; gap:16px; }
+.sf .dot{ width:11px; height:11px; border-radius:99px; border:2px solid var(--border2);
+  background:transparent; cursor:pointer; padding:0; position:relative; transition:all .3s cubic-bezier(.2,.8,.2,1.3); }
+.sf .dot:hover{ border-color:var(--primary); }
+.sf .dot.on{ background:var(--grad); border-color:transparent; transform:scale(1.35); box-shadow:0 0 0 5px var(--glow); }
+.sf .dot .lbl{ position:absolute; right:24px; top:50%; transform:translateY(-50%); white-space:nowrap;
+  font-size:12px; font-weight:600; color:var(--text); background:var(--surface); border:1px solid var(--border2);
+  padding:4px 10px; border-radius:8px; opacity:0; pointer-events:none; transition:opacity .25s; box-shadow:var(--shadow); }
+.sf .dot:hover .lbl{ opacity:1; }
+
+/* scroll hint */
+.sf .scrollhint{ position:absolute; bottom:30px; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:6px; color:var(--faint);
+  font-size:11px; letter-spacing:2px; cursor:pointer; animation:bob 2.4s ease-in-out infinite; z-index:5; }
+.sf .scrollhint:hover{ color:var(--primary2); }
+
 @media (max-width:760px){
   .sf .hide-sm{ display:none !important; }
   .sf .wrap{ padding:0 16px; }
+  .sf .dots{ right:12px; gap:12px; }
+  .sf .fp-sec{ padding:86px 16px 60px; }
 }
 `;
 
@@ -362,116 +402,196 @@ const FEATURES = [
   { icon: Zap, title: "One hub", body: "Every tool generated from a single source panel.", c: "var(--accent)" },
 ];
 
-function Landing({ onStart }) {
+// Full-page slide controller: each child is one 100vh section; wheel / arrow
+// keys / touch-swipe advance one section at a time and the stack slides up.
+function FullPage({ pages, labels, theme, toggleTheme }) {
+  const [idx, setIdx] = useState(0);
+  const idxRef = useRef(0);
+  const lock = useRef(false);
+  const touchY = useRef(0);
+  const n = pages.length;
+
+  const go = useCallback((i) => {
+    if (i < 0 || i >= n || lock.current || i === idxRef.current) return;
+    lock.current = true;
+    idxRef.current = i;
+    setIdx(i);
+    setTimeout(() => { lock.current = false; }, 1050); // matches slide duration
+  }, [n]);
+
+  useEffect(() => {
+    const onWheel = (e) => {
+      e.preventDefault();
+      if (lock.current || Math.abs(e.deltaY) < 12) return;
+      go(idxRef.current + (e.deltaY > 0 ? 1 : -1));
+    };
+    const onKey = (e) => {
+      if (["ArrowDown", "PageDown"].includes(e.key)) { e.preventDefault(); go(idxRef.current + 1); }
+      if (["ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); go(idxRef.current - 1); }
+    };
+    const onTS = (e) => { touchY.current = e.touches[0].clientY; };
+    const onTE = (e) => {
+      const dy = touchY.current - e.changedTouches[0].clientY;
+      if (Math.abs(dy) > 50) go(idxRef.current + (dy > 0 ? 1 : -1));
+    };
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("touchstart", onTS, { passive: true });
+    window.addEventListener("touchend", onTE, { passive: true });
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("touchstart", onTS);
+      window.removeEventListener("touchend", onTE);
+    };
+  }, [go]);
+
   return (
-    <div>
-      {/* HERO */}
-      <section style={{ position: "relative", overflow: "hidden" }}>
-        <div className="orb" style={{ width: 380, height: 380, background: "var(--primary)", top: -120, left: -60 }} />
-        <div className="orb" style={{ width: 320, height: 320, background: "var(--accent)", top: 40, right: -80, animationDelay: "1.5s" }} />
-        <div className="wrap center" style={{ padding: "84px 22px 70px", position: "relative" }}>
-          <div className="pill pop-in" style={{ marginBottom: 22 }}>
-            <Sparkles size={14} /> Turn anything into a study session
+    <div className="fp">
+      <div className="lnav">
+        <div className="lnav-in">
+          <div className="logo" onClick={() => go(0)}>
+            <span className="mark"><GraduationCap size={19} /></span>
+            <span>Study<span className="grad-text">Forge</span></span>
           </div>
-          <h1 className="pop-in" style={{ fontSize: "clamp(38px,7vw,68px)", lineHeight: 1.03, letterSpacing: "-1.5px", margin: "0 0 18px", fontWeight: 850 }}>
-            Study smarter with <span className="grad-text">StudyForge</span>
-          </h1>
-          <p className="fade-in" style={{ fontSize: "clamp(16px,2.4vw,20px)", color: "var(--muted)", maxWidth: 620, margin: "0 auto 32px", lineHeight: 1.5 }}>
-            Upload notes, drop a YouTube link, or search a topic — then generate quizzes, summaries and flashcards from one place.
-          </p>
-          <div className="row gap12 fade-in" style={{ justifyContent: "center", flexWrap: "wrap" }}>
-            <button className="btn btn-primary" onClick={onStart}>
-              Get started <ArrowRight size={18} />
-            </button>
-            <button className="btn btn-ghost" onClick={onStart}>
-              <Play size={16} /> See how it works
-            </button>
-          </div>
-
-          {/* floating mock preview */}
-          <Reveal delay={150}>
-            <div className="card bob" style={{ maxWidth: 720, margin: "56px auto 0", padding: 18, boxShadow: "var(--shadow)" }}>
-              <div className="row gap8" style={{ marginBottom: 14 }}>
-                <span style={{ width: 11, height: 11, borderRadius: 99, background: "#f87171" }} />
-                <span style={{ width: 11, height: 11, borderRadius: 99, background: "#fbbf24" }} />
-                <span style={{ width: 11, height: 11, borderRadius: 99, background: "#34d399" }} />
-              </div>
-              <div className="grid" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
-                {[{ i: ListChecks, t: "Quiz", c: "var(--primary)" }, { i: StickyNote, t: "Notes", c: "var(--accent)" }, { i: Layers, t: "Cards", c: "var(--primary2)" }].map((x, k) => (
-                  <div key={k} className="card" style={{ padding: 16, textAlign: "left", background: "var(--surface2)" }}>
-                    <span style={{ display: "grid", placeItems: "center", width: 38, height: 38, borderRadius: 10, background: x.c, color: "#fff", marginBottom: 10 }}>
-                      <x.i size={19} />
-                    </span>
-                    <div style={{ fontWeight: 700, fontSize: 14 }}>{x.t}</div>
-                    <div className="faint" style={{ fontSize: 12, marginTop: 4 }}>Auto-generated</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Reveal>
+          <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle theme"
+            title={theme === "dark" ? "Switch to light" : "Switch to dark"}>
+            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
         </div>
-      </section>
+      </div>
 
-      {/* HOW IT WORKS */}
-      <section className="wrap" style={{ padding: "40px 22px 30px" }}>
-        <Reveal><div className="center" style={{ marginBottom: 40 }}>
-          <div className="pill" style={{ marginBottom: 14 }}><MousePointerClick size={14} /> How it works</div>
-          <h2 style={{ fontSize: "clamp(26px,4.5vw,40px)", margin: 0, letterSpacing: "-.8px", fontWeight: 820 }}>Four steps, one flow</h2>
-        </div></Reveal>
-        <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 18 }}>
-          {STEPS.map((s, i) => (
-            <Reveal key={i} delay={i * 110}>
-              <div className="card card-h" style={{ padding: 24, height: "100%" }}>
-                <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
-                  <span style={{ display: "grid", placeItems: "center", width: 46, height: 46, borderRadius: 13, background: "var(--grad)", color: "#fff" }}>
-                    <s.icon size={22} />
-                  </span>
-                  <span style={{ fontSize: 42, fontWeight: 850, color: "var(--border2)", lineHeight: 1 }}>{i + 1}</span>
-                </div>
-                <div style={{ fontWeight: 750, fontSize: 17, marginBottom: 6 }}>{s.title}</div>
-                <div className="muted" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{s.body}</div>
+      <div className="fp-track" style={{ transform: `translateY(-${idx * 100}vh)` }}>
+        {pages.map((P, i) => (
+          <section key={i} className={`fp-sec ${i === idx ? "on" : ""}`}>
+            <div className="fp-inner">{P}</div>
+            {i === 0 && (
+              <div className="scrollhint" onClick={() => go(1)}>
+                SCROLL <ChevronDown size={18} />
               </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+            )}
+          </section>
+        ))}
+      </div>
 
-      {/* FEATURES */}
-      <section className="wrap" style={{ padding: "50px 22px 40px" }}>
-        <Reveal><div className="center" style={{ marginBottom: 40 }}>
-          <div className="pill" style={{ marginBottom: 14 }}><Sparkles size={14} /> Everything you need</div>
-          <h2 style={{ fontSize: "clamp(26px,4.5vw,40px)", margin: 0, letterSpacing: "-.8px", fontWeight: 820 }}>One hub, every study tool</h2>
-        </div></Reveal>
-        <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 18 }}>
-          {FEATURES.map((f, i) => (
-            <Reveal key={i} delay={(i % 3) * 100}>
-              <div className="card card-h" style={{ padding: 24, height: "100%" }}>
-                <span style={{ display: "grid", placeItems: "center", width: 46, height: 46, borderRadius: 13, background: f.c, color: "#fff", marginBottom: 14 }}>
-                  <f.icon size={22} />
-                </span>
-                <div style={{ fontWeight: 750, fontSize: 17, marginBottom: 6 }}>{f.title}</div>
-                <div className="muted" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{f.body}</div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="wrap" style={{ padding: "30px 22px 80px" }}>
-        <Reveal>
-          <div className="card" style={{ padding: "48px 30px", textAlign: "center", position: "relative", overflow: "hidden", background: "var(--grad)" }}>
-            <h2 style={{ color: "#fff", fontSize: "clamp(24px,4vw,36px)", margin: "0 0 12px", letterSpacing: "-.6px", fontWeight: 820 }}>
-              Ready to forge your first study set?
-            </h2>
-            <p style={{ color: "rgba(255,255,255,.9)", margin: "0 0 24px", fontSize: 17 }}>It takes about ten seconds.</p>
-            <button className="btn" style={{ background: "#fff", color: "#111", fontWeight: 700 }} onClick={onStart}>
-              Get started free <ArrowRight size={18} />
-            </button>
-          </div>
-        </Reveal>
-      </section>
+      <div className="dots">
+        {labels.map((l, i) => (
+          <button key={i} className={`dot ${i === idx ? "on" : ""}`} onClick={() => go(i)} aria-label={l}>
+            <span className="lbl">{l}</span>
+          </button>
+        ))}
+      </div>
     </div>
+  );
+}
+
+function Landing({ onStart, theme, toggleTheme }) {
+  const hero = (
+    <div className="center" style={{ position: "relative" }}>
+      <div className="orb" style={{ width: 440, height: 440, background: "var(--primary)", top: -190, left: -90 }} />
+      <div className="orb" style={{ width: 360, height: 360, background: "var(--accent)", top: -60, right: -110, animationDelay: "1.5s" }} />
+      <div style={{ position: "relative" }}>
+        <div className="pill rise d1" style={{ marginBottom: 22 }}>
+          <Sparkles size={14} /> Turn anything into a study session
+        </div>
+        <h1 className="rise d2" style={{ fontSize: "clamp(40px,7.3vw,72px)", lineHeight: 1.02, letterSpacing: "-2px", margin: "0 0 18px", fontWeight: 860 }}>
+          Study smarter with<br /><span className="grad-text">StudyForge</span>
+        </h1>
+        <p className="rise d3" style={{ fontSize: "clamp(16px,2.3vw,20px)", color: "var(--muted)", maxWidth: 580, margin: "0 auto 30px", lineHeight: 1.55 }}>
+          Upload notes, drop a YouTube link, or search a topic — then generate quizzes, summaries and flashcards from one place.
+        </p>
+        <div className="row gap12 rise d4" style={{ justifyContent: "center", flexWrap: "wrap" }}>
+          <button className="btn btn-primary" onClick={onStart}>Get started <ArrowRight size={18} /></button>
+          <button className="btn btn-ghost" onClick={onStart}><Play size={16} /> See how it works</button>
+        </div>
+        <div className="rise d5" style={{ maxWidth: 640, margin: "40px auto 0" }}>
+          <div className="card" style={{ padding: 14, boxShadow: "var(--shadow)" }}>
+            <div className="row gap8" style={{ marginBottom: 12 }}>
+              <span style={{ width: 10, height: 10, borderRadius: 99, background: "#f87171" }} />
+              <span style={{ width: 10, height: 10, borderRadius: 99, background: "#fbbf24" }} />
+              <span style={{ width: 10, height: 10, borderRadius: 99, background: "#34d399" }} />
+            </div>
+            <div className="grid" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+              {[{ i: ListChecks, t: "Quiz", c: "var(--primary)" }, { i: StickyNote, t: "Notes", c: "var(--accent)" }, { i: Layers, t: "Cards", c: "var(--primary2)" }].map((x, k) => (
+                <div key={k} className="card" style={{ padding: 14, textAlign: "left", background: "var(--surface2)" }}>
+                  <span style={{ display: "grid", placeItems: "center", width: 36, height: 36, borderRadius: 10, background: x.c, color: "#fff", marginBottom: 9 }}>
+                    <x.i size={18} />
+                  </span>
+                  <div style={{ fontWeight: 700, fontSize: 13.5 }}>{x.t}</div>
+                  <div className="faint" style={{ fontSize: 11.5, marginTop: 3 }}>Auto-generated</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const how = (
+    <div>
+      <div className="center rise d1" style={{ marginBottom: 44 }}>
+        <div className="pill" style={{ marginBottom: 16 }}><MousePointerClick size={14} /> How it works</div>
+        <h2 style={{ fontSize: "clamp(28px,4.6vw,44px)", margin: 0, letterSpacing: "-1px", fontWeight: 840 }}>Four steps, one flow</h2>
+      </div>
+      <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 18 }}>
+        {STEPS.map((s, i) => (
+          <div key={i} className={`card card-h rise d${i + 2}`} style={{ padding: 26 }}>
+            <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
+              <span style={{ display: "grid", placeItems: "center", width: 48, height: 48, borderRadius: 14, background: "var(--grad)", color: "#fff" }}>
+                <s.icon size={22} />
+              </span>
+              <span style={{ fontSize: 44, fontWeight: 860, color: "var(--border2)", lineHeight: 1 }}>{i + 1}</span>
+            </div>
+            <div style={{ fontWeight: 760, fontSize: 17, marginBottom: 6 }}>{s.title}</div>
+            <div className="muted" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{s.body}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const feat = (
+    <div>
+      <div className="center rise d1" style={{ marginBottom: 44 }}>
+        <div className="pill" style={{ marginBottom: 16 }}><Sparkles size={14} /> Everything you need</div>
+        <h2 style={{ fontSize: "clamp(28px,4.6vw,44px)", margin: 0, letterSpacing: "-1px", fontWeight: 840 }}>One hub, every study tool</h2>
+      </div>
+      <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 18 }}>
+        {FEATURES.map((f, i) => (
+          <div key={i} className={`card card-h rise d${(i % 3) + 2}`} style={{ padding: 24 }}>
+            <span style={{ display: "grid", placeItems: "center", width: 48, height: 48, borderRadius: 14, background: f.c, color: "#fff", marginBottom: 14 }}>
+              <f.icon size={22} />
+            </span>
+            <div style={{ fontWeight: 760, fontSize: 17, marginBottom: 6 }}>{f.title}</div>
+            <div className="muted" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{f.body}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const cta = (
+    <div className="rise d1" style={{ width: "100%" }}>
+      <div className="card" style={{ padding: "60px 34px", textAlign: "center", position: "relative", overflow: "hidden", background: "var(--grad)" }}>
+        <h2 style={{ color: "#fff", fontSize: "clamp(28px,4.4vw,42px)", margin: "0 0 14px", letterSpacing: "-.8px", fontWeight: 850 }}>
+          Ready to forge your first study set?
+        </h2>
+        <p style={{ color: "rgba(255,255,255,.92)", margin: "0 0 28px", fontSize: 18 }}>It takes about ten seconds.</p>
+        <button className="btn" style={{ background: "#fff", color: "#0a0b12", fontWeight: 750 }} onClick={onStart}>
+          Get started free <ArrowRight size={18} />
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <FullPage
+      pages={[hero, how, feat, cta]}
+      labels={["Home", "How it works", "Features", "Get started"]}
+      theme={theme}
+      toggleTheme={toggleTheme}
+    />
   );
 }
 
@@ -1067,20 +1187,27 @@ export default function App() {
   const startTour = () => { setWelcome(false); setTourStep(0); };
   const finishTour = () => { setTourStep(null); setSeenTour(true); };
 
+  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+
   return (
     <div className={`sf ${theme === "light" ? "light" : ""}`}>
       <style>{CSS}</style>
 
-      <Nav theme={theme} toggleTheme={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
-        onLogo={() => setPage("landing")} showApp={page === "app"}
-        onOpenLibrary={() => setLibOpen(true)} />
+      {page === "landing" ? (
+        // Landing owns its own fixed nav (theme toggle) and full-page slider.
+        <Landing onStart={enterApp} theme={theme} toggleTheme={toggleTheme} />
+      ) : (
+        <>
+          <Nav theme={theme} toggleTheme={toggleTheme}
+            onLogo={() => setPage("landing")} showApp
+            onOpenLibrary={() => setLibOpen(true)} />
 
-      {/* library button anchor (invisible marker near nav for the tour spotlight) */}
-      <span ref={anchorLibBtn} style={{ position: "fixed", top: 14, right: 76, width: 40, height: 40, pointerEvents: "none" }} />
+          {/* library button anchor (invisible marker near nav for the tour spotlight) */}
+          <span ref={anchorLibBtn} style={{ position: "fixed", top: 14, right: 76, width: 40, height: 40, pointerEvents: "none" }} />
 
-      {page === "landing" ? <Landing onStart={enterApp} /> : (
-        <Workspace anchors={anchors} onOpenLibrary={() => setLibOpen(true)}
-          libraryPick={libPick} clearLibraryPick={() => setLibPick(null)} onToast={fireToast} />
+          <Workspace anchors={anchors} onOpenLibrary={() => setLibOpen(true)}
+            libraryPick={libPick} clearLibraryPick={() => setLibPick(null)} onToast={fireToast} />
+        </>
       )}
 
       {welcome && <Welcome onTour={startTour} onSkip={() => { setWelcome(false); setSeenTour(true); }} />}
