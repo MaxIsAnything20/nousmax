@@ -553,23 +553,25 @@ const CSS = `
 .sf .intro-cap{ position:relative; z-index:2; overflow:visible; }
 .sf .intro-cap .cap{ fill:none; stroke-linecap:round; stroke-linejoin:round;
   filter:drop-shadow(0 2px 5px rgba(0,0,0,.4)); }
-/* the NousMax word — pencil-drawn (stroke) then inked (fill); the SAME SVG is
-   reused as the resting page watermark so the hand-off is seamless. */
+/* the NousMax word — the SAME element is the intro word AND the resting page
+   watermark, so the hand-off is seamless. In the intro each letter expands in,
+   one after another; on the page they're simply all present (solid, faded). */
+.sf .nmw{ font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-weight:900; font-size:24vw; letter-spacing:-.06em; white-space:nowrap; line-height:1; }
+.sf .nmw .mt-n{ display:inline-block; color:#0d9488; }
+.sf .nmw .mt-m{ display:inline-block; color:#d9a521; }
 .sf .intro-morph{ position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center;
-  pointer-events:none; opacity:0; transform:scale(.6); will-change:transform,opacity; }
-.sf .morph-svg{ width:94vw; height:auto; overflow:visible; }
-.sf .morph-text{ font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  font-size:250px; font-weight:900; letter-spacing:-14px; }
-.sf .mt-n{ fill:none; stroke:#0d9488; stroke-width:2.4; stroke-linejoin:round; transition:fill .55s ease; }
-.sf .mt-m{ fill:none; stroke:#d9a521; stroke-width:2.4; stroke-linejoin:round; transition:fill .55s ease; }
-.sf .intro-morph .morph-text{ stroke-dasharray:13000; stroke-dashoffset:13000; }
-.sf .intro-morph.play .morph-text{ animation:drawWord 1.7s ease forwards; }
-@keyframes drawWord{ to{ stroke-dashoffset:0; } }
-.sf .intro-morph.fill .mt-n{ fill:#0d9488; }
-.sf .intro-morph.fill .mt-m{ fill:#d9a521; }
-/* resting page watermark: same word, always solid */
-.sf .wm-brand .mt-n{ fill:#0d9488; stroke:none; }
-.sf .wm-brand .mt-m{ fill:#d9a521; stroke:none; }
+  pointer-events:none; opacity:0; transform:scale(.42); will-change:transform,opacity; }
+.sf .intro-morph .nmw > span{ opacity:0; transform:scale(.1); transform-origin:center 60%; }
+.sf .intro-morph.play .nmw > span{ animation:letterExpand .6s cubic-bezier(.2,.85,.3,1.1) forwards; }
+.sf .intro-morph.play .nmw > span:nth-child(1){ animation-delay:0s; }
+.sf .intro-morph.play .nmw > span:nth-child(2){ animation-delay:.15s; }
+.sf .intro-morph.play .nmw > span:nth-child(3){ animation-delay:.3s; }
+.sf .intro-morph.play .nmw > span:nth-child(4){ animation-delay:.45s; }
+.sf .intro-morph.play .nmw > span:nth-child(5){ animation-delay:.6s; }
+.sf .intro-morph.play .nmw > span:nth-child(6){ animation-delay:.75s; }
+.sf .intro-morph.play .nmw > span:nth-child(7){ animation-delay:.9s; }
+@keyframes letterExpand{ from{ opacity:0; transform:scale(.1); } to{ opacity:1; transform:scale(1); } }
 .sf .intro-word{ font-weight:850; font-size:40px; letter-spacing:-1px; white-space:nowrap; color:var(--text);
   clip-path:inset(0 100% 0 0); text-shadow:0 0 26px rgba(79,124,255,.5); }
 @keyframes iring{ 0%{ opacity:.7; transform:translate(-50%,-50%) scale(.6);} 100%{ opacity:0; transform:translate(-50%,-50%) scale(2.3);} }
@@ -626,10 +628,13 @@ const CSS = `
 .sf .fp .btn-primary{ box-shadow:none; border:none; outline:none; }
 .sf .fp .btn-primary:hover{ box-shadow:none; transform:translateY(-2px); filter:brightness(1.06); }
 .sf .fp .btn-primary:focus-visible{ outline:none; box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 30%, transparent); }
-/* hero page 1: content on the left, right half reserved for later */
+/* hero page 1: appears centred, then slides left leaving the right half reserved */
 .sf .pin.hero-left{ display:flex; justify-content:flex-start; align-items:center; }
-.sf .hero-col{ max-width:560px; text-align:left; }
-@media (max-width:860px){ .sf .pin.hero-left{ justify-content:center; } .sf .hero-col{ text-align:center; max-width:600px; margin:0 auto; } }
+.sf .hero-col{ max-width:560px; text-align:left; transform:translateX(clamp(0px,21vw,300px));
+  transition:transform .9s cubic-bezier(.3,.7,.2,1); }
+.sf.hero-shift .hero-col{ transform:translateX(0); }
+@media (max-width:860px){ .sf .pin.hero-left{ justify-content:center; }
+  .sf .hero-col, .sf.hero-shift .hero-col{ text-align:center; max-width:600px; margin:0 auto; transform:none; } }
 /* fixed nav on cream */
 .sf .fp .lnav .logo{ color:var(--cream-ink); text-shadow:none; }
 .sf .fp .lnav .signin{ background:var(--cream-ink); color:var(--cream); }
@@ -803,11 +808,10 @@ function Reveal({ children, delay = 0, style, className = "" }) {
 // in both places makes the hand-off seamless.
 function NousMaxWord() {
   return (
-    <svg className="morph-svg" viewBox="0 0 1240 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-      <text x="620" y="214" textAnchor="middle" className="morph-text">
-        <tspan className="mt-n">Nous</tspan><tspan className="mt-m">Max</tspan>
-      </text>
-    </svg>
+    <span className="nmw" aria-hidden="true">
+      <span className="mt-n">N</span><span className="mt-n">o</span><span className="mt-n">u</span><span className="mt-n">s</span>
+      <span className="mt-m">M</span><span className="mt-m">a</span><span className="mt-m">x</span>
+    </span>
   );
 }
 
@@ -1122,11 +1126,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
                 Upload notes, drop a YouTube link, or search a topic — NousMax turns it into summaries, quizzes and flashcards, then brings them back at exactly the right moment.
               </p>
               <div className="rise d3">
-                <button className="btn btn-primary" onClick={onStart}>Get started <ArrowRight size={18} /></button>
-                <div style={{ marginTop: 12 }}>
-                  <button onClick={onStart} style={{ background: "none", border: "none", color: "var(--cream-muted)", cursor: "pointer", textDecoration: "underline", fontSize: 13.5, padding: 0 }}>See how it works</button>
-                </div>
-                <div className="faint" style={{ marginTop: 12, fontSize: 12 }}>Free while in beta · your notes stay yours</div>
+                <div className="faint" style={{ fontSize: 12.5 }}>Free while in beta · your notes stay yours</div>
               </div>
             </div>
           </div>
@@ -1999,7 +1999,7 @@ function Workspace({ anchors, onOpenLibrary, libraryPick, clearLibraryPick, onTo
 // (its tip follows getPointAtLength along each path as the stroke is revealed),
 // the mark then colours in, the wordmark is written under the moving pencil, and
 // finally the finished logo flies up into the nav.
-function IntroOverlay({ onReveal, onDone }) {
+function IntroOverlay({ onReveal, onShift, onDone }) {
   const bgRef = useRef(null);
   const logoRef = useRef(null);
   const markRef = useRef(null);
@@ -2059,29 +2059,31 @@ function IntroOverlay({ onReveal, onDone }) {
 
     const morph = () => {
       const morphEl = document.querySelector(".intro-morph");
-      // the monogram pushes BACK, then fades as the word expands out of it
+      // the monogram pushes BACK (shrinking toward the word's letter size) then fades
       markSvg.animate([
         { transform: "scale(1)", opacity: 1, offset: 0 },
-        { transform: "scale(.78)", opacity: 1, offset: .32 },
-        { transform: "scale(1.05)", opacity: 0, offset: 1 },
-      ], { duration: 900, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" });
-      if (paths[0]) paths[0].animate([{ transform: "translateX(0)" }, { transform: "translateX(-40px)" }], { duration: 900, easing: "ease", fill: "forwards" });
-      if (paths[1]) paths[1].animate([{ transform: "translateX(0)" }, { transform: "translateX(40px)" }], { duration: 900, easing: "ease", fill: "forwards" });
+        { transform: "scale(.5)", opacity: 1, offset: .4 },
+        { transform: "scale(.42)", opacity: 0, offset: 1 },
+      ], { duration: 850, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" });
       if (morphEl) {
-        morphEl.classList.add("play");              // the o-u-s and a-x get drawn (stroke) like the NM
+        morphEl.classList.add("play");              // each letter expands in, one after another
         morphEl.animate([
-          { opacity: 0, transform: "scale(.6)", offset: 0 },
-          { opacity: 0.16, transform: "scale(.86)", offset: .32 },   // pushed back
-          { opacity: 0.16, transform: "scale(1)", offset: 1 },       // then expands
-        ], { duration: 1900, easing: "cubic-bezier(.3,.6,.2,1)", fill: "forwards" });
-        timers.push(setTimeout(() => morphEl.classList.add("fill"), 1350));   // ink fills the drawn outline
+          { opacity: 0, transform: "scale(.42)", offset: 0 },
+          { opacity: 0.16, transform: "scale(.5)", offset: .22 },    // pushed back
+          { opacity: 0.16, transform: "scale(1)", offset: 1 },       // expands to full as letters pop
+        ], { duration: 1950, easing: "cubic-bezier(.3,.55,.2,1)", fill: "forwards" });
       }
-      onReveal && onReveal();                       // page pulls into focus, hero rises on the left
-      timers.push(setTimeout(reveal, 2050));
+      onReveal && onReveal();                       // page pulls into focus, hero appears centred
+      timers.push(setTimeout(reveal, 2150));
     };
 
     const reveal = () => {
       if (bg) bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: "ease", fill: "forwards" });
+      timers.push(setTimeout(shift, 620));
+    };
+
+    const shift = () => {
+      onShift && onShift();                         // hero slides from centre to the left
       timers.push(setTimeout(finish, 780));
     };
 
@@ -2234,6 +2236,7 @@ export default function App() {
   const [booting, setBooting] = useState(true);     // hero held + blurred until the reveal
   const [navUp, setNavUp] = useState(false);        // nav chrome shown only after the whole intro
   const [wmOn, setWmOn] = useState(false);          // page watermark takes over from the intro word
+  const [heroShift, setHeroShift] = useState(false);// hero appears centred, then slides left
   const [auth, setAuth] = useState(null);           // null | 'signup' | 'signin'  (mock)
   const anchors = useRef({});
 
@@ -2256,10 +2259,10 @@ export default function App() {
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   return (
-    <div className={`sf ${theme === "light" ? "light" : ""} ${intro ? "intro-active" : ""} ${booting ? "booting" : ""} ${navUp ? "nav-up" : ""} ${wmOn ? "wm-on" : ""}`}>
+    <div className={`sf ${theme === "light" ? "light" : ""} ${intro ? "intro-active" : ""} ${booting ? "booting" : ""} ${navUp ? "nav-up" : ""} ${wmOn ? "wm-on" : ""} ${heroShift ? "hero-shift" : ""}`}>
       <style>{CSS}</style>
 
-      {intro && <IntroOverlay onReveal={() => setBooting(false)} onDone={() => { setWmOn(true); setNavUp(true); setTimeout(() => setIntro(false), 480); }} />}
+      {intro && <IntroOverlay onReveal={() => setBooting(false)} onShift={() => setHeroShift(true)} onDone={() => { setWmOn(true); setNavUp(true); setTimeout(() => setIntro(false), 480); }} />}
 
       {page === "landing" ? (
         // Landing owns its own fixed nav (theme toggle) and full-page slider.
