@@ -459,6 +459,41 @@ const CSS = `
   box-shadow:0 0 22px -8px var(--glow), inset 0 1px 0 rgba(255,255,255,.06); border:1px solid var(--border2); }
 .sf .ftile-lg{ box-shadow:0 0 34px -10px var(--glow), var(--shadow); }
 
+/* ===== note → question "transmutation" card ===== */
+.sf .xmut{ position:relative; width:340px; min-height:326px; border-radius:16px; overflow:hidden; text-align:left; color:var(--text);
+  background:linear-gradient(160deg, rgba(46,24,80,.6), rgba(14,8,28,.66)); backdrop-filter:blur(14px);
+  border:1px solid rgba(178,148,255,.30);
+  box-shadow:0 46px 90px -34px rgba(0,0,0,.82), 0 0 64px -6px rgba(168,85,247,.5), inset 0 1px 0 rgba(255,255,255,.09); }
+.sf .xmut::after{ content:""; position:absolute; inset:0; pointer-events:none; z-index:1;
+  background-image:linear-gradient(rgba(178,148,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(178,148,255,.05) 1px,transparent 1px);
+  background-size:26px 26px; opacity:.6; }
+.sf .xmut-bar{ position:relative; z-index:2; display:flex; align-items:center; gap:8px; padding:11px 16px;
+  font-family:ui-monospace,monospace; font-size:10.5px; letter-spacing:1.5px; color:var(--muted);
+  border-bottom:1px solid rgba(178,148,255,.16); }
+.sf .xdot{ width:8px; height:8px; border-radius:99px; background:#22d3ee; box-shadow:0 0 10px #22d3ee; }
+.sf .xstatus{ margin-left:auto; position:relative; width:104px; height:14px; }
+.sf .xstatus > span{ position:absolute; right:0; top:0; white-space:nowrap; }
+.sf .s-raw{ color:#f0abfc; animation:rawcycle 6s ease-in-out infinite; }
+.sf .s-clean{ color:#5eead4; opacity:0; animation:cleancycle 6s ease-in-out infinite; }
+.sf .xmut-body{ position:relative; z-index:2; height:252px; }
+.sf .xmut-layer{ position:absolute; inset:0; padding:26px 26px; }
+.sf .xmut-raw{ animation:rawcycle 6s ease-in-out infinite; }
+.sf .xmut-clean{ opacity:0; animation:cleancycle 6s ease-in-out infinite; }
+.sf .scrawl{ font-family:"Bradley Hand","Segoe Print","Comic Sans MS",cursive; font-size:16px; line-height:1.95; color:rgba(224,214,255,.5); }
+.sf .scrawl:nth-child(1){ transform:rotate(-1.2deg); }
+.sf .scrawl:nth-child(2){ transform:rotate(.8deg) translateX(6px); }
+.sf .scrawl:nth-child(3){ transform:rotate(-.6deg); }
+.sf .scrawl:nth-child(4){ transform:rotate(1deg) translateX(3px); color:rgba(224,214,255,.34); }
+.sf .q-text2{ font-size:22px; font-weight:730; line-height:1.4; margin:14px 0 20px; text-shadow:0 0 22px rgba(168,85,247,.45); }
+.sf .q-ans{ display:inline-flex; align-items:center; padding:7px 13px; border-radius:9px; font-size:13px; font-weight:650;
+  color:#67e8f9; background:rgba(34,211,238,.10); border:1px solid rgba(34,211,238,.35); box-shadow:0 0 20px -6px rgba(34,211,238,.55); }
+.sf .xbeam{ position:absolute; left:0; right:0; top:0; height:3px; z-index:3; opacity:0;
+  background:linear-gradient(90deg,transparent,#22d3ee 30%,#a855f7 70%,transparent);
+  box-shadow:0 0 24px 6px rgba(168,85,247,.65); animation:beam 6s ease-in-out infinite; }
+@keyframes beam{ 0%{ top:-4px; opacity:0; } 6%{ opacity:1; } 40%{ top:100%; opacity:1; } 47%{ opacity:0; } 100%{ opacity:0; } }
+@keyframes rawcycle{ 0%,30%{ opacity:1; } 44%{ opacity:0; } 90%{ opacity:0; } 100%{ opacity:1; } }
+@keyframes cleancycle{ 0%,34%{ opacity:0; } 48%{ opacity:1; } 88%{ opacity:1; } 100%{ opacity:0; } }
+
 @media (max-width:760px){
   .sf .hide-sm{ display:none !important; }
   .sf .wrap{ padding:0 16px; }
@@ -679,9 +714,30 @@ function Landing({ onStart, theme, toggleTheme }) {
               <Reveal delay={140}>
                 <div className="center">
                   <div className="tilt hud" style={{ display: "inline-block", position: "relative" }}>
-                    <div className="paper">
-                      <div className="q-tag">Question</div>
-                      <div className="q-text">What is the powerhouse of the cell?</div>
+                    <div className="xmut">
+                      <div className="xmut-bar">
+                        <span className="xdot" /> NOTE_04.TXT
+                        <span className="xstatus">
+                          <span className="s-raw">● ANALYZING</span>
+                          <span className="s-clean">✓ GENERATED</span>
+                        </span>
+                      </div>
+                      <div className="xmut-body">
+                        {/* raw messy notes */}
+                        <div className="xmut-layer xmut-raw">
+                          <div className="scrawl">mitochondria = "powerhouse"</div>
+                          <div className="scrawl">makes ATP… energy??</div>
+                          <div className="scrawl">cell respiration ~ glucose</div>
+                          <div className="scrawl">→ inner membrane / cristae</div>
+                        </div>
+                        {/* generated question */}
+                        <div className="xmut-layer xmut-clean">
+                          <div className="q-tag">Question</div>
+                          <div className="q-text2">What is the powerhouse of the cell?</div>
+                          <div className="q-ans">A · Mitochondria</div>
+                        </div>
+                        <div className="xbeam" />
+                      </div>
                     </div>
                   </div>
                   <div style={{ marginTop: 22, fontFamily: "ui-monospace,monospace", fontSize: 10.5, letterSpacing: 2, textTransform: "uppercase", color: "var(--faint)" }}>
