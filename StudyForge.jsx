@@ -168,22 +168,22 @@ async function mockGenerateFlashcards(sourceId) {
    ========================================================================= */
 const CSS = `
 :root{ --r:16px; }
-.sf{ --bg:#010207; --bg2:#02040c; --surface:#050a15; --surface2:#08101f;
-  --hover:#0d1730; --border:rgba(105,145,235,.09); --border2:rgba(105,145,235,.15);
-  --text:#dbe4f9; --muted:#7c89ae; --faint:#48547a;
-  --primary:#42639e; --primary2:#7189b6; --accent:#4f6a90; --accent2:#8194b6;
-  --grad:linear-gradient(120deg,#4a6aa6,#33477c); --glow:rgba(70,100,175,.22);
-  --shadow:0 26px 70px -26px rgba(0,3,16,.9); --danger:#f87171; --ok:#34d399;
-  --amber:#98aed4; --amber2:#bccae4; --cream:#e9eefc; --cream-ink:#0f1730; --cream-muted:#566486;
+.sf{ --bg:#16151d; --bg2:#1d1c26; --surface:#252330; --surface2:#2d2b39;
+  --hover:#38364a; --border:rgba(226,222,255,.09); --border2:rgba(226,222,255,.15);
+  --text:#f1eff7; --muted:#a9a4b8; --faint:#6f6a7e;
+  --primary:#6d5efc; --primary2:#9a8dff; --accent:#8b7cff; --accent2:#b3a8ff;
+  --grad:linear-gradient(120deg,#8b7cff,#6d5efc 55%,#5747e0); --glow:rgba(109,94,252,.3);
+  --shadow:0 26px 70px -26px rgba(6,4,16,.72); --danger:#f87171; --ok:#34d399;
+  --amber:#f4c25a; --amber2:#f9d98a; --cream:#f4f1ea; --cream-ink:#1c1b23; --cream-muted:#5c5766;
   color-scheme:dark;
 }
-.sf.light{ --bg:#f2f6fd; --bg2:#e4edfb; --surface:#ffffff; --surface2:#eef3fd;
-  --hover:#e9f0fc; --border:rgba(30,60,120,.10); --border2:rgba(30,60,120,.18);
-  --text:#0f1730; --muted:#566486; --faint:#7c86a6;
-  --primary:#2563eb; --primary2:#4f46e5; --accent:#0891b2; --accent2:#38bdf8;
-  --grad:linear-gradient(120deg,#0891b2,#2563eb 46%,#4f46e5); --glow:rgba(37,99,235,.3);
-  --shadow:0 24px 60px -28px rgba(20,40,110,.35);
-  --amber:#0369a1; --amber2:#0891b2; --cream:#e9eefc; --cream-ink:#0f1730; --cream-muted:#566486;
+.sf.light{ --bg:#f5f3ee; --bg2:#ece8df; --surface:#ffffff; --surface2:#f5f2ea;
+  --hover:#efeae0; --border:rgba(40,30,80,.10); --border2:rgba(40,30,80,.16);
+  --text:#1c1b23; --muted:#5c5766; --faint:#8b8494;
+  --primary:#5b4fe0; --primary2:#4a3fce; --accent:#7d6ffb; --accent2:#9a8dff;
+  --grad:linear-gradient(120deg,#6d5efc,#5546e6); --glow:rgba(91,79,224,.22);
+  --shadow:0 24px 60px -28px rgba(40,30,90,.3);
+  --amber:#c98a1e; --amber2:#e0a83a; --cream:#f4f1ea; --cream-ink:#1c1b23; --cream-muted:#5c5766;
   color-scheme:light;
 }
 .sf{ background:var(--bg); color:var(--text); min-height:100vh;
@@ -423,9 +423,9 @@ const CSS = `
 /* animated aurora field behind the (transparent) dark pages */
 .sf .aurora{ position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
 .sf .aurora i{ position:absolute; border-radius:50%; filter:blur(100px); display:block; }
-.sf .aurora .a1{ width:60vw; height:60vw; background:radial-gradient(circle,#3a6bf0,transparent 64%); opacity:.34; top:-20%; left:-14%; animation:drift 20s ease-in-out infinite; }
-.sf .aurora .a2{ width:54vw; height:54vw; background:radial-gradient(circle,#22a7e6,transparent 64%); opacity:.28; bottom:-24%; right:-16%; animation:drift 27s ease-in-out infinite reverse; }
-.sf .aurora .a3{ width:44vw; height:44vw; background:radial-gradient(circle,#1fbfe0,transparent 64%); opacity:.2; top:28%; right:18%; animation:drift 33s ease-in-out infinite; }
+.sf .aurora .a1{ width:60vw; height:60vw; background:radial-gradient(circle,#6d5efc,transparent 64%); opacity:.34; top:-20%; left:-14%; animation:drift 20s ease-in-out infinite; }
+.sf .aurora .a2{ width:54vw; height:54vw; background:radial-gradient(circle,#f4c25a,transparent 64%); opacity:.28; bottom:-24%; right:-16%; animation:drift 27s ease-in-out infinite reverse; }
+.sf .aurora .a3{ width:44vw; height:44vw; background:radial-gradient(circle,#8b7cff,transparent 64%); opacity:.2; top:28%; right:18%; animation:drift 33s ease-in-out infinite; }
 @keyframes drift{ 0%,100%{ transform:translate(0,0) scale(1);} 33%{ transform:translate(6vw,-4vh) scale(1.12);} 66%{ transform:translate(-5vw,5vh) scale(.94);} }
 
 /* faint tech grid, vignette-masked */
@@ -540,10 +540,13 @@ const CSS = `
   background:linear-gradient(120deg, rgba(150,172,215,.5), rgba(150,172,215,.10)); }
 .sf .glassx{ box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 22px 55px -24px rgba(0,0,0,.72); }
 .sf .paper, .sf .xmut{ box-shadow:0 42px 80px -34px rgba(0,0,0,.82), 0 0 0 1px rgba(120,150,215,.09); }
-.sf .aurora .a1, .sf .aurora .a2, .sf .aurora .a3{ opacity:.09; }
+.sf .aurora .a1, .sf .aurora .a2, .sf .aurora .a3{ opacity:.16; }
 .sf .xbeam{ background:linear-gradient(90deg,transparent,#5f7aa4 40%,#3f5f96 70%,transparent);
   box-shadow:0 0 10px 1px rgba(120,150,215,.28); }
-.sf .fbadge{ background:var(--surface2); color:var(--muted); border:1px solid var(--border2); box-shadow:none; }
+.sf .fbadge{ background:var(--amber); color:#3a2a05; border:none; box-shadow:0 4px 12px -3px rgba(244,194,90,.5); }
+/* cream toolkit panel: white tiles with indigo icons + dark ink, like nkae */
+.sf .panel-cream .ftile{ background:#fff; color:var(--primary); box-shadow:0 10px 22px -12px rgba(40,25,90,.28); border:1px solid rgba(28,27,35,.06); }
+.sf .panel-cream .frow{ border-top:1px solid rgba(28,27,35,.12); }
 .sf .q-ans{ color:#a9b6d2; background:rgba(120,150,215,.08); border-color:rgba(120,150,215,.22); box-shadow:none; }
 .sf .xdot{ background:#5f7aa4; box-shadow:none; }
 .sf .ftile, .sf .ftile-lg{ box-shadow:0 12px 26px -16px rgba(0,0,0,.72); }
@@ -567,8 +570,13 @@ const CSS = `
 @keyframes beamOnce{ 0%{ top:-4px; opacity:0; } 8%{ opacity:1; } 90%{ opacity:1; } 100%{ top:100%; opacity:0; } }
 
 /* ===== auth (sign-up / sign-in) modal ===== */
+/* auth overlay centers the card; only the overlay scrolls if a small screen needs it
+   (so the card itself never shows scrollbars). */
+.sf .auth-mask{ display:grid; place-items:center; padding:16px; overflow-y:auto; }
 .sf .authcard{ position:relative; z-index:121; width:404px; max-width:calc(100vw - 32px);
-  border-radius:20px; padding:34px 30px; max-height:calc(100vh - 40px); overflow:auto; }
+  border-radius:20px; padding:34px 30px; }
+/* no hover movement anywhere on the popup */
+.sf .authcard .btn-primary:hover, .sf .authcard .btn-ghost:hover, .sf .authcard .icon-btn:hover{ transform:none; }
 .sf .auth-div{ display:flex; align-items:center; gap:12px; margin:16px 0; color:var(--faint);
   font-size:12px; text-transform:uppercase; letter-spacing:1px; }
 .sf .auth-div::before, .sf .auth-div::after{ content:""; flex:1; height:1px; background:var(--border2); }
@@ -894,7 +902,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
     },
     // PAGE 3 — THE TOOLKIT (cream)
     {
-      bg: "", eyebrow: "02 · THE TOOLKIT", wm: true,
+      bg: "panel-cream", eyebrow: "02 · THE TOOLKIT", wm: true,
       content: (
         <div className="pin">
           <div style={{ ...twoCol, gap: 52 }}>
@@ -912,7 +920,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
                 <div key={i} className={`frow rise d${i + 2}`}>
                   <div className="ftile glassx"><f.icon size={22} /></div>
                   <div>
-                    <div style={{ fontWeight: 760, fontSize: 16.5, color: "var(--text)", marginBottom: 3 }}>{f.t}</div>
+                    <div style={{ fontWeight: 760, fontSize: 16.5, color: "var(--cream-ink)", marginBottom: 3 }}>{f.t}</div>
                     <div className="p-sub" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{f.d}</div>
                   </div>
                 </div>
@@ -1568,9 +1576,37 @@ function GoogleG() {
 
 function AuthModal({ mode, setMode, onClose, onAuthed }) {
   const signup = mode === "signup";
-  const submit = (e) => { e.preventDefault(); onAuthed(); };   // MOCK: no real auth
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const api = typeof globalThis !== "undefined" ? globalThis.SF_API : null; // set only when deployed
+
+  const google = async () => {
+    setErr("");
+    if (!api) return onAuthed();                 // preview: no backend → just enter the app
+    try { await api.auth.google(); }             // real Google OAuth (redirects)
+    catch (e) { setErr(e.message || "Google sign-in failed."); }
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setErr("");
+    if (!api) return onAuthed();                 // preview mock
+    setBusy(true);
+    try {
+      const { error } = signup
+        ? await api.auth.signUp(email, password, name)
+        : await api.auth.signIn(email, password);
+      if (error) throw error;
+      onAuthed();
+    } catch (e2) { setErr(e2.message || "Authentication failed."); }
+    finally { setBusy(false); }
+  };
+
   return (
-    <div className="tour-mask" style={{ zIndex: 120, display: "grid", placeItems: "center", padding: 16 }} onClick={onClose}>
+    <div className="tour-mask auth-mask" style={{ zIndex: 120 }} onClick={onClose}>
       <div className="authcard glassx hud pop-in" onClick={(e) => e.stopPropagation()}>
         <button className="icon-btn" style={{ position: "absolute", top: 14, right: 14, width: 34, height: 34 }} onClick={onClose} aria-label="Close"><X size={16} /></button>
         <div className="mark" style={{ width: 48, height: 48, borderRadius: 14, margin: "0 auto 16px" }}><GraduationCap size={24} /></div>
@@ -1581,28 +1617,29 @@ function AuthModal({ mode, setMode, onClose, onAuthed }) {
           {signup ? "Start turning your notes into study tools." : "Sign in to pick up where you left off."}
         </p>
 
-        <button className="btn btn-ghost" style={{ width: "100%", justifyContent: "center", marginBottom: 14 }} onClick={onAuthed}>
+        <button className="btn btn-ghost" type="button" style={{ width: "100%", justifyContent: "center", marginBottom: 14 }} onClick={google}>
           <GoogleG /> Continue with Google
         </button>
         <div className="auth-div"><span>or</span></div>
 
         <form onSubmit={submit}>
-          {signup && <input className="input" style={{ marginBottom: 12 }} placeholder="Full name" />}
-          <input className="input" type="email" style={{ marginBottom: 12 }} placeholder="Email address" />
-          <input className="input" type="password" style={{ marginBottom: 18 }} placeholder="Password" />
-          <button className="btn btn-primary" type="submit" style={{ width: "100%", justifyContent: "center" }}>
-            {signup ? "Create account" : "Sign in"} <ArrowRight size={17} />
+          {signup && <input className="input" style={{ marginBottom: 12 }} placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} />}
+          <input className="input" type="email" style={{ marginBottom: 12 }} placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input className="input" type="password" style={{ marginBottom: 14 }} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          {err && <div style={{ color: "var(--danger)", fontSize: 13, lineHeight: 1.4, marginBottom: 12, textAlign: "center" }}>{err}</div>}
+          <button className="btn btn-primary" type="submit" disabled={busy} style={{ width: "100%", justifyContent: "center", opacity: busy ? 0.7 : 1 }}>
+            {busy ? "Please wait…" : (signup ? "Create account" : "Sign in")} <ArrowRight size={17} />
           </button>
         </form>
 
         <div className="muted" style={{ textAlign: "center", fontSize: 13.5, marginTop: 18 }}>
           {signup ? "Already have an account? " : "New to StudyForge? "}
-          <button className="linklike" onClick={() => setMode(signup ? "signin" : "signup")}>
+          <button className="linklike" onClick={() => { setErr(""); setMode(signup ? "signin" : "signup"); }}>
             {signup ? "Sign in" : "Create account"}
           </button>
         </div>
         <div className="faint" style={{ textAlign: "center", fontSize: 10.5, marginTop: 16, fontFamily: "ui-monospace,monospace", letterSpacing: 1.2 }}>
-          PHASE 1 · MOCK — NO REAL AUTHENTICATION
+          {api ? "SECURED BY SUPABASE AUTH" : "PREVIEW · MOCK — DEPLOY FOR REAL LOGIN"}
         </div>
       </div>
     </div>
