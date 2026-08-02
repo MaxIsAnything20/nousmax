@@ -582,6 +582,15 @@ const CSS = `
   box-shadow:0 0 10px 1px rgba(120,150,215,.3); animation:beamOnce 1.3s ease .12s both; }
 @keyframes beamOnce{ 0%{ top:-4px; opacity:0; } 8%{ opacity:1; } 90%{ opacity:1; } 100%{ top:100%; opacity:0; } }
 
+/* ===== auth (sign-up / sign-in) modal ===== */
+.sf .authcard{ position:fixed; z-index:121; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:404px; max-width:calc(100vw - 32px); border-radius:20px; padding:34px 30px; }
+.sf .auth-div{ display:flex; align-items:center; gap:12px; margin:16px 0; color:var(--faint);
+  font-size:12px; text-transform:uppercase; letter-spacing:1px; }
+.sf .auth-div::before, .sf .auth-div::after{ content:""; flex:1; height:1px; background:var(--border2); }
+.sf .linklike{ background:none; border:none; color:var(--primary2); cursor:pointer; font-size:13.5px; padding:0; text-decoration:underline; }
+.sf .linklike:hover{ opacity:.85; }
+
 @media (max-width:760px){
   .sf .hide-sm{ display:none !important; }
   .sf .wrap{ padding:0 16px; }
@@ -682,7 +691,7 @@ const TOOLS = [
 // Discrete page-transition controller: one scroll gesture (or key/swipe/dot)
 // glides to the next full page with an eased transform + staged content reveal —
 // a page hand-off, NOT a 1:1 continuous slide. Keeps the Nkae panel visuals.
-function FullPage({ theme, toggleTheme, onStart, pages, labels }) {
+function FullPage({ theme, toggleTheme, onStart, onSignin, pages, labels }) {
   const [idx, setIdx] = useState(0);
   const idxRef = useRef(0);
   const lock = useRef(false);
@@ -742,7 +751,7 @@ function FullPage({ theme, toggleTheme, onStart, pages, labels }) {
               title={theme === "dark" ? "Switch to light" : "Switch to dark"}>
               {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-            <button className="signin" onClick={onStart}>Sign in</button>
+            <button className="signin" onClick={onSignin || onStart}>Sign in</button>
           </div>
         </div>
       </div>
@@ -835,7 +844,7 @@ function QuestionCard() {
   );
 }
 
-function Landing({ onStart, theme, toggleTheme }) {
+function Landing({ onStart, onSignin, theme, toggleTheme }) {
   const twoCol = { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 44, alignItems: "center" };
 
   const pages = [
@@ -946,7 +955,7 @@ function Landing({ onStart, theme, toggleTheme }) {
   ];
 
   return (
-    <FullPage theme={theme} toggleTheme={toggleTheme} onStart={onStart}
+    <FullPage theme={theme} toggleTheme={toggleTheme} onStart={onStart} onSignin={onSignin}
       pages={pages} labels={["Home", "The flow", "Toolkit", "Get started"]} />
   );
 }
@@ -1559,6 +1568,66 @@ function IntroOverlay({ onReveal, onDone }) {
 
 
 /* =========================================================================
+   9c) AUTH — sign-up / sign-in screen. UI ONLY (mock). No real auth; the
+   form just proceeds into the app. Phase 2 wires a real provider here.
+   ========================================================================= */
+function GoogleG() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.5z" />
+      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
+      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.1-11.3-7.6l-6.5 5C9.6 39.6 16.2 44 24 44z" />
+      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C39.9 36.3 44 30.7 44 24c0-1.3-.1-2.6-.4-3.5z" />
+    </svg>
+  );
+}
+
+function AuthModal({ mode, setMode, onClose, onAuthed }) {
+  const signup = mode === "signup";
+  const submit = (e) => { e.preventDefault(); onAuthed(); };   // MOCK: no real auth
+  return (
+    <>
+      <div className="tour-mask" style={{ zIndex: 120 }} onClick={onClose} />
+      <div className="authcard glassx hud pop-in">
+        <button className="icon-btn" style={{ position: "absolute", top: 14, right: 14, width: 34, height: 34 }} onClick={onClose} aria-label="Close"><X size={16} /></button>
+        <div className="mark" style={{ width: 48, height: 48, borderRadius: 14, margin: "0 auto 16px" }}><GraduationCap size={24} /></div>
+        <h2 style={{ textAlign: "center", fontSize: 23, fontWeight: 820, letterSpacing: "-.5px", margin: "0 0 6px" }}>
+          {signup ? "Create your account" : "Welcome back"}
+        </h2>
+        <p className="muted" style={{ textAlign: "center", fontSize: 14, margin: "0 0 22px" }}>
+          {signup ? "Start turning your notes into study tools." : "Sign in to pick up where you left off."}
+        </p>
+
+        <button className="btn btn-ghost" style={{ width: "100%", justifyContent: "center", marginBottom: 14 }} onClick={onAuthed}>
+          <GoogleG /> Continue with Google
+        </button>
+        <div className="auth-div"><span>or</span></div>
+
+        <form onSubmit={submit}>
+          {signup && <input className="input" style={{ marginBottom: 12 }} placeholder="Full name" />}
+          <input className="input" type="email" style={{ marginBottom: 12 }} placeholder="Email address" />
+          <input className="input" type="password" style={{ marginBottom: 18 }} placeholder="Password" />
+          <button className="btn btn-primary" type="submit" style={{ width: "100%", justifyContent: "center" }}>
+            {signup ? "Create account" : "Sign in"} <ArrowRight size={17} />
+          </button>
+        </form>
+
+        <div className="muted" style={{ textAlign: "center", fontSize: 13.5, marginTop: 18 }}>
+          {signup ? "Already have an account? " : "New to StudyForge? "}
+          <button className="linklike" onClick={() => setMode(signup ? "signin" : "signup")}>
+            {signup ? "Sign in" : "Create account"}
+          </button>
+        </div>
+        <div className="faint" style={{ textAlign: "center", fontSize: 10.5, marginTop: 16, fontFamily: "ui-monospace,monospace", letterSpacing: 1.2 }}>
+          PHASE 1 · MOCK — NO REAL AUTHENTICATION
+        </div>
+      </div>
+    </>
+  );
+}
+
+
+/* =========================================================================
    10) APP ROOT — theme state, routing between landing & workspace, tour
    ========================================================================= */
 export default function App() {
@@ -1573,6 +1642,7 @@ export default function App() {
   const [toast, setToast] = useState(null);
   const [intro, setIntro] = useState(true);         // overlay mounted + nav logo hidden
   const [booting, setBooting] = useState(true);     // hero held until the logo pulls up
+  const [auth, setAuth] = useState(null);           // null | 'signup' | 'signin'  (mock)
   const anchors = useRef({});
 
   const anchorLibBtn = useRef(null);
@@ -1601,7 +1671,8 @@ export default function App() {
 
       {page === "landing" ? (
         // Landing owns its own fixed nav (theme toggle) and full-page slider.
-        <Landing onStart={enterApp} theme={theme} toggleTheme={toggleTheme} />
+        <Landing onStart={() => setAuth("signup")} onSignin={() => setAuth("signin")}
+          theme={theme} toggleTheme={toggleTheme} />
       ) : (
         <>
           <Nav theme={theme} toggleTheme={toggleTheme}
@@ -1615,6 +1686,9 @@ export default function App() {
             libraryPick={libPick} clearLibraryPick={() => setLibPick(null)} onToast={fireToast} />
         </>
       )}
+
+      {auth && <AuthModal mode={auth} setMode={setAuth} onClose={() => setAuth(null)}
+        onAuthed={() => { setAuth(null); enterApp(); }} />}
 
       {welcome && <Welcome onTour={startTour} onSkip={() => { setWelcome(false); setSeenTour(true); }} />}
       {tourStep !== null && <Tour step={tourStep} setStep={setTourStep} onFinish={finishTour} anchors={anchors} />}
