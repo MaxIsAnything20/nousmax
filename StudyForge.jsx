@@ -495,6 +495,27 @@ const CSS = `
 @keyframes rawcycle{ 0%,30%{ opacity:1; } 44%{ opacity:0; } 90%{ opacity:0; } 100%{ opacity:1; } }
 @keyframes cleancycle{ 0%,34%{ opacity:0; } 48%{ opacity:1; } 88%{ opacity:1; } 100%{ opacity:0; } }
 
+/* ===== intro: draw the logo, then pull it to the nav ===== */
+.sf .intro{ position:fixed; inset:0; z-index:200; display:grid; place-items:center; pointer-events:none; }
+.sf .intro-bg{ position:absolute; inset:0; background:#0a0716;
+  background-image:radial-gradient(circle at 50% 44%, rgba(168,85,247,.24), transparent 62%); }
+.sf .intro-logo{ position:relative; z-index:2; display:flex; align-items:center; gap:16px; will-change:transform; }
+.sf .intro-mark{ position:relative; width:76px; height:76px; display:grid; place-items:center; color:#fff; }
+.sf .intro-mark::before{ content:""; position:absolute; left:50%; top:50%; width:80px; height:80px; border-radius:24px;
+  border:1px solid rgba(210,170,255,.6); opacity:0; animation:iring 1.3s ease .5s; }
+.sf .intro-tile{ position:absolute; inset:0; border-radius:20px; background:var(--grad); opacity:0; transform:scale(.6);
+  box-shadow:0 0 54px -4px var(--glow), inset 0 1px 0 rgba(255,255,255,.22); animation:itile .7s cubic-bezier(.2,.8,.2,1.5) .8s forwards; }
+.sf .intro-mark svg{ position:relative; z-index:2; filter:drop-shadow(0 0 12px rgba(210,170,255,.95)); }
+.sf .intro-mark svg *{ stroke-dasharray:300; stroke-dashoffset:300; animation:idraw 1s ease .2s forwards; }
+.sf .intro-word{ font-weight:850; font-size:40px; letter-spacing:-1px; white-space:nowrap; color:var(--text);
+  clip-path:inset(0 100% 0 0); animation:iword .8s cubic-bezier(.6,0,.2,1) 1.2s forwards; text-shadow:0 0 26px rgba(168,85,247,.5); }
+@keyframes idraw{ to{ stroke-dashoffset:0; } }
+@keyframes itile{ from{ opacity:0; transform:scale(.55) rotate(-14deg);} to{ opacity:1; transform:scale(1) rotate(0);} }
+@keyframes iword{ to{ clip-path:inset(0 0 0 0); } }
+@keyframes iring{ 0%{ opacity:.7; transform:translate(-50%,-50%) scale(.6);} 100%{ opacity:0; transform:translate(-50%,-50%) scale(2.3);} }
+/* hold hero elements hidden during the intro so they cascade in when it ends */
+.sf.booting .fp-sec.on .rise{ opacity:0; transform:translateY(30px) scale(.965); filter:blur(6px); }
+
 @media (max-width:760px){
   .sf .hide-sm{ display:none !important; }
   .sf .wrap{ padding:0 16px; }
@@ -1388,6 +1409,48 @@ function Workspace({ anchors, onOpenLibrary, libraryPick, clearLibraryPick, onTo
 
 
 /* =========================================================================
+   9b) INTRO — draws the logo, then flies it to its spot in the nav.
+   Measures the real nav logo at runtime so the landing is pixel-precise.
+   ========================================================================= */
+function IntroOverlay({ onDone }) {
+  const bgRef = useRef(null);
+  const logoRef = useRef(null);
+  useEffect(() => {
+    const logo = logoRef.current, bg = bgRef.current;
+    const target = document.querySelector(".lnav .logo") || document.querySelector(".logo");
+    let tx = 0, ty = 0, scale = 0.45;
+    if (target && logo) {
+      const t = target.getBoundingClientRect();
+      const c = logo.getBoundingClientRect();
+      scale = t.width / c.width;
+      tx = (t.left + t.width / 2) - (c.left + c.width / 2);
+      ty = (t.top + t.height / 2) - (c.top + c.height / 2);
+    }
+    const MOVE = 2100;                 // logo has finished drawing by now
+    const mv = setTimeout(() => {
+      logo.animate(
+        [{ transform: "translate(0px,0px) scale(1)" }, { transform: `translate(${tx}px,${ty}px) scale(${scale})` }],
+        { duration: 900, easing: "cubic-bezier(.66,0,.2,1)", fill: "forwards" }
+      );
+      if (bg) bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 820, delay: 320, easing: "ease", fill: "forwards" });
+    }, MOVE);
+    const dn = setTimeout(onDone, MOVE + 1080);
+    return () => { clearTimeout(mv); clearTimeout(dn); };
+  }, [onDone]);
+
+  return (
+    <div className="intro">
+      <div className="intro-bg" ref={bgRef} />
+      <div className="intro-logo" ref={logoRef}>
+        <span className="intro-mark"><span className="intro-tile" /><GraduationCap size={40} /></span>
+        <span className="intro-word">Study<span className="grad-text">Forge</span></span>
+      </div>
+    </div>
+  );
+}
+
+
+/* =========================================================================
    10) APP ROOT — theme state, routing between landing & workspace, tour
    ========================================================================= */
 export default function App() {
@@ -1400,6 +1463,7 @@ export default function App() {
   const [libOpen, setLibOpen] = useState(false);
   const [libPick, setLibPick] = useState(null);
   const [toast, setToast] = useState(null);
+  const [intro, setIntro] = useState(true);         // logo intro plays on first load
   const anchors = useRef({});
 
   const anchorLibBtn = useRef(null);
@@ -1421,8 +1485,10 @@ export default function App() {
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   return (
-    <div className={`sf ${theme === "light" ? "light" : ""}`}>
+    <div className={`sf ${theme === "light" ? "light" : ""} ${intro ? "booting" : ""}`}>
       <style>{CSS}</style>
+
+      {intro && <IntroOverlay onDone={() => setIntro(false)} />}
 
       {page === "landing" ? (
         // Landing owns its own fixed nav (theme toggle) and full-page slider.
