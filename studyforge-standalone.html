@@ -452,9 +452,9 @@ const CSS = `
 /* animated aurora field behind the (transparent) dark pages */
 .sf .aurora{ position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
 .sf .aurora i{ position:absolute; border-radius:50%; filter:blur(100px); display:block; }
-.sf .aurora .a1{ width:60vw; height:60vw; background:radial-gradient(circle,#6d5efc,transparent 64%); opacity:.34; top:-20%; left:-14%; animation:drift 20s ease-in-out infinite; }
-.sf .aurora .a2{ width:54vw; height:54vw; background:radial-gradient(circle,#f4c25a,transparent 64%); opacity:.28; bottom:-24%; right:-16%; animation:drift 27s ease-in-out infinite reverse; }
-.sf .aurora .a3{ width:44vw; height:44vw; background:radial-gradient(circle,#8b7cff,transparent 64%); opacity:.2; top:28%; right:18%; animation:drift 33s ease-in-out infinite; }
+.sf .aurora .a1{ width:60vw; height:60vw; background:none; opacity:0; top:-20%; left:-14%; animation:drift 20s ease-in-out infinite; }
+.sf .aurora .a2{ width:54vw; height:54vw; background:radial-gradient(circle,#f4c25a,transparent 64%); opacity:.14; bottom:-24%; right:-16%; animation:drift 27s ease-in-out infinite reverse; }
+.sf .aurora .a3{ width:44vw; height:44vw; background:none; opacity:0; top:28%; right:18%; animation:drift 33s ease-in-out infinite; }
 @keyframes drift{ 0%,100%{ transform:translate(0,0) scale(1);} 33%{ transform:translate(6vw,-4vh) scale(1.12);} 66%{ transform:translate(-5vw,5vh) scale(.94);} }
 
 /* faint tech grid, vignette-masked */
@@ -908,31 +908,25 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
       bg: "",
       content: (
         <>
-          <div className="orb" style={{ width: 460, height: 460, background: "var(--primary)", top: -200, left: -120 }} />
-          <div className="orb" style={{ width: 380, height: 380, background: "var(--accent)", top: 40, right: -140, animationDelay: "1.5s" }} />
-          <div className="pin">
-            <div style={twoCol}>
-              <div>
-                <h1 className="display rise d1" style={{ marginBottom: 22 }}>
-                  Study smarter,<br /><span className="amber">remember longer.</span>
-                </h1>
-                <p className="rise d2" style={{ fontSize: "clamp(16px,2.2vw,19px)", color: "var(--muted)", lineHeight: 1.6, maxWidth: 460, marginBottom: 30 }}>
-                  Upload notes, drop a YouTube link, or search a topic — StudyForge turns it into summaries, quizzes and flashcards, then brings them back at exactly the right moment.
-                </p>
-                <div className="rise d3">
-                  <button className="btn btn-primary" onClick={onStart}>Get started <ArrowRight size={18} /></button>
-                  <div style={{ marginTop: 14 }}>
-                    <button onClick={onStart} style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", textDecoration: "underline", fontSize: 14, padding: 0 }}>See how it works</button>
-                  </div>
-                  <div className="faint" style={{ marginTop: 18, fontSize: 12.5 }}>Free while in beta · your notes stay yours</div>
+          <div className="pin center">
+            <div style={{ maxWidth: 780, margin: "0 auto" }}>
+              <h1 className="display rise d1" style={{ marginBottom: 22 }}>
+                Study smarter,<br /><span className="amber">remember longer.</span>
+              </h1>
+              <p className="rise d2" style={{ fontSize: "clamp(16px,2.2vw,19px)", color: "var(--muted)", lineHeight: 1.6, maxWidth: 560, margin: "0 auto 30px" }}>
+                Upload notes, drop a YouTube link, or search a topic — StudyForge turns it into summaries, quizzes and flashcards, then brings them back at exactly the right moment.
+              </p>
+              <div className="rise d3">
+                <button className="btn btn-primary" onClick={onStart}>Get started <ArrowRight size={18} /></button>
+                <div style={{ marginTop: 14 }}>
+                  <button onClick={onStart} style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", textDecoration: "underline", fontSize: 14, padding: 0 }}>See how it works</button>
                 </div>
+                <div className="faint" style={{ marginTop: 18, fontSize: 12.5 }}>Free while in beta · your notes stay yours</div>
               </div>
-              <div className="rise d4">
-                <div className="center">
-                  <QuestionCard />
-                  <div style={{ marginTop: 22, fontFamily: "ui-monospace,monospace", fontSize: 10.5, letterSpacing: 2, textTransform: "uppercase", color: "var(--faint)" }}>
-                    Click the note to generate its answer
-                  </div>
+              <div className="rise d4" style={{ marginTop: 46 }}>
+                <QuestionCard />
+                <div style={{ marginTop: 22, fontFamily: "ui-monospace,monospace", fontSize: 10.5, letterSpacing: 2, textTransform: "uppercase", color: "var(--faint)" }}>
+                  Click the note to generate its answer
                 </div>
               </div>
             </div>
@@ -2005,6 +1999,7 @@ export default function App() {
     </div>
   );
 }
+
 
 import { createRoot } from "react-dom/client";
 const boot = document.getElementById("boot");
