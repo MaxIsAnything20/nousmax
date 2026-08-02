@@ -298,8 +298,9 @@ const CSS = `
 .sf .fp-sec:not(.on){ opacity:.35; filter:blur(2px); }
 .sf .fp-inner{ width:100%; max-width:1120px; margin:0 auto; }
 /* content rises in only when its section is active */
-.sf .fp-sec .rise{ opacity:0; transform:translateY(38px); transition:opacity .85s cubic-bezier(.2,.7,.2,1), transform .85s cubic-bezier(.2,.7,.2,1); }
-.sf .fp-sec.on .rise{ opacity:1; transform:none; }
+.sf .fp-sec .rise{ opacity:0; transform:translateY(30px) scale(.965); filter:blur(6px);
+  transition:opacity .55s ease, transform .8s cubic-bezier(.18,.9,.28,1.25), filter .5s ease; }
+.sf .fp-sec.on .rise{ opacity:1; transform:none; filter:none; }
 .sf .fp-sec.on .rise.d1{ transition-delay:.06s; }
 .sf .fp-sec.on .rise.d2{ transition-delay:.14s; }
 .sf .fp-sec.on .rise.d3{ transition-delay:.22s; }
@@ -697,21 +698,21 @@ function Landing({ onStart, theme, toggleTheme }) {
           <div className="pin">
             <div style={twoCol}>
               <div>
-                <Reveal><h1 className="display" style={{ marginBottom: 22 }}>
+                <h1 className="display rise d1" style={{ marginBottom: 22 }}>
                   Study smarter,<br /><span className="amber">remember longer.</span>
-                </h1></Reveal>
-                <Reveal delay={90}><p style={{ fontSize: "clamp(16px,2.2vw,19px)", color: "var(--muted)", lineHeight: 1.6, maxWidth: 460, marginBottom: 30 }}>
+                </h1>
+                <p className="rise d2" style={{ fontSize: "clamp(16px,2.2vw,19px)", color: "var(--muted)", lineHeight: 1.6, maxWidth: 460, marginBottom: 30 }}>
                   Upload notes, drop a YouTube link, or search a topic — StudyForge turns it into summaries, quizzes and flashcards, then brings them back at exactly the right moment.
-                </p></Reveal>
-                <Reveal delay={170}>
+                </p>
+                <div className="rise d3">
                   <button className="btn btn-primary" onClick={onStart}>Get started <ArrowRight size={18} /></button>
                   <div style={{ marginTop: 14 }}>
                     <button onClick={onStart} style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", textDecoration: "underline", fontSize: 14, padding: 0 }}>See how it works</button>
                   </div>
                   <div className="faint" style={{ marginTop: 18, fontSize: 12.5 }}>Free while in beta · your notes stay yours</div>
-                </Reveal>
+                </div>
               </div>
-              <Reveal delay={140}>
+              <div className="rise d4">
                 <div className="center">
                   <div className="tilt hud" style={{ display: "inline-block", position: "relative" }}>
                     <div className="xmut">
@@ -744,7 +745,7 @@ function Landing({ onStart, theme, toggleTheme }) {
                     Your notes become this, automatically
                   </div>
                 </div>
-              </Reveal>
+              </div>
             </div>
           </div>
         </>
@@ -755,21 +756,19 @@ function Landing({ onStart, theme, toggleTheme }) {
       bg: "", eyebrow: "01 · THE FLOW", wm: true,
       content: (
         <div className="pin center">
-          <Reveal>
+          <div className="rise d1">
             <div className="kicker" style={{ marginBottom: 18 }}>How it works</div>
             <h2 className="display" style={{ marginBottom: 54 }}>Three steps,<br />one <span className="amber">flow.</span></h2>
-          </Reveal>
+          </div>
           <div className="flow">
             {FLOW.map((s, i) => (
-              <Reveal key={i} delay={i * 110}>
-                <div className="fnode">
-                  <div className="ftile-lg glassx hud"><s.icon size={28} /><span className="fbadge">{i + 1}</span></div>
-                  <div>
-                    <div style={{ fontWeight: 770, fontSize: 17, marginBottom: 6 }}>{s.t}</div>
-                    <div className="muted" style={{ fontSize: 14, lineHeight: 1.5 }}>{s.d}</div>
-                  </div>
+              <div key={i} className={`fnode rise d${i + 2}`}>
+                <div className="ftile-lg glassx hud"><s.icon size={28} /><span className="fbadge">{i + 1}</span></div>
+                <div>
+                  <div style={{ fontWeight: 770, fontSize: 17, marginBottom: 6 }}>{s.t}</div>
+                  <div className="muted" style={{ fontSize: 14, lineHeight: 1.5 }}>{s.d}</div>
                 </div>
-              </Reveal>
+              </div>
             ))}
           </div>
         </div>
@@ -782,25 +781,23 @@ function Landing({ onStart, theme, toggleTheme }) {
         <div className="pin">
           <div style={{ ...twoCol, gap: 52 }}>
             <div>
-              <Reveal>
+              <div className="rise d1">
                 <div className="kicker" style={{ marginBottom: 18 }}>What you get</div>
                 <h2 className="display" style={{ marginBottom: 18 }}>Everything, from <span className="amber">one upload.</span></h2>
                 <p className="p-sub" style={{ fontSize: 17, lineHeight: 1.6, maxWidth: 420 }}>
                   One source becomes a complete study system — summaries, cards and quizzes, scheduled around how memory actually works.
                 </p>
-              </Reveal>
+              </div>
             </div>
             <div>
               {TOOLS.map((f, i) => (
-                <Reveal key={i} delay={i * 70}>
-                  <div className="frow">
-                    <div className="ftile glassx"><f.icon size={22} /></div>
-                    <div>
-                      <div style={{ fontWeight: 760, fontSize: 16.5, color: "var(--text)", marginBottom: 3 }}>{f.t}</div>
-                      <div className="p-sub" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{f.d}</div>
-                    </div>
+                <div key={i} className={`frow rise d${i + 2}`}>
+                  <div className="ftile glassx"><f.icon size={22} /></div>
+                  <div>
+                    <div style={{ fontWeight: 760, fontSize: 16.5, color: "var(--text)", marginBottom: 3 }}>{f.t}</div>
+                    <div className="p-sub" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{f.d}</div>
                   </div>
-                </Reveal>
+                </div>
               ))}
             </div>
           </div>
@@ -812,14 +809,12 @@ function Landing({ onStart, theme, toggleTheme }) {
       bg: "", wm: true,
       content: (
         <div className="pin center">
-          <Reveal>
-            <div className="glassx glow-border hud" style={{ borderRadius: 24, padding: "56px 40px", maxWidth: 620, margin: "0 auto", position: "relative" }}>
-              <div className="mark" style={{ width: 58, height: 58, borderRadius: 17, margin: "0 auto 26px" }}><GraduationCap size={28} /></div>
-              <h2 className="display" style={{ marginBottom: 30 }}>Start studying <span className="amber">today.</span></h2>
-              <button className="btn btn-primary" style={{ fontSize: 16, padding: "14px 26px" }} onClick={onStart}>Get started free <ArrowRight size={18} /></button>
-              <div className="faint" style={{ marginTop: 40, fontSize: 12.5 }}>StudyForge · Phase 1 prototype · built with mock data</div>
-            </div>
-          </Reveal>
+          <div className="glassx glow-border hud" style={{ borderRadius: 24, padding: "56px 40px", maxWidth: 620, margin: "0 auto", position: "relative" }}>
+            <div className="mark rise d1" style={{ width: 58, height: 58, borderRadius: 17, margin: "0 auto 26px" }}><GraduationCap size={28} /></div>
+            <h2 className="display rise d2" style={{ marginBottom: 30 }}>Start studying <span className="amber">today.</span></h2>
+            <div className="rise d3"><button className="btn btn-primary" style={{ fontSize: 16, padding: "14px 26px" }} onClick={onStart}>Get started free <ArrowRight size={18} /></button></div>
+            <div className="faint rise d4" style={{ marginTop: 40, fontSize: 12.5 }}>StudyForge · Phase 1 prototype · built with mock data</div>
+          </div>
         </div>
       ),
     },
