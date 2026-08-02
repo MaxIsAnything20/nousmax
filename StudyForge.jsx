@@ -403,6 +403,62 @@ const CSS = `
   display:flex; flex-direction:column; align-items:center; gap:5px; color:var(--faint);
   font-family:ui-monospace,monospace; font-size:10.5px; letter-spacing:2px; animation:bob 2.4s ease-in-out infinite; }
 
+/* ================= FUTURISTIC / FUI LAYER ================= */
+.sf .fp-track{ position:relative; z-index:1; }
+
+/* animated aurora field behind the (transparent) dark pages */
+.sf .aurora{ position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+.sf .aurora i{ position:absolute; border-radius:50%; filter:blur(100px); display:block; }
+.sf .aurora .a1{ width:62vw; height:62vw; background:radial-gradient(circle,#a855f7,transparent 62%); opacity:.5; top:-18%; left:-12%; animation:drift 20s ease-in-out infinite; }
+.sf .aurora .a2{ width:56vw; height:56vw; background:radial-gradient(circle,#d946ef,transparent 62%); opacity:.45; bottom:-22%; right:-14%; animation:drift 27s ease-in-out infinite reverse; }
+.sf .aurora .a3{ width:46vw; height:46vw; background:radial-gradient(circle,#22d3ee,transparent 62%); opacity:.3; top:28%; right:18%; animation:drift 33s ease-in-out infinite; }
+@keyframes drift{ 0%,100%{ transform:translate(0,0) scale(1);} 33%{ transform:translate(6vw,-4vh) scale(1.12);} 66%{ transform:translate(-5vw,5vh) scale(.94);} }
+
+/* faint tech grid, vignette-masked */
+.sf .grid-bg{ position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:linear-gradient(rgba(178,148,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(178,148,255,.07) 1px,transparent 1px);
+  background-size:48px 48px;
+  -webkit-mask-image:radial-gradient(ellipse 82% 72% at 50% 45%, #000 28%, transparent 82%);
+  mask-image:radial-gradient(ellipse 82% 72% at 50% 45%, #000 28%, transparent 82%); }
+
+/* CRT-ish scanlines over everything (very subtle) */
+.sf .scan{ position:fixed; inset:0; z-index:58; pointer-events:none; opacity:.55;
+  background:repeating-linear-gradient(180deg, rgba(200,180,255,.035) 0 1px, transparent 1px 3px); }
+
+/* neon glow on type */
+.sf .fp-sec .display{ text-shadow:0 0 34px rgba(168,85,247,.4); }
+.sf .logo{ text-shadow:0 0 22px rgba(168,85,247,.45); }
+
+/* glassmorphism + luminous holographic border + HUD corner brackets */
+.sf .glassx{ background:linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.015)); backdrop-filter:blur(16px);
+  border:1px solid rgba(178,148,255,.24);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 22px 55px -22px rgba(0,0,0,.75), 0 0 46px -12px rgba(168,85,247,.4); }
+.sf .glow-border{ position:relative; }
+.sf .glow-border::before{ content:""; position:absolute; inset:-1px; border-radius:inherit; padding:1px; pointer-events:none;
+  background:linear-gradient(120deg,#d946ef,#a855f7,#22d3ee,#d946ef); background-size:300% 100%;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude;
+  animation:sheen 6s linear infinite; opacity:.8; }
+@keyframes sheen{ to{ background-position:300% 0; } }
+.sf .hud::before, .sf .hud::after{ content:""; position:absolute; width:16px; height:16px; border:2px solid var(--primary2); opacity:.85; z-index:3; }
+.sf .hud::before{ top:-1px; left:-1px; border-right:0; border-bottom:0; border-top-left-radius:6px; }
+.sf .hud::after{ bottom:-1px; right:-1px; border-left:0; border-top:0; border-bottom-right-radius:6px; }
+
+/* neon buttons with a light-sweep */
+.sf .btn-primary{ position:relative; overflow:hidden; box-shadow:0 0 26px -2px var(--glow), 0 12px 32px -8px var(--glow); }
+.sf .btn-primary::after{ content:""; position:absolute; inset:0; background:linear-gradient(110deg,transparent 22%,rgba(255,255,255,.30) 50%,transparent 78%); transform:translateX(-130%); }
+.sf .btn-primary:hover::after{ animation:swipe .8s ease; }
+@keyframes swipe{ to{ transform:translateX(130%);} }
+
+/* holographic ring around the hero flashcard */
+.sf .paper{ box-shadow:0 46px 90px -34px rgba(0,0,0,.8), 0 0 60px -6px rgba(168,85,247,.45), 0 0 0 1px rgba(0,0,0,.05); }
+
+/* dark-glass feature tiles + rows (toolkit is now dark neon, not cream) */
+.sf .p-sub{ color:var(--muted); }
+.sf .frow{ border-top:1px solid var(--border); }
+.sf .ftile{ background:var(--surface); color:var(--primary2);
+  box-shadow:0 0 22px -8px var(--glow), inset 0 1px 0 rgba(255,255,255,.06); border:1px solid var(--border2); }
+.sf .ftile-lg{ box-shadow:0 0 34px -10px var(--glow), var(--shadow); }
+
 @media (max-width:760px){
   .sf .hide-sm{ display:none !important; }
   .sf .wrap{ padding:0 16px; }
@@ -547,6 +603,11 @@ function FullPage({ theme, toggleTheme, onStart, pages, labels }) {
 
   return (
     <div className="fp">
+      {/* futuristic background field: animated aurora + tech grid + scanlines */}
+      <div className="aurora"><i className="a1" /><i className="a2" /><i className="a3" /></div>
+      <div className="grid-bg" />
+      <div className="scan" />
+
       <div className="lnav">
         <div className="lnav-in">
           <div className="logo" onClick={() => go(0)}>
@@ -617,7 +678,7 @@ function Landing({ onStart, theme, toggleTheme }) {
               </div>
               <Reveal delay={140}>
                 <div className="center">
-                  <div className="tilt" style={{ display: "inline-block" }}>
+                  <div className="tilt hud" style={{ display: "inline-block", position: "relative" }}>
                     <div className="paper">
                       <div className="q-tag">Question</div>
                       <div className="q-text">What is the powerhouse of the cell?</div>
@@ -635,7 +696,7 @@ function Landing({ onStart, theme, toggleTheme }) {
     },
     // PAGE 2 — THE FLOW (alt dark)
     {
-      bg: "panel-alt", eyebrow: "01 · THE FLOW", wm: true,
+      bg: "", eyebrow: "01 · THE FLOW", wm: true,
       content: (
         <div className="pin center">
           <Reveal>
@@ -646,7 +707,7 @@ function Landing({ onStart, theme, toggleTheme }) {
             {FLOW.map((s, i) => (
               <Reveal key={i} delay={i * 110}>
                 <div className="fnode">
-                  <div className="ftile-lg"><s.icon size={28} /><span className="fbadge">{i + 1}</span></div>
+                  <div className="ftile-lg glassx hud"><s.icon size={28} /><span className="fbadge">{i + 1}</span></div>
                   <div>
                     <div style={{ fontWeight: 770, fontSize: 17, marginBottom: 6 }}>{s.t}</div>
                     <div className="muted" style={{ fontSize: 14, lineHeight: 1.5 }}>{s.d}</div>
@@ -660,7 +721,7 @@ function Landing({ onStart, theme, toggleTheme }) {
     },
     // PAGE 3 — THE TOOLKIT (cream)
     {
-      bg: "panel-cream", eyebrow: "02 · THE TOOLKIT", wm: true,
+      bg: "", eyebrow: "02 · THE TOOLKIT", wm: true,
       content: (
         <div className="pin">
           <div style={{ ...twoCol, gap: 52 }}>
@@ -677,9 +738,9 @@ function Landing({ onStart, theme, toggleTheme }) {
               {TOOLS.map((f, i) => (
                 <Reveal key={i} delay={i * 70}>
                   <div className="frow">
-                    <div className="ftile"><f.icon size={22} /></div>
+                    <div className="ftile glassx"><f.icon size={22} /></div>
                     <div>
-                      <div style={{ fontWeight: 760, fontSize: 16.5, color: "var(--cream-ink)", marginBottom: 3 }}>{f.t}</div>
+                      <div style={{ fontWeight: 760, fontSize: 16.5, color: "var(--text)", marginBottom: 3 }}>{f.t}</div>
                       <div className="p-sub" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{f.d}</div>
                     </div>
                   </div>
@@ -696,10 +757,12 @@ function Landing({ onStart, theme, toggleTheme }) {
       content: (
         <div className="pin center">
           <Reveal>
-            <div className="mark" style={{ width: 58, height: 58, borderRadius: 17, margin: "0 auto 26px" }}><GraduationCap size={28} /></div>
-            <h2 className="display" style={{ marginBottom: 30 }}>Start studying <span className="amber">today.</span></h2>
-            <button className="btn btn-primary" style={{ fontSize: 16, padding: "14px 26px" }} onClick={onStart}>Get started free <ArrowRight size={18} /></button>
-            <div className="faint" style={{ marginTop: 42, fontSize: 12.5 }}>StudyForge · Phase 1 prototype · built with mock data</div>
+            <div className="glassx glow-border hud" style={{ borderRadius: 24, padding: "56px 40px", maxWidth: 620, margin: "0 auto", position: "relative" }}>
+              <div className="mark" style={{ width: 58, height: 58, borderRadius: 17, margin: "0 auto 26px" }}><GraduationCap size={28} /></div>
+              <h2 className="display" style={{ marginBottom: 30 }}>Start studying <span className="amber">today.</span></h2>
+              <button className="btn btn-primary" style={{ fontSize: 16, padding: "14px 26px" }} onClick={onStart}>Get started free <ArrowRight size={18} /></button>
+              <div className="faint" style={{ marginTop: 40, fontSize: 12.5 }}>StudyForge · Phase 1 prototype · built with mock data</div>
+            </div>
           </Reveal>
         </div>
       ),
