@@ -363,6 +363,9 @@ const CSS = `
 .sf .wm{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
   pointer-events:none; font-weight:900; font-size:24vw; letter-spacing:-.06em; opacity:.04;
   color:currentColor; white-space:nowrap; z-index:0; }
+.sf .wm-brand{ opacity:.14; }
+.sf .wm-brand .wm-n{ color:#0d9488; }
+.sf .wm-brand .wm-m{ color:#d9a521; }
 
 /* mono eyebrows + kickers */
 .sf .eyebrow{ position:absolute; top:28px; left:28px; z-index:3; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -512,14 +515,12 @@ const CSS = `
 
 /* ===== intro: draw the logo, then pull it to the nav ===== */
 .sf .intro{ position:fixed; inset:0; z-index:200; display:grid; place-items:center; pointer-events:none; }
-.sf .intro-bg{ position:absolute; inset:0; background:#010207;
-  background-image:radial-gradient(circle at 50% 44%, rgba(58,107,240,.20), transparent 62%); }
-.sf .intro-logo{ position:relative; z-index:2; display:flex; align-items:center; gap:16px; will-change:transform; }
-.sf .intro-mark{ position:relative; width:76px; height:76px; display:grid; place-items:center; color:#fff; }
-.sf .intro-mark::before{ content:""; position:absolute; left:50%; top:50%; width:80px; height:80px; border-radius:24px;
-  border:1px solid rgba(150,190,255,.6); opacity:0; animation:iring 1.3s ease .5s; }
-.sf .intro-tile{ position:absolute; inset:0; border-radius:20px; background:var(--grad); opacity:0; transform:scale(.55);
-  box-shadow:0 0 54px -4px var(--glow), inset 0 1px 0 rgba(255,255,255,.22); }
+.sf .intro-bg{ position:absolute; inset:0; background:var(--cream);
+  background-image:radial-gradient(rgba(27,27,36,.10) 1px, transparent 1px); background-size:22px 22px; }
+.sf .intro-logo{ position:relative; z-index:2; display:flex; align-items:center; justify-content:center; will-change:transform; }
+.sf .intro-mark{ position:relative; display:grid; place-items:center; }
+.sf .intro-mark::before{ display:none; }
+.sf .intro-tile{ display:none; }
 .sf .intro-cap{ position:relative; z-index:2; overflow:visible; }
 .sf .intro-cap .cap{ fill:none; stroke-linecap:round; stroke-linejoin:round;
   filter:drop-shadow(0 2px 5px rgba(0,0,0,.4)); }
@@ -859,8 +860,7 @@ function FullPage({ theme, toggleTheme, onStart, onSignin, pages, labels }) {
       <div className="lnav">
         <div className="lnav-in">
           <div className="logo" onClick={() => go(0)}>
-            <LogoMark size={30} />
-            <span>Nous<span className="grad-text">Max</span></span>
+            <LogoMark size={38} />
           </div>
           <div className="row gap12">
             <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle theme"
@@ -876,7 +876,7 @@ function FullPage({ theme, toggleTheme, onStart, onSignin, pages, labels }) {
         {pages.map((p, i) => (
           <div key={i} className={`fp-sec ${p.bg || ""} ${i === idx ? "on" : ""}`}>
             {p.eyebrow && <div className="eyebrow">{p.eyebrow}</div>}
-            {p.wm && <div className="wm">{p.wm}</div>}
+            {p.wm && <div className={`wm ${p.wmClass || ""}`}>{p.wm}</div>}
             {p.content}
             {i === 0 && (
               <div className="cue" style={{ cursor: "pointer" }} onClick={() => go(1)}>SCROLL <ChevronDown size={16} /></div>
@@ -1036,7 +1036,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
   const pages = [
     // PAGE 1 — HERO (cream)
     {
-      bg: "panel-cream", wm: "Study",
+      bg: "panel-cream", wmClass: "wm-brand", wm: (<><span className="wm-n">Nous</span><span className="wm-m">Max</span></>),
       content: (
         <>
           <div className="pin center">
@@ -1975,8 +1975,9 @@ function IntroOverlay({ onReveal, onDone }) {
     };
 
     const afterDraw = () => {
-      // mark is drawn (in its own teal/gold colours); move straight to the wordmark
-      timers.push(setTimeout(writeWord, 320));
+      // mark is fully drawn; lift the pencil, then the mark flies up into the nav
+      pencil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, fill: "forwards" });
+      timers.push(setTimeout(flyUp, 360));
     };
 
     const writeWord = () => {
@@ -2022,12 +2023,11 @@ function IntroOverlay({ onReveal, onDone }) {
       <div className="intro-bg" ref={bgRef} />
       <div className="intro-logo" ref={logoRef}>
         <span className="intro-mark">
-          <svg ref={markRef} className="intro-cap" width="74" height="74" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+          <svg ref={markRef} className="intro-cap" width="150" height="150" viewBox="0 0 100 100" fill="none" aria-hidden="true">
             <path className="cap" d="M22 74 L22 26 L54 74 L54 26" stroke="#0d9488" strokeWidth="11" />
             <path className="cap" d="M42 74 L42 26 L58 52 L74 26 L74 74" stroke="#d9a521" strokeWidth="11" opacity="0.85" />
           </svg>
         </span>
-        <span className="intro-word" ref={wordRef}>Nous<span className="grad-text">Max</span></span>
         {/* the pencil — its tip (18,42 in its own box) is placed on the drawing point each frame */}
         <span className="intro-pencil" ref={pencilRef} aria-hidden="true">
           <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
