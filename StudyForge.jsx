@@ -528,6 +528,23 @@ const CSS = `
 @keyframes itile{ from{ opacity:0; transform:scale(.55) rotate(-14deg);} to{ opacity:1; transform:scale(1) rotate(0);} }
 @keyframes iword{ to{ clip-path:inset(0 0 0 0); } }
 @keyframes iring{ 0%{ opacity:.7; transform:translate(-50%,-50%) scale(.6);} 100%{ opacity:0; transform:translate(-50%,-50%) scale(2.3);} }
+/* a real pencil traces the mark, then writes the wordmark */
+.sf .intro-pencil{ position:absolute; left:0; top:0; z-index:6; width:46px; height:46px; pointer-events:none;
+  transform-origin:18px 42px; opacity:0; animation:ipencil 1.85s cubic-bezier(.45,.05,.5,1) .2s forwards; will-change:transform,opacity; }
+.sf .intro-pencil svg{ display:block; filter:drop-shadow(0 4px 6px rgba(0,0,0,.55)); }
+@keyframes ipencil{
+  0%   { opacity:0; transform:translate(28px,-32px) rotate(16deg); }
+  7%   { opacity:1; }
+  12%  { transform:translate(6px,-22px) rotate(14deg); }
+  20%  { transform:translate(34px,-12px) rotate(20deg); }
+  28%  { transform:translate(8px,2px) rotate(15deg); }
+  36%  { transform:translate(32px,-20px) rotate(21deg); }
+  44%  { transform:translate(12px,8px) rotate(16deg); }
+  52%  { transform:translate(30px,-2px) rotate(19deg); }
+  56%  { opacity:1; transform:translate(78px,2px) rotate(17deg); }
+  94%  { transform:translate(262px,4px) rotate(17deg); }
+  100% { opacity:0; transform:translate(286px,4px) rotate(17deg); }
+}
 /* hold hero elements hidden until the logo starts pulling up, then they cascade */
 .sf.booting .fp-sec.on .rise{ opacity:0; transform:translateY(-46px) scale(.93); filter:blur(9px); }
 /* hide the real nav logo during the intro so the flying logo becomes it (no duplicate) */
@@ -1004,16 +1021,13 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
         <>
           <div className="pin center">
             <div style={{ maxWidth: 780, margin: "0 auto" }}>
-              <h1 className="display rise d1" style={{ marginBottom: 12, fontSize: "clamp(30px,4.6vw,54px)" }}>
+              <h1 className="display rise d1" style={{ marginBottom: 18, fontSize: "clamp(34px,5.2vw,60px)" }}>
                 Study smarter,<br /><span className="amber">remember longer.</span>
               </h1>
-              <p className="rise d2" style={{ fontSize: "clamp(15px,2vw,17px)", color: "var(--muted)", lineHeight: 1.55, maxWidth: 520, margin: "0 auto 22px" }}>
+              <p className="rise d2" style={{ fontSize: "clamp(16px,2vw,18px)", color: "var(--muted)", lineHeight: 1.6, maxWidth: 540, margin: "0 auto 32px" }}>
                 Upload notes, drop a YouTube link, or search a topic — StudyForge turns it into summaries, quizzes and flashcards, then brings them back at exactly the right moment.
               </p>
-              <div className="rise d3" style={{ marginBottom: 24 }}>
-                <QuizDemo />
-              </div>
-              <div className="rise d4">
+              <div className="rise d3">
                 <button className="btn btn-primary" onClick={onStart}>Get started <ArrowRight size={18} /></button>
                 <div style={{ marginTop: 12 }}>
                   <button onClick={onStart} style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", textDecoration: "underline", fontSize: 13.5, padding: 0 }}>See how it works</button>
@@ -1923,6 +1937,19 @@ function IntroOverlay({ onReveal, onDone }) {
       <div className="intro-logo" ref={logoRef}>
         <span className="intro-mark"><span className="intro-tile" /><GraduationCap size={40} /></span>
         <span className="intro-word">Study<span className="grad-text">Forge</span></span>
+        {/* pencil that traces the mark, then writes the wordmark */}
+        <span className="intro-pencil" aria-hidden="true">
+          <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
+            <g transform="translate(12 2)">
+              <rect x="0" y="0" width="12" height="4" rx="1.4" fill="#f2a2b0" />
+              <rect x="0" y="4" width="12" height="3" fill="#cfd3da" />
+              <rect x="0" y="7" width="12" height="22" fill="#f4c25a" />
+              <rect x="0" y="7" width="3.4" height="22" fill="#d99f2e" opacity="0.55" />
+              <polygon points="0,29 12,29 6,40" fill="#e8d3a6" />
+              <polygon points="3.2,35.6 8.8,35.6 6,40" fill="#2b2b2b" />
+            </g>
+          </svg>
+        </span>
       </div>
     </div>
   );
