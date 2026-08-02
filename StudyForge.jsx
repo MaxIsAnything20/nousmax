@@ -118,11 +118,11 @@ const mockFlashcards = {
 
 // -- topic → video search results ------------------------------------------
 const VIDEO_POOL = [
-  { id: "v1", title: "Photosynthesis: Crash Course Biology", channel: "CrashCourse", duration: "13:14", views: "9.2M", tone: "#7c3aed" },
+  { id: "v1", title: "Photosynthesis: Crash Course Biology", channel: "CrashCourse", duration: "13:14", views: "9.2M", tone: "#4f46e5" },
   { id: "v2", title: "How Plants Make Food — Full Lesson", channel: "Amoeba Sisters", duration: "8:41", views: "4.1M", tone: "#06b6d4" },
-  { id: "v3", title: "The Calvin Cycle, Step by Step", channel: "Prof. Dave Explains", duration: "11:02", views: "1.7M", tone: "#a855f7" },
+  { id: "v3", title: "The Calvin Cycle, Step by Step", channel: "Prof. Dave Explains", duration: "11:02", views: "1.7M", tone: "#4f7cff" },
   { id: "v4", title: "Light Reactions Made Simple", channel: "Bozeman Science", duration: "9:58", views: "980K", tone: "#22d3ee" },
-  { id: "v5", title: "Photosynthesis in 5 Minutes", channel: "StudyQuick", duration: "5:12", views: "2.3M", tone: "#8b5cf6" },
+  { id: "v5", title: "Photosynthesis in 5 Minutes", channel: "StudyQuick", duration: "5:12", views: "2.3M", tone: "#3b82f6" },
   { id: "v6", title: "Chloroplast Structure & Function", channel: "MedBio", duration: "7:33", views: "640K", tone: "#0ea5e9" },
 ];
 
@@ -156,22 +156,22 @@ async function mockGenerateFlashcards() { await wait(1200); return mockFlashcard
    ========================================================================= */
 const CSS = `
 :root{ --r:16px; }
-.sf{ --bg:#0a0716; --bg2:#100a24; --surface:#171033; --surface2:#1f1642;
-  --hover:#2a1e59; --border:rgba(178,148,255,.11); --border2:rgba(178,148,255,.20);
-  --text:#efeafd; --muted:#ada3d6; --faint:#726a9c;
-  --primary:#a855f7; --primary2:#c084fc; --accent:#e879f9; --accent2:#f0abfc;
-  --grad:linear-gradient(120deg,#d946ef,#a855f7 46%,#7c3aed); --glow:rgba(168,85,247,.58);
-  --shadow:0 26px 70px -26px rgba(20,0,40,.82); --danger:#f87171; --ok:#34d399;
-  --amber:#e879f9; --amber2:#f5d0fe; --cream:#efeafc; --cream-ink:#1a1330; --cream-muted:#5b5378;
+.sf{ --bg:#060b1a; --bg2:#0b1226; --surface:#101a38; --surface2:#172247;
+  --hover:#1f2c58; --border:rgba(120,165,255,.11); --border2:rgba(120,165,255,.20);
+  --text:#e8eeff; --muted:#9aa8cf; --faint:#5f6d97;
+  --primary:#4f7cff; --primary2:#82a4ff; --accent:#38bdf8; --accent2:#7dd3fc;
+  --grad:linear-gradient(120deg,#38bdf8,#4f7cff 46%,#4f46e5); --glow:rgba(79,124,255,.58);
+  --shadow:0 26px 70px -26px rgba(2,8,30,.82); --danger:#f87171; --ok:#34d399;
+  --amber:#38bdf8; --amber2:#bae6fd; --cream:#e9eefc; --cream-ink:#0f1730; --cream-muted:#566486;
   color-scheme:dark;
 }
-.sf.light{ --bg:#f5f2fe; --bg2:#ebe5fb; --surface:#ffffff; --surface2:#f4f0fd;
-  --hover:#efe9fc; --border:rgba(60,30,110,.10); --border2:rgba(60,30,110,.18);
-  --text:#191233; --muted:#5b5378; --faint:#8b83a8;
-  --primary:#9333ea; --primary2:#7c3aed; --accent:#c026d3; --accent2:#d946ef;
-  --grad:linear-gradient(120deg,#c026d3,#9333ea 46%,#7c3aed); --glow:rgba(147,51,234,.3);
-  --shadow:0 24px 60px -28px rgba(60,20,110,.35);
-  --amber:#a21caf; --amber2:#c026d3; --cream:#efeafc; --cream-ink:#1a1330; --cream-muted:#5b5378;
+.sf.light{ --bg:#f2f6fd; --bg2:#e4edfb; --surface:#ffffff; --surface2:#eef3fd;
+  --hover:#e9f0fc; --border:rgba(30,60,120,.10); --border2:rgba(30,60,120,.18);
+  --text:#0f1730; --muted:#566486; --faint:#7c86a6;
+  --primary:#2563eb; --primary2:#4f46e5; --accent:#0891b2; --accent2:#38bdf8;
+  --grad:linear-gradient(120deg,#0891b2,#2563eb 46%,#4f46e5); --glow:rgba(37,99,235,.3);
+  --shadow:0 24px 60px -28px rgba(20,40,110,.35);
+  --amber:#0369a1; --amber2:#0891b2; --cream:#e9eefc; --cream-ink:#0f1730; --cream-muted:#566486;
   color-scheme:light;
 }
 .sf{ background:var(--bg); color:var(--text); min-height:100vh;
@@ -388,8 +388,8 @@ const CSS = `
 .sf .ftile-lg{ position:relative; width:70px; height:70px; border-radius:20px; display:grid; place-items:center;
   background:var(--surface); border:1px solid var(--border2); color:var(--primary2); box-shadow:var(--shadow); }
 .sf .fbadge{ position:absolute; top:-9px; right:-9px; width:26px; height:26px; border-radius:99px;
-  background:var(--amber); color:#2a0733; font-size:13px; font-weight:850; display:grid; place-items:center;
-  box-shadow:0 6px 16px -3px rgba(232,121,249,.65); }
+  background:var(--amber); color:#04121f; font-size:13px; font-weight:850; display:grid; place-items:center;
+  box-shadow:0 6px 16px -3px rgba(56,189,248,.65); }
 
 /* icon-row feature list (cream panel) */
 .sf .frow{ display:flex; gap:18px; align-items:flex-start; padding:22px 4px;
@@ -410,33 +410,33 @@ const CSS = `
 /* animated aurora field behind the (transparent) dark pages */
 .sf .aurora{ position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
 .sf .aurora i{ position:absolute; border-radius:50%; filter:blur(100px); display:block; }
-.sf .aurora .a1{ width:62vw; height:62vw; background:radial-gradient(circle,#a855f7,transparent 62%); opacity:.5; top:-18%; left:-12%; animation:drift 20s ease-in-out infinite; }
-.sf .aurora .a2{ width:56vw; height:56vw; background:radial-gradient(circle,#d946ef,transparent 62%); opacity:.45; bottom:-22%; right:-14%; animation:drift 27s ease-in-out infinite reverse; }
+.sf .aurora .a1{ width:62vw; height:62vw; background:radial-gradient(circle,#4f7cff,transparent 62%); opacity:.5; top:-18%; left:-12%; animation:drift 20s ease-in-out infinite; }
+.sf .aurora .a2{ width:56vw; height:56vw; background:radial-gradient(circle,#38bdf8,transparent 62%); opacity:.45; bottom:-22%; right:-14%; animation:drift 27s ease-in-out infinite reverse; }
 .sf .aurora .a3{ width:46vw; height:46vw; background:radial-gradient(circle,#22d3ee,transparent 62%); opacity:.3; top:28%; right:18%; animation:drift 33s ease-in-out infinite; }
 @keyframes drift{ 0%,100%{ transform:translate(0,0) scale(1);} 33%{ transform:translate(6vw,-4vh) scale(1.12);} 66%{ transform:translate(-5vw,5vh) scale(.94);} }
 
 /* faint tech grid, vignette-masked */
 .sf .grid-bg{ position:absolute; inset:0; z-index:0; pointer-events:none;
-  background-image:linear-gradient(rgba(178,148,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(178,148,255,.07) 1px,transparent 1px);
+  background-image:linear-gradient(rgba(120,165,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(120,165,255,.07) 1px,transparent 1px);
   background-size:48px 48px;
   -webkit-mask-image:radial-gradient(ellipse 82% 72% at 50% 45%, #000 28%, transparent 82%);
   mask-image:radial-gradient(ellipse 82% 72% at 50% 45%, #000 28%, transparent 82%); }
 
 /* CRT-ish scanlines over everything (very subtle) */
 .sf .scan{ position:fixed; inset:0; z-index:58; pointer-events:none; opacity:.55;
-  background:repeating-linear-gradient(180deg, rgba(200,180,255,.035) 0 1px, transparent 1px 3px); }
+  background:repeating-linear-gradient(180deg, rgba(150,185,255,.035) 0 1px, transparent 1px 3px); }
 
 /* neon glow on type */
-.sf .fp-sec .display{ text-shadow:0 0 34px rgba(168,85,247,.4); }
-.sf .logo{ text-shadow:0 0 22px rgba(168,85,247,.45); }
+.sf .fp-sec .display{ text-shadow:0 0 34px rgba(79,124,255,.4); }
+.sf .logo{ text-shadow:0 0 22px rgba(79,124,255,.45); }
 
 /* glassmorphism + luminous holographic border + HUD corner brackets */
 .sf .glassx{ background:linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.015)); backdrop-filter:blur(16px);
-  border:1px solid rgba(178,148,255,.24);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 22px 55px -22px rgba(0,0,0,.75), 0 0 46px -12px rgba(168,85,247,.4); }
+  border:1px solid rgba(120,165,255,.24);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 22px 55px -22px rgba(0,0,0,.75), 0 0 46px -12px rgba(79,124,255,.4); }
 .sf .glow-border{ position:relative; }
 .sf .glow-border::before{ content:""; position:absolute; inset:-1px; border-radius:inherit; padding:1px; pointer-events:none;
-  background:linear-gradient(120deg,#d946ef,#a855f7,#22d3ee,#d946ef); background-size:300% 100%;
+  background:linear-gradient(120deg,#38bdf8,#4f7cff,#22d3ee,#38bdf8); background-size:300% 100%;
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude;
   animation:sheen 6s linear infinite; opacity:.8; }
 @keyframes sheen{ to{ background-position:300% 0; } }
@@ -451,7 +451,7 @@ const CSS = `
 @keyframes swipe{ to{ transform:translateX(130%);} }
 
 /* holographic ring around the hero flashcard */
-.sf .paper{ box-shadow:0 46px 90px -34px rgba(0,0,0,.8), 0 0 60px -6px rgba(168,85,247,.45), 0 0 0 1px rgba(0,0,0,.05); }
+.sf .paper{ box-shadow:0 46px 90px -34px rgba(0,0,0,.8), 0 0 60px -6px rgba(79,124,255,.45), 0 0 0 1px rgba(0,0,0,.05); }
 
 /* dark-glass feature tiles + rows (toolkit is now dark neon, not cream) */
 .sf .p-sub{ color:var(--muted); }
@@ -462,59 +462,61 @@ const CSS = `
 
 /* ===== note → question "transmutation" card ===== */
 .sf .xmut{ position:relative; width:340px; min-height:326px; border-radius:16px; overflow:hidden; text-align:left; color:var(--text);
-  background:linear-gradient(160deg, rgba(46,24,80,.6), rgba(14,8,28,.66)); backdrop-filter:blur(14px);
-  border:1px solid rgba(178,148,255,.30);
-  box-shadow:0 46px 90px -34px rgba(0,0,0,.82), 0 0 64px -6px rgba(168,85,247,.5), inset 0 1px 0 rgba(255,255,255,.09); }
+  background:linear-gradient(160deg, rgba(16,30,70,.6), rgba(8,14,34,.66)); backdrop-filter:blur(14px);
+  border:1px solid rgba(120,165,255,.30);
+  box-shadow:0 46px 90px -34px rgba(0,0,0,.82), 0 0 64px -6px rgba(79,124,255,.5), inset 0 1px 0 rgba(255,255,255,.09); }
 .sf .xmut::after{ content:""; position:absolute; inset:0; pointer-events:none; z-index:1;
-  background-image:linear-gradient(rgba(178,148,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(178,148,255,.05) 1px,transparent 1px);
+  background-image:linear-gradient(rgba(120,165,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(120,165,255,.05) 1px,transparent 1px);
   background-size:26px 26px; opacity:.6; }
 .sf .xmut-bar{ position:relative; z-index:2; display:flex; align-items:center; gap:8px; padding:11px 16px;
   font-family:ui-monospace,monospace; font-size:10.5px; letter-spacing:1.5px; color:var(--muted);
-  border-bottom:1px solid rgba(178,148,255,.16); }
+  border-bottom:1px solid rgba(120,165,255,.16); }
 .sf .xdot{ width:8px; height:8px; border-radius:99px; background:#22d3ee; box-shadow:0 0 10px #22d3ee; }
 .sf .xstatus{ margin-left:auto; position:relative; width:104px; height:14px; }
 .sf .xstatus > span{ position:absolute; right:0; top:0; white-space:nowrap; }
-.sf .s-raw{ color:#f0abfc; animation:rawcycle 6s ease-in-out infinite; }
+.sf .s-raw{ color:#7dd3fc; animation:rawcycle 6s ease-in-out infinite; }
 .sf .s-clean{ color:#5eead4; opacity:0; animation:cleancycle 6s ease-in-out infinite; }
 .sf .xmut-body{ position:relative; z-index:2; height:252px; }
 .sf .xmut-layer{ position:absolute; inset:0; padding:26px 26px; }
 .sf .xmut-raw{ animation:rawcycle 6s ease-in-out infinite; }
 .sf .xmut-clean{ opacity:0; animation:cleancycle 6s ease-in-out infinite; }
-.sf .scrawl{ font-family:"Bradley Hand","Segoe Print","Comic Sans MS",cursive; font-size:16px; line-height:1.95; color:rgba(224,214,255,.5); }
+.sf .scrawl{ font-family:"Bradley Hand","Segoe Print","Comic Sans MS",cursive; font-size:16px; line-height:1.95; color:rgba(205,222,255,.5); }
 .sf .scrawl:nth-child(1){ transform:rotate(-1.2deg); }
 .sf .scrawl:nth-child(2){ transform:rotate(.8deg) translateX(6px); }
 .sf .scrawl:nth-child(3){ transform:rotate(-.6deg); }
-.sf .scrawl:nth-child(4){ transform:rotate(1deg) translateX(3px); color:rgba(224,214,255,.34); }
-.sf .q-text2{ font-size:22px; font-weight:730; line-height:1.4; margin:14px 0 20px; text-shadow:0 0 22px rgba(168,85,247,.45); }
+.sf .scrawl:nth-child(4){ transform:rotate(1deg) translateX(3px); color:rgba(205,222,255,.34); }
+.sf .q-text2{ font-size:22px; font-weight:730; line-height:1.4; margin:14px 0 20px; text-shadow:0 0 22px rgba(79,124,255,.45); }
 .sf .q-ans{ display:inline-flex; align-items:center; padding:7px 13px; border-radius:9px; font-size:13px; font-weight:650;
   color:#67e8f9; background:rgba(34,211,238,.10); border:1px solid rgba(34,211,238,.35); box-shadow:0 0 20px -6px rgba(34,211,238,.55); }
 .sf .xbeam{ position:absolute; left:0; right:0; top:0; height:3px; z-index:3; opacity:0;
-  background:linear-gradient(90deg,transparent,#22d3ee 30%,#a855f7 70%,transparent);
-  box-shadow:0 0 24px 6px rgba(168,85,247,.65); animation:beam 6s ease-in-out infinite; }
+  background:linear-gradient(90deg,transparent,#22d3ee 30%,#4f7cff 70%,transparent);
+  box-shadow:0 0 24px 6px rgba(79,124,255,.65); animation:beam 6s ease-in-out infinite; }
 @keyframes beam{ 0%{ top:-4px; opacity:0; } 6%{ opacity:1; } 40%{ top:100%; opacity:1; } 47%{ opacity:0; } 100%{ opacity:0; } }
 @keyframes rawcycle{ 0%,30%{ opacity:1; } 44%{ opacity:0; } 90%{ opacity:0; } 100%{ opacity:1; } }
 @keyframes cleancycle{ 0%,34%{ opacity:0; } 48%{ opacity:1; } 88%{ opacity:1; } 100%{ opacity:0; } }
 
 /* ===== intro: draw the logo, then pull it to the nav ===== */
 .sf .intro{ position:fixed; inset:0; z-index:200; display:grid; place-items:center; pointer-events:none; }
-.sf .intro-bg{ position:absolute; inset:0; background:#0a0716;
-  background-image:radial-gradient(circle at 50% 44%, rgba(168,85,247,.24), transparent 62%); }
+.sf .intro-bg{ position:absolute; inset:0; background:#060b1a;
+  background-image:radial-gradient(circle at 50% 44%, rgba(79,124,255,.24), transparent 62%); }
 .sf .intro-logo{ position:relative; z-index:2; display:flex; align-items:center; gap:16px; will-change:transform; }
 .sf .intro-mark{ position:relative; width:76px; height:76px; display:grid; place-items:center; color:#fff; }
 .sf .intro-mark::before{ content:""; position:absolute; left:50%; top:50%; width:80px; height:80px; border-radius:24px;
-  border:1px solid rgba(210,170,255,.6); opacity:0; animation:iring 1.3s ease .5s; }
+  border:1px solid rgba(150,190,255,.6); opacity:0; animation:iring 1.3s ease .5s; }
 .sf .intro-tile{ position:absolute; inset:0; border-radius:20px; background:var(--grad); opacity:0; transform:scale(.6);
   box-shadow:0 0 54px -4px var(--glow), inset 0 1px 0 rgba(255,255,255,.22); animation:itile .7s cubic-bezier(.2,.8,.2,1.5) .8s forwards; }
-.sf .intro-mark svg{ position:relative; z-index:2; filter:drop-shadow(0 0 12px rgba(210,170,255,.95)); }
+.sf .intro-mark svg{ position:relative; z-index:2; filter:drop-shadow(0 0 12px rgba(150,190,255,.95)); }
 .sf .intro-mark svg *{ stroke-dasharray:300; stroke-dashoffset:300; animation:idraw 1s ease .2s forwards; }
 .sf .intro-word{ font-weight:850; font-size:40px; letter-spacing:-1px; white-space:nowrap; color:var(--text);
-  clip-path:inset(0 100% 0 0); animation:iword .8s cubic-bezier(.6,0,.2,1) 1.2s forwards; text-shadow:0 0 26px rgba(168,85,247,.5); }
+  clip-path:inset(0 100% 0 0); animation:iword .8s cubic-bezier(.6,0,.2,1) 1.2s forwards; text-shadow:0 0 26px rgba(79,124,255,.5); }
 @keyframes idraw{ to{ stroke-dashoffset:0; } }
 @keyframes itile{ from{ opacity:0; transform:scale(.55) rotate(-14deg);} to{ opacity:1; transform:scale(1) rotate(0);} }
 @keyframes iword{ to{ clip-path:inset(0 0 0 0); } }
 @keyframes iring{ 0%{ opacity:.7; transform:translate(-50%,-50%) scale(.6);} 100%{ opacity:0; transform:translate(-50%,-50%) scale(2.3);} }
-/* hold hero elements hidden during the intro so they cascade in when it ends */
+/* hold hero elements hidden until the logo starts pulling up, then they cascade */
 .sf.booting .fp-sec.on .rise{ opacity:0; transform:translateY(30px) scale(.965); filter:blur(6px); }
+/* hide the real nav logo during the intro so the flying logo becomes it (no duplicate) */
+.sf.intro-active .lnav .logo{ opacity:0; }
 
 @media (max-width:760px){
   .sf .hide-sm{ display:none !important; }
@@ -1412,7 +1414,7 @@ function Workspace({ anchors, onOpenLibrary, libraryPick, clearLibraryPick, onTo
    9b) INTRO — draws the logo, then flies it to its spot in the nav.
    Measures the real nav logo at runtime so the landing is pixel-precise.
    ========================================================================= */
-function IntroOverlay({ onDone }) {
+function IntroOverlay({ onReveal, onDone }) {
   const bgRef = useRef(null);
   const logoRef = useRef(null);
   useEffect(() => {
@@ -1432,11 +1434,12 @@ function IntroOverlay({ onDone }) {
         [{ transform: "translate(0px,0px) scale(1)" }, { transform: `translate(${tx}px,${ty}px) scale(${scale})` }],
         { duration: 900, easing: "cubic-bezier(.66,0,.2,1)", fill: "forwards" }
       );
-      if (bg) bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 820, delay: 320, easing: "ease", fill: "forwards" });
+      if (bg) bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 820, delay: 260, easing: "ease", fill: "forwards" });
+      onReveal && onReveal();          // page cascades in WHILE the logo flies up
     }, MOVE);
-    const dn = setTimeout(onDone, MOVE + 1080);
+    const dn = setTimeout(onDone, MOVE + 1060);
     return () => { clearTimeout(mv); clearTimeout(dn); };
-  }, [onDone]);
+  }, [onReveal, onDone]);
 
   return (
     <div className="intro">
@@ -1463,7 +1466,8 @@ export default function App() {
   const [libOpen, setLibOpen] = useState(false);
   const [libPick, setLibPick] = useState(null);
   const [toast, setToast] = useState(null);
-  const [intro, setIntro] = useState(true);         // logo intro plays on first load
+  const [intro, setIntro] = useState(true);         // overlay mounted + nav logo hidden
+  const [booting, setBooting] = useState(true);     // hero held until the logo pulls up
   const anchors = useRef({});
 
   const anchorLibBtn = useRef(null);
@@ -1485,10 +1489,10 @@ export default function App() {
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   return (
-    <div className={`sf ${theme === "light" ? "light" : ""} ${intro ? "booting" : ""}`}>
+    <div className={`sf ${theme === "light" ? "light" : ""} ${intro ? "intro-active" : ""} ${booting ? "booting" : ""}`}>
       <style>{CSS}</style>
 
-      {intro && <IntroOverlay onDone={() => setIntro(false)} />}
+      {intro && <IntroOverlay onReveal={() => setBooting(false)} onDone={() => setIntro(false)} />}
 
       {page === "landing" ? (
         // Landing owns its own fixed nav (theme toggle) and full-page slider.
