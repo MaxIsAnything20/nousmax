@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>StudyForge — Phase 1 Prototype</title>
 <style>
-  html,body{height:100%;} body{margin:0;background:#16151d;overflow:hidden;}
-  #boot{position:fixed;inset:0;display:grid;place-items:center;color:#a9a4b8;
-    font-family:system-ui,sans-serif;font-size:15px;background:#16151d;z-index:9999;}
+  html{height:100%;} body{margin:0;background:#0e1013;overflow-x:hidden;min-height:100%;}
+  #boot{position:fixed;inset:0;display:grid;place-items:center;color:#99a1ac;
+    font-family:system-ui,sans-serif;font-size:15px;background:#0e1013;z-index:9999;}
   #boot .dot{width:34px;height:34px;border-radius:10px;margin:0 auto 14px;
-    background:linear-gradient(155deg,#7367f8,#5a4be6);animation:sp 1s linear infinite;}
+    background:linear-gradient(150deg,#2dd4bf,#0e9e8f);animation:sp 1s linear infinite;}
   @keyframes sp{to{transform:rotate(360deg);}}
 </style>
 </head>
@@ -197,22 +197,22 @@ async function mockGenerateFlashcards(sourceId) {
    ========================================================================= */
 const CSS = `
 :root{ --r:16px; }
-.sf{ --bg:#16151d; --bg2:#1d1c26; --surface:#252330; --surface2:#2d2b39;
-  --hover:#38364a; --border:rgba(226,222,255,.09); --border2:rgba(226,222,255,.15);
-  --text:#f1eff7; --muted:#a9a4b8; --faint:#6f6a7e;
-  --primary:#6d5efc; --primary2:#9a8dff; --accent:#8b7cff; --accent2:#b3a8ff;
-  --grad:linear-gradient(155deg,#7367f8,#5a4be6); --glow:rgba(109,94,252,.26);
-  --shadow:0 26px 70px -26px rgba(6,4,16,.72); --danger:#f87171; --ok:#34d399;
-  --amber:#f4c25a; --amber2:#f9d98a; --cream:#f4f1ea; --cream-ink:#1c1b23; --cream-muted:#5c5766;
+.sf{ --bg:#0e1013; --bg2:#14171b; --surface:#1a1e23; --surface2:#22272e;
+  --hover:#2b313a; --border:rgba(255,255,255,.08); --border2:rgba(255,255,255,.14);
+  --text:#e9ecf1; --muted:#99a1ac; --faint:#636a74;
+  --primary:#14b8a6; --primary2:#2dd4bf; --accent:#2dd4bf; --accent2:#5eead4;
+  --grad:linear-gradient(150deg,#2dd4bf,#0e9e8f); --glow:rgba(20,184,166,.26);
+  --shadow:0 26px 70px -26px rgba(0,0,0,.7); --danger:#f87171; --ok:#34d399;
+  --amber:#2dd4bf; --amber2:#5eead4; --cream:#eef2f1; --cream-ink:#12161a; --cream-muted:#586069;
   color-scheme:dark;
 }
-.sf.light{ --bg:#f5f3ee; --bg2:#ece8df; --surface:#ffffff; --surface2:#f5f2ea;
-  --hover:#efeae0; --border:rgba(40,30,80,.10); --border2:rgba(40,30,80,.16);
-  --text:#1c1b23; --muted:#5c5766; --faint:#8b8494;
-  --primary:#5b4fe0; --primary2:#4a3fce; --accent:#7d6ffb; --accent2:#9a8dff;
-  --grad:linear-gradient(155deg,#6155e8,#4f43d6); --glow:rgba(91,79,224,.2);
-  --shadow:0 24px 60px -28px rgba(40,30,90,.3);
-  --amber:#c98a1e; --amber2:#e0a83a; --cream:#f4f1ea; --cream-ink:#1c1b23; --cream-muted:#5c5766;
+.sf.light{ --bg:#f4f6f6; --bg2:#e9edec; --surface:#ffffff; --surface2:#eef2f1;
+  --hover:#e6ecea; --border:rgba(20,40,40,.10); --border2:rgba(20,40,40,.16);
+  --text:#12161a; --muted:#586069; --faint:#8b929a;
+  --primary:#0d9488; --primary2:#0f766e; --accent:#14b8a6; --accent2:#2dd4bf;
+  --grad:linear-gradient(150deg,#14b8a6,#0d9488); --glow:rgba(13,148,136,.2);
+  --shadow:0 24px 60px -28px rgba(20,40,40,.25);
+  --amber:#0d9488; --amber2:#14b8a6; --cream:#eef2f1; --cream-ink:#12161a; --cream-muted:#586069;
   color-scheme:light;
 }
 .sf{ background:var(--bg); color:var(--text); min-height:100vh;
@@ -452,9 +452,9 @@ const CSS = `
 /* animated aurora field behind the (transparent) dark pages */
 .sf .aurora{ position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
 .sf .aurora i{ position:absolute; border-radius:50%; filter:blur(100px); display:block; }
-.sf .aurora .a1{ width:60vw; height:60vw; background:radial-gradient(circle,#6d5efc,transparent 64%); opacity:.34; top:-20%; left:-14%; animation:drift 20s ease-in-out infinite; }
-.sf .aurora .a2{ width:54vw; height:54vw; background:radial-gradient(circle,#f4c25a,transparent 64%); opacity:.28; bottom:-24%; right:-16%; animation:drift 27s ease-in-out infinite reverse; }
-.sf .aurora .a3{ width:44vw; height:44vw; background:radial-gradient(circle,#8b7cff,transparent 64%); opacity:.2; top:28%; right:18%; animation:drift 33s ease-in-out infinite; }
+.sf .aurora .a1{ width:60vw; height:60vw; background:radial-gradient(circle,#14b8a6,transparent 64%); opacity:.3; top:-20%; left:-14%; animation:drift 20s ease-in-out infinite; }
+.sf .aurora .a2{ width:54vw; height:54vw; background:radial-gradient(circle,#22d3ee,transparent 64%); opacity:.22; bottom:-24%; right:-16%; animation:drift 27s ease-in-out infinite reverse; }
+.sf .aurora .a3{ width:44vw; height:44vw; background:radial-gradient(circle,#2dd4bf,transparent 64%); opacity:.18; top:28%; right:18%; animation:drift 33s ease-in-out infinite; }
 @keyframes drift{ 0%,100%{ transform:translate(0,0) scale(1);} 33%{ transform:translate(6vw,-4vh) scale(1.12);} 66%{ transform:translate(-5vw,5vh) scale(.94);} }
 
 /* faint tech grid, vignette-masked */
@@ -572,7 +572,7 @@ const CSS = `
 .sf .aurora .a1, .sf .aurora .a2, .sf .aurora .a3{ opacity:.16; }
 .sf .xbeam{ background:linear-gradient(90deg,transparent,#5f7aa4 40%,#3f5f96 70%,transparent);
   box-shadow:0 0 10px 1px rgba(120,150,215,.28); }
-.sf .fbadge{ background:var(--amber); color:#3a2a05; border:none; box-shadow:0 4px 12px -3px rgba(244,194,90,.5); }
+.sf .fbadge{ background:var(--amber); color:#04231f; border:none; box-shadow:0 4px 12px -3px rgba(20,184,166,.5); }
 /* cream toolkit panel: white tiles with indigo icons + dark ink, like nkae */
 .sf .panel-cream .ftile{ background:#fff; color:var(--primary); box-shadow:0 10px 22px -12px rgba(40,25,90,.28); border:1px solid rgba(28,27,35,.06); }
 .sf .panel-cream .frow{ border-top:1px solid rgba(28,27,35,.12); }
@@ -655,6 +655,70 @@ const CSS = `
   .sf .flow{ flex-direction:column; align-items:center; gap:26px; }
   .sf .flow::before{ display:none; }
   .sf .wm{ font-size:40vw; }
+}
+
+/* ===== v2 landing — distinct normal-scroll layout (no full-page slide) ===== */
+.sf .lp{ position:relative; overflow:hidden; }
+.sf .lp .wrapx{ max-width:1160px; margin:0 auto; padding:0 24px; position:relative; z-index:1; }
+.sf .lp .aurora{ position:absolute; }
+
+/* top nav for the landing */
+.sf .lnav{ position:fixed; top:0; left:0; right:0; z-index:55; backdrop-filter:blur(14px);
+  background:color-mix(in srgb,var(--bg) 72%, transparent); border-bottom:1px solid var(--border); }
+.sf .lnav-in{ max-width:1160px; margin:0 auto; padding:0 24px; height:66px; display:flex; align-items:center; justify-content:space-between; }
+.sf .btn-sm2{ padding:9px 16px; font-size:14px; }
+
+/* hero: asymmetric two columns */
+.sf .hero2{ display:grid; grid-template-columns:1.05fr .95fr; gap:52px; align-items:center; padding:150px 0 72px; }
+.sf .chip2{ display:inline-flex; align-items:center; gap:9px; padding:6px 14px 6px 6px; border-radius:999px;
+  background:var(--surface); border:1px solid var(--border2); font-size:13px; color:var(--muted); }
+.sf .chip2 b{ display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:999px;
+  background:color-mix(in srgb,var(--primary) 20%, transparent); color:var(--primary2); font-weight:700; font-size:11px; letter-spacing:.3px; }
+.sf .h1x{ font-size:clamp(38px,5.6vw,60px); line-height:1.04; letter-spacing:-2px; font-weight:840; margin:22px 0 18px; }
+.sf .hl{ color:var(--primary2); }
+
+/* product-window mock (replaces the paper flashcard) */
+.sf .mock{ border-radius:18px; border:1px solid var(--border2); background:var(--surface); overflow:hidden;
+  box-shadow:var(--shadow); transform:perspective(1700px) rotateY(-9deg) rotateX(3deg); }
+.sf .mock-bar{ display:flex; align-items:center; gap:7px; padding:12px 14px; border-bottom:1px solid var(--border); background:var(--surface2); }
+.sf .mock-bar .d{ width:10px; height:10px; border-radius:99px; }
+.sf .mock-bar .u{ margin-left:12px; flex:1; height:22px; border-radius:7px; background:var(--bg2); }
+.sf .mock-body{ padding:18px; }
+.sf .mock-tabs{ display:flex; gap:6px; margin-bottom:15px; }
+.sf .mock-tabs span{ font-size:11.5px; padding:6px 11px; border-radius:8px; background:var(--surface2); color:var(--muted); }
+.sf .mock-tabs span.on{ background:var(--grad); color:#04231f; font-weight:700; }
+.sf .mock-q{ border:1px solid var(--border); border-radius:12px; padding:15px; background:var(--bg2); }
+.sf .mock-opt{ padding:9px 12px; border-radius:9px; border:1px solid var(--border2); margin-top:8px; font-size:13px; }
+
+/* trust strip */
+.sf .strip{ display:flex; flex-wrap:wrap; gap:30px; justify-content:center; padding:26px 0;
+  border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.sf .strip .n{ font-size:26px; font-weight:840; letter-spacing:-.5px; text-align:center; }
+
+/* bento feature grid */
+.sf .bento{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.sf .bento .b{ background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:24px;
+  transition:transform .25s ease, border-color .25s ease; }
+.sf .bento .b:hover{ transform:translateY(-4px); border-color:var(--border2); }
+.sf .bento .w2{ grid-column:span 2; }
+.sf .bico{ display:grid; place-items:center; width:44px; height:44px; border-radius:12px; margin-bottom:14px; color:#04231f; background:var(--grad); }
+.sf .btitle{ font-weight:770; font-size:17px; margin-bottom:6px; }
+.sf .minheat{ display:grid; grid-template-columns:repeat(14,1fr); gap:4px; margin-top:16px; max-width:280px; }
+.sf .minheat i{ aspect-ratio:1; border-radius:3px; background:var(--surface2); }
+
+/* how it works — 3 cards, no connector */
+.sf .steps3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.sf .stepc{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:26px; }
+.sf .stepn{ font-family:ui-monospace,monospace; font-size:13px; font-weight:800; color:var(--primary2); letter-spacing:1px; margin-bottom:12px; }
+.sf .lp h2.sec{ font-size:clamp(26px,3.9vw,40px); letter-spacing:-1.2px; font-weight:820; margin:0; }
+
+@media (max-width:860px){
+  .sf .hero2{ grid-template-columns:1fr; gap:30px; padding:118px 0 50px; }
+  .sf .mock{ transform:none; }
+  .sf .bento{ grid-template-columns:1fr 1fr; }
+  .sf .bento .w2{ grid-column:span 2; }
+  .sf .steps3{ grid-template-columns:1fr; }
+  .sf .lnav .signin.hide-sm{ display:none; }
 }
 `;
 
@@ -899,7 +963,169 @@ function QuestionCard() {
   );
 }
 
+// Bento feature grid — varied card sizes (a deliberately different layout).
+const BENTO = [
+  { icon: FileUp, w: true, t: "Upload anything", d: "PDF, DOCX, slides, screenshots — or paste a YouTube link. StudyForge reads it and pulls out what matters." },
+  { icon: ListChecks, t: "AI quizzes", d: "Multiple-choice, true/false and short-answer, with explanations." },
+  { icon: Layers, t: "Flashcards", d: "Auto-built decks you flip and grade." },
+  { icon: StickyNote, t: "Summaries", d: "Clean, structured notes you'll actually read." },
+  { icon: MessageSquare, t: "Chat with your notes", d: "Ask questions and get answers grounded in your own material." },
+  { icon: Timer, w: true, t: "Focus, streaks & a study heatmap", d: "Pomodoro sessions, daily streaks, and a calendar that fills in as you learn — motivation built into the workflow.", heat: true },
+];
+
+const STEPS3 = [
+  { n: "01", icon: Upload, t: "Add a source", d: "Drop a file, paste a link, or search a topic. One source is all it takes." },
+  { n: "02", icon: Sparkles, t: "Generate", d: "Turn it into quizzes, summaries and flashcards in a click." },
+  { n: "03", icon: Target, t: "Study & remember", d: "Review with spaced repetition so it resurfaces right before you forget." },
+];
+
 function Landing({ onStart, onSignin, theme, toggleTheme }) {
+  return (
+    <div className="lp">
+      <div className="aurora"><i className="a1" /><i className="a2" /><i className="a3" /></div>
+
+      {/* fixed top nav */}
+      <div className="lnav">
+        <div className="lnav-in">
+          <div className="logo">
+            <span className="mark"><GraduationCap size={19} /></span>
+            <span>Study<span className="grad-text">Forge</span></span>
+          </div>
+          <div className="row gap12">
+            <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle theme"
+              title={theme === "dark" ? "Switch to light" : "Switch to dark"}>
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button className="signin hide-sm" onClick={onSignin}
+              style={{ background: "none", border: "none", color: "var(--text)", cursor: "pointer", fontSize: 14, fontWeight: 600 }}>Sign in</button>
+            <button className="btn btn-primary btn-sm2" onClick={onStart}>Get started</button>
+          </div>
+        </div>
+      </div>
+
+      {/* HERO — asymmetric, product-window visual */}
+      <section className="wrapx">
+        <div className="hero2">
+          <div>
+            <Reveal><span className="chip2"><b><Sparkles size={12} /> New</b> AI study companion</span></Reveal>
+            <Reveal delay={60}>
+              <h1 className="h1x">Turn any material into a <span className="hl">study system</span>.</h1>
+            </Reveal>
+            <Reveal delay={120}>
+              <p style={{ fontSize: "clamp(16px,2vw,19px)", color: "var(--muted)", lineHeight: 1.6, maxWidth: 520, marginBottom: 28 }}>
+                Upload notes, drop a YouTube link, or search a topic. StudyForge builds quizzes, summaries and flashcards around it — then schedules the review so it sticks.
+              </p>
+            </Reveal>
+            <Reveal delay={180}>
+              <div className="row gap12" style={{ flexWrap: "wrap" }}>
+                <button className="btn btn-primary" onClick={onStart}>Start free <ArrowRight size={18} /></button>
+                <button className="btn btn-ghost" onClick={onStart}><Play size={16} /> Watch demo</button>
+              </div>
+              <div className="faint" style={{ marginTop: 16, fontSize: 12.5 }}>Free while in beta · no card required</div>
+            </Reveal>
+          </div>
+
+          <Reveal delay={140}>
+            <div className="mock">
+              <div className="mock-bar">
+                <span className="d" style={{ background: "#f87171" }} />
+                <span className="d" style={{ background: "#fbbf24" }} />
+                <span className="d" style={{ background: "#34d399" }} />
+                <div className="u" />
+              </div>
+              <div className="mock-body">
+                <div className="mock-tabs">
+                  <span className="on">Sources</span><span>Review</span><span>Focus</span><span>Chat</span>
+                </div>
+                <div className="mock-q">
+                  <div className="row gap8" style={{ marginBottom: 10 }}>
+                    <span className="pill" style={{ fontSize: 11 }}>Quiz</span>
+                    <span className="faint" style={{ fontSize: 11.5 }}>Photosynthesis</span>
+                  </div>
+                  <div style={{ fontWeight: 700, fontSize: 14.5, marginBottom: 4 }}>Which organelle runs photosynthesis?</div>
+                  <div className="mock-opt" style={{ background: "color-mix(in srgb,var(--primary) 15%, var(--surface))", borderColor: "var(--primary)" }}>Chloroplast</div>
+                  <div className="mock-opt">Mitochondrion</div>
+                </div>
+                <div className="row" style={{ justifyContent: "space-between", marginTop: 14, alignItems: "center" }}>
+                  <div className="bar" style={{ flex: 1, marginRight: 12 }}><i style={{ width: "64%" }} /></div>
+                  <span className="faint" style={{ fontSize: 11.5, whiteSpace: "nowrap" }}>6-day streak</span>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* trust strip */}
+      <section className="wrapx">
+        <Reveal><div className="strip">
+          {[["4", "study tools"], ["3", "source types"], ["SM-2", "spaced repetition"], ["100%", "free in beta"]].map(([n, l], i) => (
+            <div key={i}>
+              <div className="n">{n}</div>
+              <div className="faint" style={{ fontSize: 12.5, textAlign: "center" }}>{l}</div>
+            </div>
+          ))}
+        </div></Reveal>
+      </section>
+
+      {/* BENTO features */}
+      <section className="wrapx" style={{ padding: "72px 0 28px" }}>
+        <Reveal>
+          <div style={{ marginBottom: 34 }}>
+            <h2 className="sec">Everything in one workspace</h2>
+            <p className="muted" style={{ fontSize: 16, marginTop: 8 }}>No tab-hopping — generate, review and track from a single place.</p>
+          </div>
+        </Reveal>
+        <div className="bento">
+          {BENTO.map((b, i) => (
+            <Reveal key={i} delay={i * 60} className={`b ${b.w ? "w2" : ""}`}>
+              <div className="bico"><b.icon size={22} /></div>
+              <div className="btitle">{b.t}</div>
+              <div className="muted" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{b.d}</div>
+              {b.heat && (
+                <div className="minheat">
+                  {Array.from({ length: 42 }, (_, k) => {
+                    const on = (k * 7 + 3) % 5 < 3;
+                    return <i key={k} style={on ? { background: `color-mix(in srgb,var(--primary) ${30 + (k % 4) * 22}%, var(--surface2))` } : undefined} />;
+                  })}
+                </div>
+              )}
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* HOW IT WORKS — 3 cards, no connector */}
+      <section className="wrapx" style={{ padding: "48px 0 20px" }}>
+        <Reveal><h2 className="sec" style={{ marginBottom: 34 }}>Three steps, and you're studying</h2></Reveal>
+        <div className="steps3">
+          {STEPS3.map((s, i) => (
+            <Reveal key={i} delay={i * 80} className="stepc">
+              <div className="stepn">{s.n}</div>
+              <div className="ftile glassx" style={{ marginBottom: 14 }}><s.icon size={20} /></div>
+              <div style={{ fontWeight: 770, fontSize: 17, marginBottom: 6 }}>{s.t}</div>
+              <div className="muted" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{s.d}</div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA band */}
+      <section className="wrapx" style={{ padding: "48px 0 90px" }}>
+        <Reveal>
+          <div style={{ textAlign: "center", padding: "58px 30px", borderRadius: 22, background: "var(--grad)", position: "relative", overflow: "hidden" }}>
+            <h2 style={{ color: "#04231f", fontSize: "clamp(26px,4vw,40px)", fontWeight: 850, letterSpacing: "-1px", margin: "0 0 12px" }}>Study once. Remember for good.</h2>
+            <p style={{ color: "rgba(2,26,22,.72)", fontSize: 17, margin: "0 0 26px" }}>Build your first study set in under a minute.</p>
+            <button className="btn" style={{ background: "#0e1013", color: "#e9ecf1", fontWeight: 700 }} onClick={onStart}>Get started free <ArrowRight size={18} /></button>
+          </div>
+        </Reveal>
+        <div className="faint center" style={{ marginTop: 30, fontSize: 12.5 }}>StudyForge · Phase 1 prototype</div>
+      </section>
+    </div>
+  );
+}
+
+function LandingOld({ onStart, onSignin, theme, toggleTheme }) {
   const twoCol = { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 44, alignItems: "center" };
 
   const pages = [
@@ -2005,6 +2231,7 @@ export default function App() {
     </div>
   );
 }
+
 
 import { createRoot } from "react-dom/client";
 const boot = document.getElementById("boot");
