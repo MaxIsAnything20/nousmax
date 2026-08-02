@@ -532,17 +532,19 @@ const CSS = `
 .sf .nmw .mt-n{ display:inline-block; color:#0d9488; }
 .sf .nmw .mt-m{ display:inline-block; color:#d9a521; }
 .sf .intro-morph{ position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center;
-  pointer-events:none; opacity:0; transform:scale(.42); will-change:transform,opacity; }
-.sf .intro-morph .nmw > span{ opacity:0; transform:scale(.1); transform-origin:center 60%; }
-.sf .intro-morph.play .nmw > span{ animation:letterExpand .6s cubic-bezier(.2,.85,.3,1.1) forwards; }
-.sf .intro-morph.play .nmw > span:nth-child(1){ animation-delay:0s; }
-.sf .intro-morph.play .nmw > span:nth-child(2){ animation-delay:.15s; }
-.sf .intro-morph.play .nmw > span:nth-child(3){ animation-delay:.3s; }
-.sf .intro-morph.play .nmw > span:nth-child(4){ animation-delay:.45s; }
-.sf .intro-morph.play .nmw > span:nth-child(5){ animation-delay:.6s; }
-.sf .intro-morph.play .nmw > span:nth-child(6){ animation-delay:.75s; }
-.sf .intro-morph.play .nmw > span:nth-child(7){ animation-delay:.9s; }
-@keyframes letterExpand{ from{ opacity:0; transform:scale(.1); } to{ opacity:1; transform:scale(1); } }
+  pointer-events:none; opacity:0; transform:scale(.5); will-change:transform,opacity; }
+/* the filler letters (o u s a x) start with zero width, so only N M show; as each
+   grows in it physically pushes the N and M apart — the monogram "splits". */
+.sf .intro-morph .nmw .g{ max-width:0; opacity:0; overflow:hidden; }
+.sf .intro-morph.play .nmw .g{ animation:writeLtr .62s cubic-bezier(.3,.85,.3,1) forwards; }
+.sf .intro-morph.play .nmw > span:nth-child(2){ animation-delay:0s; }
+.sf .intro-morph.play .nmw > span:nth-child(3){ animation-delay:.17s; }
+.sf .intro-morph.play .nmw > span:nth-child(4){ animation-delay:.34s; }
+.sf .intro-morph.play .nmw > span:nth-child(6){ animation-delay:.51s; }
+.sf .intro-morph.play .nmw > span:nth-child(7){ animation-delay:.68s; }
+@keyframes writeLtr{ from{ max-width:0; opacity:0; } to{ max-width:1.05em; opacity:1; } }
+/* resting page watermark: filler letters at their natural width */
+.sf .wm-brand .nmw .g{ max-width:2em; opacity:1; overflow:visible; }
 .sf .intro-word{ font-weight:850; font-size:40px; letter-spacing:-1px; white-space:nowrap; color:var(--text);
   clip-path:inset(0 100% 0 0); text-shadow:0 0 26px rgba(79,124,255,.5); }
 @keyframes iring{ 0%{ opacity:.7; transform:translate(-50%,-50%) scale(.6);} 100%{ opacity:0; transform:translate(-50%,-50%) scale(2.3);} }
@@ -599,11 +601,14 @@ const CSS = `
 .sf .fp .btn-primary{ box-shadow:none; border:none; outline:none; }
 .sf .fp .btn-primary:hover{ box-shadow:none; transform:translateY(-2px); filter:brightness(1.06); }
 .sf .fp .btn-primary:focus-visible{ outline:none; box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 30%, transparent); }
-/* hero page 1: appears centred, then slides left leaving the right half reserved */
+/* hero page 1: headline reveals letter-by-letter, appears centred, then glides left */
 .sf .pin.hero-left{ display:flex; justify-content:flex-start; align-items:center; }
 .sf .hero-col{ max-width:560px; text-align:left; transform:translateX(clamp(0px,21vw,300px));
-  transition:transform .9s cubic-bezier(.3,.7,.2,1); }
+  transition:transform 1.05s cubic-bezier(.16,1,.3,1); }
 .sf.hero-shift .hero-col{ transform:translateX(0); }
+.sf .hl{ display:inline-block; white-space:pre; opacity:0; transform:translateY(.5em) scale(.94); filter:blur(5px); }
+.sf:not(.booting) .hero-h1 .hl{ animation:heroLtrIn .72s cubic-bezier(.2,.85,.25,1) both; }
+@keyframes heroLtrIn{ from{ opacity:0; transform:translateY(.5em) scale(.94); filter:blur(5px); } to{ opacity:1; transform:none; filter:blur(0); } }
 @media (max-width:860px){ .sf .pin.hero-left{ justify-content:center; }
   .sf .hero-col, .sf.hero-shift .hero-col{ text-align:center; max-width:600px; margin:0 auto; transform:none; } }
 /* fixed nav on cream */
@@ -780,10 +785,20 @@ function Reveal({ children, delay = 0, style, className = "" }) {
 function NousMaxWord() {
   return (
     <span className="nmw" aria-hidden="true">
-      <span className="mt-n">N</span><span className="mt-n">o</span><span className="mt-n">u</span><span className="mt-n">s</span>
-      <span className="mt-m">M</span><span className="mt-m">a</span><span className="mt-m">x</span>
+      <span className="mt-n">N</span><span className="mt-n g">o</span><span className="mt-n g">u</span><span className="mt-n g">s</span>
+      <span className="mt-m">M</span><span className="mt-m g">a</span><span className="mt-m g">x</span>
     </span>
   );
+}
+
+// Splits text into per-letter spans with a staggered reveal delay (used for the
+// hero headline — letters ease/blur in one after another).
+function Letters({ text, start = 0, step = 30 }) {
+  return text.split("").map((ch, i) => (
+    <span key={i} className="hl" style={{ animationDelay: `${(start + i) * step}ms` }}>
+      {ch === " " ? " " : ch}
+    </span>
+  ));
 }
 
 // NousMax mark — an overlapping N (teal) + M (gold) monogram, one glyph.
@@ -1090,8 +1105,8 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
         <>
           <div className="pin hero-left">
             <div className="hero-col">
-              <h1 className="display rise d1" style={{ marginBottom: 18, fontSize: "clamp(34px,4.8vw,58px)" }}>
-                Study smarter,<br /><span className="amber">remember longer.</span>
+              <h1 className="display hero-h1" style={{ marginBottom: 18, fontSize: "clamp(34px,4.8vw,58px)" }}>
+                <Letters text="Study smarter," /><br /><span className="amber"><Letters text="remember longer." start={15} /></span>
               </h1>
               <p className="rise d2" style={{ fontSize: "clamp(16px,2vw,18px)", color: "var(--cream-muted)", lineHeight: 1.6, maxWidth: 480, margin: "0 0 30px" }}>
                 Upload notes, drop a YouTube link, or search a topic — NousMax turns it into summaries, quizzes and flashcards, then brings them back at exactly the right moment.
@@ -2030,22 +2045,22 @@ function IntroOverlay({ onReveal, onShift, onDone }) {
 
     const morph = () => {
       const morphEl = document.querySelector(".intro-morph");
-      // the monogram pushes BACK (shrinking toward the word's letter size) then fades
+      // the drawn monogram shrinks and crossfades into the font "N M"
       markSvg.animate([
         { transform: "scale(1)", opacity: 1, offset: 0 },
-        { transform: "scale(.5)", opacity: 1, offset: .4 },
-        { transform: "scale(.42)", opacity: 0, offset: 1 },
-      ], { duration: 850, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" });
+        { transform: "scale(.52)", opacity: 1, offset: .45 },
+        { transform: "scale(.46)", opacity: 0, offset: 1 },
+      ], { duration: 720, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" });
       if (morphEl) {
-        morphEl.classList.add("play");              // each letter expands in, one after another
         morphEl.animate([
-          { opacity: 0, transform: "scale(.42)", offset: 0 },
-          { opacity: 0.16, transform: "scale(.5)", offset: .22 },    // pushed back
-          { opacity: 0.16, transform: "scale(1)", offset: 1 },       // expands to full as letters pop
-        ], { duration: 1950, easing: "cubic-bezier(.3,.55,.2,1)", fill: "forwards" });
+          { opacity: 0, transform: "scale(.5)", offset: 0 },
+          { opacity: 0.16, transform: "scale(.55)", offset: .28 },   // "N M" appears at monogram size
+          { opacity: 0.16, transform: "scale(1)", offset: 1 },       // grows to full as letters write in
+        ], { duration: 2050, easing: "cubic-bezier(.3,.55,.2,1)", fill: "forwards" });
+        timers.push(setTimeout(() => morphEl.classList.add("play"), 470));   // then N M split + o u s / a x write in
       }
       onReveal && onReveal();                       // page pulls into focus, hero appears centred
-      timers.push(setTimeout(reveal, 2150));
+      timers.push(setTimeout(reveal, 2250));
     };
 
     const reveal = () => {
