@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>StudyForge — Phase 1 Prototype</title>
 <style>
-  html,body{height:100%;} body{margin:0;background:#0a0b12;overflow:hidden;}
-  #boot{position:fixed;inset:0;display:grid;place-items:center;color:#a3a9c0;
-    font-family:system-ui,sans-serif;font-size:15px;background:#0a0b12;z-index:9999;}
+  html,body{height:100%;} body{margin:0;background:#0a0716;overflow:hidden;}
+  #boot{position:fixed;inset:0;display:grid;place-items:center;color:#ada3d6;
+    font-family:system-ui,sans-serif;font-size:15px;background:#0a0716;z-index:9999;}
   #boot .dot{width:34px;height:34px;border-radius:10px;margin:0 auto 14px;
-    background:linear-gradient(120deg,#8b5cf6,#22d3ee);animation:sp 1s linear infinite;}
+    background:linear-gradient(120deg,#d946ef,#7c3aed);animation:sp 1s linear infinite;}
   @keyframes sp{to{transform:rotate(360deg);}}
 </style>
 </head>
@@ -184,22 +184,22 @@ async function mockGenerateFlashcards() { await wait(1200); return mockFlashcard
    ========================================================================= */
 const CSS = `
 :root{ --r:16px; }
-.sf{ --bg:#0a0c13; --bg2:#0f121c; --surface:#141826; --surface2:#1b2032;
-  --hover:#222842; --border:rgba(255,255,255,.08); --border2:rgba(255,255,255,.14);
-  --text:#e8eaf4; --muted:#969db6; --faint:#636a85;
-  --primary:#8b5cf6; --primary2:#a78bfa; --accent:#22d3ee; --accent2:#67e8f9;
-  --grad:linear-gradient(120deg,#8b5cf6,#7c73ff 46%,#22d3ee); --glow:rgba(124,92,246,.5);
-  --shadow:0 26px 70px -26px rgba(0,0,0,.78); --danger:#f87171; --ok:#34d399;
-  --amber:#f5c451; --amber2:#fcd77a; --cream:#f4f1ea; --cream-ink:#1b1b24; --cream-muted:#5c5c68;
+.sf{ --bg:#0a0716; --bg2:#100a24; --surface:#171033; --surface2:#1f1642;
+  --hover:#2a1e59; --border:rgba(178,148,255,.11); --border2:rgba(178,148,255,.20);
+  --text:#efeafd; --muted:#ada3d6; --faint:#726a9c;
+  --primary:#a855f7; --primary2:#c084fc; --accent:#e879f9; --accent2:#f0abfc;
+  --grad:linear-gradient(120deg,#d946ef,#a855f7 46%,#7c3aed); --glow:rgba(168,85,247,.58);
+  --shadow:0 26px 70px -26px rgba(20,0,40,.82); --danger:#f87171; --ok:#34d399;
+  --amber:#e879f9; --amber2:#f5d0fe; --cream:#efeafc; --cream-ink:#1a1330; --cream-muted:#5b5378;
   color-scheme:dark;
 }
-.sf.light{ --bg:#f6f7fc; --bg2:#eceffa; --surface:#ffffff; --surface2:#f4f6fd;
-  --hover:#eef1fb; --border:rgba(20,25,50,.10); --border2:rgba(20,25,50,.18);
-  --text:#161a2b; --muted:#5a6178; --faint:#8b91a8;
-  --primary:#7c3aed; --primary2:#6d28d9; --accent:#0891b2; --accent2:#06b6d4;
-  --grad:linear-gradient(120deg,#7c3aed,#0891b2); --glow:rgba(124,58,237,.28);
-  --shadow:0 24px 60px -28px rgba(30,30,80,.35);
-  --amber:#d99a1f; --amber2:#eab543; --cream:#efece4; --cream-ink:#1b1b24; --cream-muted:#5c5c68;
+.sf.light{ --bg:#f5f2fe; --bg2:#ebe5fb; --surface:#ffffff; --surface2:#f4f0fd;
+  --hover:#efe9fc; --border:rgba(60,30,110,.10); --border2:rgba(60,30,110,.18);
+  --text:#191233; --muted:#5b5378; --faint:#8b83a8;
+  --primary:#9333ea; --primary2:#7c3aed; --accent:#c026d3; --accent2:#d946ef;
+  --grad:linear-gradient(120deg,#c026d3,#9333ea 46%,#7c3aed); --glow:rgba(147,51,234,.3);
+  --shadow:0 24px 60px -28px rgba(60,20,110,.35);
+  --amber:#a21caf; --amber2:#c026d3; --cream:#efeafc; --cream-ink:#1a1330; --cream-muted:#5b5378;
   color-scheme:light;
 }
 .sf{ background:var(--bg); color:var(--text); min-height:100vh;
@@ -415,8 +415,8 @@ const CSS = `
 .sf .ftile-lg{ position:relative; width:70px; height:70px; border-radius:20px; display:grid; place-items:center;
   background:var(--surface); border:1px solid var(--border2); color:var(--primary2); box-shadow:var(--shadow); }
 .sf .fbadge{ position:absolute; top:-9px; right:-9px; width:26px; height:26px; border-radius:99px;
-  background:var(--amber); color:#241a00; font-size:13px; font-weight:850; display:grid; place-items:center;
-  box-shadow:0 6px 14px -4px rgba(245,196,81,.6); }
+  background:var(--amber); color:#2a0733; font-size:13px; font-weight:850; display:grid; place-items:center;
+  box-shadow:0 6px 16px -3px rgba(232,121,249,.65); }
 
 /* icon-row feature list (cream panel) */
 .sf .frow{ display:flex; gap:18px; align-items:flex-start; padding:22px 4px;
