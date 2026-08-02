@@ -539,6 +539,21 @@ const CSS = `
 .sf .intro-mark svg{ filter:none; }
 .sf .intro-mark::before{ border-color:rgba(150,172,215,.4); }
 
+/* ===== interactive flip card (hero note) ===== */
+.sf .qcard{ position:relative; display:inline-block; cursor:pointer; transform:rotate(1.5deg); transition:transform .35s cubic-bezier(.2,.8,.2,1); }
+.sf .qcard:hover{ transform:rotate(0deg) translateY(-4px); }
+.sf .flipcard{ perspective:1600px; width:340px; height:330px; }
+.sf .flipcard-inner{ position:relative; width:100%; height:100%; transition:transform .75s cubic-bezier(.2,.85,.25,1); transform-style:preserve-3d; }
+.sf .flipcard.flipped .flipcard-inner{ transform:rotateY(180deg); }
+.sf .fc-face{ position:absolute; inset:0; width:100%; height:100%; min-height:0; overflow:hidden;
+  backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+.sf .fc-back{ transform:rotateY(180deg); }
+.sf .fc-hint{ display:flex; align-items:center; gap:7px; margin-top:16px; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:1px; color:var(--faint); }
+.sf .xbeam-once{ position:absolute; left:0; right:0; top:0; height:3px; z-index:3;
+  background:linear-gradient(90deg,transparent,#5f7aa4 40%,#3f5f96 70%,transparent);
+  box-shadow:0 0 10px 1px rgba(120,150,215,.3); animation:beamOnce 1.3s ease .12s both; }
+@keyframes beamOnce{ 0%{ top:-4px; opacity:0; } 8%{ opacity:1; } 90%{ opacity:1; } 100%{ top:100%; opacity:0; } }
+
 @media (max-width:760px){
   .sf .hide-sm{ display:none !important; }
   .sf .wrap{ padding:0 16px; }
@@ -728,6 +743,70 @@ function FullPage({ theme, toggleTheme, onStart, pages, labels }) {
   );
 }
 
+// Interactive hero note: click → flips to the "generating" side, runs the
+// render/scan sequence, then flips back to reveal the answer.
+function QuestionCard() {
+  const [flipped, setFlipped] = useState(false);
+  const [answered, setAnswered] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const click = () => {
+    if (busy) return;
+    setBusy(true);
+    setFlipped(true);                       // flip to the generating side
+    if (!answered) {
+      setTimeout(() => { setAnswered(true); setFlipped(false); }, 1550); // render done → flip back w/ answer
+      setTimeout(() => setBusy(false), 2300);
+    } else {
+      setTimeout(() => { setAnswered(false); setFlipped(false); }, 800); // reset back to the question
+      setTimeout(() => setBusy(false), 1550);
+    }
+  };
+
+  return (
+    <div className="qcard hud" onClick={click} title="Click to flip">
+      <div className={`flipcard ${flipped ? "flipped" : ""}`}>
+        <div className="flipcard-inner">
+          {/* FRONT — question, or the revealed answer */}
+          <div className="xmut fc-face">
+            <div className="xmut-bar">
+              <span className="xdot" /> NOTE_04.TXT
+              <span style={{ marginLeft: "auto", fontFamily: "ui-monospace,monospace", fontSize: 10.5, letterSpacing: 1.5, color: answered ? "var(--ok)" : "var(--muted)" }}>
+                {answered ? "✓ ANSWER" : "QUESTION"}
+              </span>
+            </div>
+            <div className="xmut-body">
+              <div style={{ padding: 26 }}>
+                <div className="q-tag">{answered ? "Answer" : "Question"}</div>
+                <div className="q-text2">{answered ? "The mitochondria." : "What is the powerhouse of the cell?"}</div>
+                {answered
+                  ? <div className="q-ans">✓ Generated · click to reset</div>
+                  : <div className="fc-hint"><RotateCw size={13} /> Click to generate the answer</div>}
+              </div>
+            </div>
+          </div>
+          {/* BACK — the render / scan sequence */}
+          <div className="xmut fc-face fc-back">
+            <div className="xmut-bar">
+              <span className="xdot" style={{ background: "#c99b3e", boxShadow: "none" }} /> NOTE_04.TXT
+              <span style={{ marginLeft: "auto", fontFamily: "ui-monospace,monospace", fontSize: 10.5, letterSpacing: 1.5, color: "var(--muted)" }}>● GENERATING</span>
+            </div>
+            <div className="xmut-body" style={{ position: "relative" }}>
+              <div style={{ padding: 26 }}>
+                <div className="scrawl">mitochondria = "powerhouse"</div>
+                <div className="scrawl">makes ATP… energy??</div>
+                <div className="scrawl">cell respiration ~ glucose</div>
+                <div className="scrawl">→ inner membrane / cristae</div>
+              </div>
+              {flipped && <div className="xbeam-once" />}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Landing({ onStart, theme, toggleTheme }) {
   const twoCol = { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 44, alignItems: "center" };
 
@@ -758,35 +837,9 @@ function Landing({ onStart, theme, toggleTheme }) {
               </div>
               <div className="rise d4">
                 <div className="center">
-                  <div className="tilt hud" style={{ display: "inline-block", position: "relative" }}>
-                    <div className="xmut">
-                      <div className="xmut-bar">
-                        <span className="xdot" /> NOTE_04.TXT
-                        <span className="xstatus">
-                          <span className="s-raw">● ANALYZING</span>
-                          <span className="s-clean">✓ GENERATED</span>
-                        </span>
-                      </div>
-                      <div className="xmut-body">
-                        {/* raw messy notes */}
-                        <div className="xmut-layer xmut-raw">
-                          <div className="scrawl">mitochondria = "powerhouse"</div>
-                          <div className="scrawl">makes ATP… energy??</div>
-                          <div className="scrawl">cell respiration ~ glucose</div>
-                          <div className="scrawl">→ inner membrane / cristae</div>
-                        </div>
-                        {/* generated question */}
-                        <div className="xmut-layer xmut-clean">
-                          <div className="q-tag">Question</div>
-                          <div className="q-text2">What is the powerhouse of the cell?</div>
-                          <div className="q-ans">A · Mitochondria</div>
-                        </div>
-                        <div className="xbeam" />
-                      </div>
-                    </div>
-                  </div>
+                  <QuestionCard />
                   <div style={{ marginTop: 22, fontFamily: "ui-monospace,monospace", fontSize: 10.5, letterSpacing: 2, textTransform: "uppercase", color: "var(--faint)" }}>
-                    Your notes become this, automatically
+                    Click the note to generate its answer
                   </div>
                 </div>
               </div>
