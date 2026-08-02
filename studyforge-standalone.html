@@ -546,33 +546,18 @@ const CSS = `
 .sf .intro-mark{ position:relative; width:76px; height:76px; display:grid; place-items:center; color:#fff; }
 .sf .intro-mark::before{ content:""; position:absolute; left:50%; top:50%; width:80px; height:80px; border-radius:24px;
   border:1px solid rgba(150,190,255,.6); opacity:0; animation:iring 1.3s ease .5s; }
-.sf .intro-tile{ position:absolute; inset:0; border-radius:20px; background:var(--grad); opacity:0; transform:scale(.6);
-  box-shadow:0 0 54px -4px var(--glow), inset 0 1px 0 rgba(255,255,255,.22); animation:itile .7s cubic-bezier(.2,.8,.2,1.5) .8s forwards; }
-.sf .intro-mark svg{ position:relative; z-index:2; filter:drop-shadow(0 0 12px rgba(150,190,255,.95)); }
-.sf .intro-mark svg *{ stroke-dasharray:300; stroke-dashoffset:300; animation:idraw 1s ease .2s forwards; }
+.sf .intro-tile{ position:absolute; inset:0; border-radius:20px; background:var(--grad); opacity:0; transform:scale(.55);
+  box-shadow:0 0 54px -4px var(--glow), inset 0 1px 0 rgba(255,255,255,.22); }
+.sf .intro-cap{ position:relative; z-index:2; overflow:visible; }
+.sf .intro-cap .cap{ fill:none; stroke:#fff; stroke-width:7; stroke-linecap:round; stroke-linejoin:round;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.4)); }
 .sf .intro-word{ font-weight:850; font-size:40px; letter-spacing:-1px; white-space:nowrap; color:var(--text);
-  clip-path:inset(0 100% 0 0); animation:iword .8s cubic-bezier(.6,0,.2,1) 1.2s forwards; text-shadow:0 0 26px rgba(79,124,255,.5); }
-@keyframes idraw{ to{ stroke-dashoffset:0; } }
-@keyframes itile{ from{ opacity:0; transform:scale(.55) rotate(-14deg);} to{ opacity:1; transform:scale(1) rotate(0);} }
-@keyframes iword{ to{ clip-path:inset(0 0 0 0); } }
+  clip-path:inset(0 100% 0 0); text-shadow:0 0 26px rgba(79,124,255,.5); }
 @keyframes iring{ 0%{ opacity:.7; transform:translate(-50%,-50%) scale(.6);} 100%{ opacity:0; transform:translate(-50%,-50%) scale(2.3);} }
-/* a real pencil traces the mark, then writes the wordmark */
+/* a real pencil — JS positions its tip on the drawing point every frame */
 .sf .intro-pencil{ position:absolute; left:0; top:0; z-index:6; width:46px; height:46px; pointer-events:none;
-  transform-origin:18px 42px; opacity:0; animation:ipencil 1.85s cubic-bezier(.45,.05,.5,1) .2s forwards; will-change:transform,opacity; }
-.sf .intro-pencil svg{ display:block; filter:drop-shadow(0 4px 6px rgba(0,0,0,.55)); }
-@keyframes ipencil{
-  0%   { opacity:0; transform:translate(28px,-32px) rotate(16deg); }
-  7%   { opacity:1; }
-  12%  { transform:translate(6px,-22px) rotate(14deg); }
-  20%  { transform:translate(34px,-12px) rotate(20deg); }
-  28%  { transform:translate(8px,2px) rotate(15deg); }
-  36%  { transform:translate(32px,-20px) rotate(21deg); }
-  44%  { transform:translate(12px,8px) rotate(16deg); }
-  52%  { transform:translate(30px,-2px) rotate(19deg); }
-  56%  { opacity:1; transform:translate(78px,2px) rotate(17deg); }
-  94%  { transform:translate(262px,4px) rotate(17deg); }
-  100% { opacity:0; transform:translate(286px,4px) rotate(17deg); }
-}
+  transform-origin:18px 42px; opacity:0; will-change:transform,opacity; }
+.sf .intro-pencil svg{ display:block; filter:drop-shadow(0 5px 7px rgba(0,0,0,.5)); }
 /* hold hero elements hidden until the logo starts pulling up, then they cascade */
 .sf.booting .fp-sec.on .rise{ opacity:0; transform:translateY(-46px) scale(.93); filter:blur(9px); }
 /* hide the real nav logo during the intro so the flying logo becomes it (no duplicate) */
@@ -1090,9 +1075,9 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
         </div>
       ),
     },
-    // PAGE 3 — THE TOOLKIT (cream)
+    // PAGE 3 — THE TOOLKIT (dark)
     {
-      bg: "panel-cream", eyebrow: "02 · THE TOOLKIT", wm: true,
+      bg: "", eyebrow: "02 · THE TOOLKIT", wm: true,
       content: (
         <div className="pin">
           <div style={{ ...twoCol, gap: 52 }}>
@@ -1110,7 +1095,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
                 <div key={i} className={`frow rise d${i + 2}`}>
                   <div className="ftile glassx"><f.icon size={22} /></div>
                   <div>
-                    <div style={{ fontWeight: 760, fontSize: 16.5, color: "var(--cream-ink)", marginBottom: 3 }}>{f.t}</div>
+                    <div style={{ fontWeight: 760, fontSize: 16.5, color: "var(--text)", marginBottom: 3 }}>{f.t}</div>
                     <div className="p-sub" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{f.d}</div>
                   </div>
                 </div>
@@ -1929,33 +1914,102 @@ function Workspace({ anchors, onOpenLibrary, libraryPick, clearLibraryPick, onTo
    9b) INTRO — draws the logo, then flies it to its spot in the nav.
    Measures the real nav logo at runtime so the landing is pixel-precise.
    ========================================================================= */
+// The intro. A pencil genuinely traces the graduation-cap logo stroke-by-stroke
+// (its tip follows getPointAtLength along each path as the stroke is revealed),
+// the mark then colours in, the wordmark is written under the moving pencil, and
+// finally the finished logo flies up into the nav.
 function IntroOverlay({ onReveal, onDone }) {
   const bgRef = useRef(null);
   const logoRef = useRef(null);
+  const markRef = useRef(null);
+  const tileRef = useRef(null);
+  const wordRef = useRef(null);
+  const pencilRef = useRef(null);
+
   useEffect(() => {
-    const logo = logoRef.current, bg = bgRef.current;
-    const target = document.querySelector(".lnav .logo") || document.querySelector(".logo");
-    let tx = 0, ty = 0, scale = 0.45;
-    if (target && logo) {
-      const t = target.getBoundingClientRect();
-      const c = logo.getBoundingClientRect();
-      scale = t.width / c.width;
-      tx = (t.left + t.width / 2) - (c.left + c.width / 2);
-      ty = (t.top + t.height / 2) - (c.top + c.height / 2);
-    }
-    const MOVE = 2100;                 // logo has finished drawing by now
-    const mv = setTimeout(() => {
+    const logo = logoRef.current, bg = bgRef.current, markSvg = markRef.current;
+    const tile = tileRef.current, word = wordRef.current, pencil = pencilRef.current;
+    if (!logo || !markSvg) return;
+
+    const paths = Array.from(markSvg.querySelectorAll("path.cap"));
+    const lens = paths.map((p) => p.getTotalLength());
+    paths.forEach((p, i) => { p.style.strokeDasharray = lens[i]; p.style.strokeDashoffset = lens[i]; });
+    const total = lens.reduce((a, b) => a + b, 0) || 1;
+
+    const ctm = markSvg.getScreenCTM();
+    const spt = markSvg.createSVGPoint();
+    const box0 = logo.getBoundingClientRect();
+    const toLocal = (pt) => { spt.x = pt.x; spt.y = pt.y; const s = spt.matrixTransform(ctm); return { x: s.x - box0.left, y: s.y - box0.top }; };
+    const place = (loc, rot) => { pencil.style.transform = `translate(${loc.x - 18}px, ${loc.y - 42}px) rotate(${rot}deg)`; };
+    const easeIO = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+
+    let raf = 0; const timers = [];
+    pencil.style.opacity = "1";
+    place(toLocal(paths[0].getPointAtLength(0)), 22);
+
+    const DRAW = 1500;
+    let t0 = 0;
+    const drawFrame = (ts) => {
+      if (!t0) t0 = ts;
+      const t = Math.min(1, (ts - t0) / DRAW);
+      const drawn = easeIO(t) * total;
+      let acc = 0;
+      for (let i = 0; i < paths.length; i++) {
+        if (drawn <= acc + lens[i] || i === paths.length - 1) {
+          const local = Math.max(0, Math.min(lens[i], drawn - acc));
+          paths[i].style.strokeDashoffset = lens[i] - local;
+          for (let j = 0; j < i; j++) paths[j].style.strokeDashoffset = 0;
+          place(toLocal(paths[i].getPointAtLength(local)), 22 + Math.sin(t * 26) * 3);
+          break;
+        }
+        acc += lens[i];
+      }
+      if (t < 1) raf = requestAnimationFrame(drawFrame); else afterDraw();
+    };
+
+    const afterDraw = () => {
+      tile.animate(
+        [{ opacity: 0, transform: "scale(.55) rotate(-12deg)" }, { opacity: 1, transform: "scale(1) rotate(0)" }],
+        { duration: 420, easing: "cubic-bezier(.2,.8,.2,1.4)", fill: "forwards" }
+      );
+      timers.push(setTimeout(writeWord, 400));
+    };
+
+    const writeWord = () => {
+      const wb = word.getBoundingClientRect(), lb = logo.getBoundingClientRect();
+      const x0 = wb.left - lb.left + 3, x1 = wb.right - lb.left - 3, by = (wb.top - lb.top) + wb.height * 0.74;
+      const WORD = 780; let w0 = 0;
+      const wf = (ts) => {
+        if (!w0) w0 = ts;
+        const t = Math.min(1, (ts - w0) / WORD);
+        word.style.clipPath = `inset(0 ${(1 - t) * 100}% 0 0)`;
+        place({ x: x0 + t * (x1 - x0), y: by }, 19);
+        if (t < 1) raf = requestAnimationFrame(wf);
+        else { pencil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 240, fill: "forwards" }); timers.push(setTimeout(flyUp, 240)); }
+      };
+      raf = requestAnimationFrame(wf);
+    };
+
+    const flyUp = () => {
+      const target = document.querySelector(".lnav .logo") || document.querySelector(".logo");
+      let tx = 0, ty = 0, scale = 0.45;
+      if (target) {
+        const t = target.getBoundingClientRect(), c = logo.getBoundingClientRect();
+        scale = t.width / c.width;
+        tx = (t.left + t.width / 2) - (c.left + c.width / 2);
+        ty = (t.top + t.height / 2) - (c.top + c.height / 2);
+      }
       logo.animate(
         [{ transform: "translate(0px,0px) scale(1)" }, { transform: `translate(${tx}px,${ty}px) scale(${scale})` }],
         { duration: 900, easing: "cubic-bezier(.66,0,.2,1)", fill: "forwards" }
       );
       if (bg) bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 820, delay: 260, easing: "ease", fill: "forwards" });
-      onReveal && onReveal();          // page cascades in WHILE the logo flies up
-    }, MOVE);
-    const dn = setTimeout(onDone, MOVE + 1060);
-    return () => { clearTimeout(mv); clearTimeout(dn); };
-    // Run exactly once. onReveal/onDone are stable state setters — leaving them
-    // out of deps prevents the sequence from replaying (which caused a double play).
+      onReveal && onReveal();
+      timers.push(setTimeout(() => onDone && onDone(), 1000));
+    };
+
+    raf = requestAnimationFrame(drawFrame);
+    return () => { cancelAnimationFrame(raf); timers.forEach(clearTimeout); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -1963,18 +2017,28 @@ function IntroOverlay({ onReveal, onDone }) {
     <div className="intro">
       <div className="intro-bg" ref={bgRef} />
       <div className="intro-logo" ref={logoRef}>
-        <span className="intro-mark"><span className="intro-tile" /><GraduationCap size={40} /></span>
-        <span className="intro-word">Study<span className="grad-text">Forge</span></span>
-        {/* pencil that traces the mark, then writes the wordmark */}
-        <span className="intro-pencil" aria-hidden="true">
+        <span className="intro-mark">
+          <span className="intro-tile" ref={tileRef} />
+          <svg ref={markRef} className="intro-cap" width="54" height="54" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+            <path className="cap" d="M50 20 L88 41 L50 62 L12 41 Z" />
+            <path className="cap" d="M28 50 L28 65 Q50 78 72 65 L72 50" />
+            <path className="cap" d="M88 41 L88 71" />
+            <path className="cap" d="M84 71 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0" />
+          </svg>
+        </span>
+        <span className="intro-word" ref={wordRef}>Study<span className="grad-text">Forge</span></span>
+        {/* the pencil — its tip (18,42 in its own box) is placed on the drawing point each frame */}
+        <span className="intro-pencil" ref={pencilRef} aria-hidden="true">
           <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
             <g transform="translate(12 2)">
-              <rect x="0" y="0" width="12" height="4" rx="1.4" fill="#f2a2b0" />
-              <rect x="0" y="4" width="12" height="3" fill="#cfd3da" />
-              <rect x="0" y="7" width="12" height="22" fill="#f4c25a" />
-              <rect x="0" y="7" width="3.4" height="22" fill="#d99f2e" opacity="0.55" />
-              <polygon points="0,29 12,29 6,40" fill="#e8d3a6" />
-              <polygon points="3.2,35.6 8.8,35.6 6,40" fill="#2b2b2b" />
+              <rect x="0" y="0" width="12" height="4.5" rx="1.4" fill="#f2a2b0" />
+              <rect x="0" y="4.5" width="12" height="3" fill="#c9ccd4" />
+              <rect x="0" y="7.5" width="12" height="21.5" fill="#f4c25a" />
+              <rect x="0" y="7.5" width="4" height="21.5" fill="#e6ad33" />
+              <rect x="8" y="7.5" width="4" height="21.5" fill="#dc9f22" opacity=".55" />
+              <polygon points="0,29 12,29 6,40" fill="#efd8ac" />
+              <polygon points="0,29 6,29 6,40" fill="#dcc294" />
+              <polygon points="3,35.4 9,35.4 6,40.6" fill="#2b2b2b" />
             </g>
           </svg>
         </span>
