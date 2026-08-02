@@ -1102,7 +1102,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
       content: (
         <div className="pin center">
           <div className="cta-card hud" style={{ borderRadius: 24, padding: "56px 40px", maxWidth: 620, margin: "0 auto", position: "relative" }}>
-            <div className="mark rise d1" style={{ width: 58, height: 58, borderRadius: 17, margin: "0 auto 26px" }}><GraduationCap size={28} /></div>
+            <div className="mark rise d1" style={{ width: 58, height: 58, borderRadius: 17, margin: "0 auto 26px", background: "var(--grad)", color: "#fff", display: "grid", placeItems: "center", boxShadow: "0 12px 28px -10px var(--glow)" }}><GraduationCap size={28} /></div>
             <h2 className="display rise d2" style={{ marginBottom: 30 }}>Start studying <span className="amber">today.</span></h2>
             <div className="rise d3"><button className="btn btn-primary" style={{ fontSize: 16, padding: "14px 26px" }} onClick={onStart}>Get started free <ArrowRight size={18} /></button></div>
             <div className="faint rise d4" style={{ marginTop: 40, fontSize: 12.5 }}>StudyForge · Phase 1 prototype · built with mock data</div>
