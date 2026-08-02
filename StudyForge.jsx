@@ -551,6 +551,25 @@ const CSS = `
 /* cream toolkit panel: white tiles with indigo icons + dark ink, like nkae */
 .sf .panel-cream .ftile{ background:#fff; color:var(--primary); box-shadow:0 10px 22px -12px rgba(40,25,90,.28); border:1px solid rgba(28,27,35,.06); }
 .sf .panel-cream .frow{ border-top:1px solid rgba(28,27,35,.12); }
+
+/* ===== all-cream landing: adapt shared text, nav, tiles & dots to cream ===== */
+.sf .panel-cream .muted{ color:var(--cream-muted); }
+.sf .panel-cream .faint{ color:rgba(28,27,35,.5); }
+.sf .panel-cream .amber{ color:#bd8619; }
+.sf .panel-cream .display{ color:var(--cream-ink); }
+.sf .panel-cream .ftile-lg{ background:#fff; color:var(--primary); border:1px solid rgba(28,27,35,.06);
+  box-shadow:0 14px 30px -16px rgba(40,25,90,.3); }
+.sf .panel-cream .flow::before{ background:linear-gradient(90deg, transparent, rgba(28,27,35,.18), transparent); }
+/* the CTA card on cream */
+.sf .cta-card{ background:#fff; border:1px solid rgba(28,27,35,.08); box-shadow:0 34px 80px -34px rgba(40,25,90,.28); }
+/* fixed nav on cream */
+.sf .fp .lnav .logo{ color:var(--cream-ink); text-shadow:none; }
+.sf .fp .lnav .signin{ background:var(--cream-ink); color:var(--cream); }
+.sf .fp .lnav .icon-btn{ color:var(--cream-ink); background:rgba(28,27,35,.05); border-color:rgba(28,27,35,.14); }
+/* scroll cue + page dots on cream */
+.sf .fp .cue{ color:var(--cream-muted); }
+.sf .fp .dot{ border-color:rgba(28,27,35,.28); }
+.sf .fp .dot .lbl{ color:var(--cream-ink); background:#fff; border:1px solid rgba(28,27,35,.1); }
 .sf .q-ans{ color:#a9b6d2; background:rgba(120,150,215,.08); border-color:rgba(120,150,215,.22); box-shadow:none; }
 .sf .xdot{ background:#5f7aa4; box-shadow:none; }
 .sf .ftile, .sf .ftile-lg{ box-shadow:0 12px 26px -16px rgba(0,0,0,.72); }
@@ -841,7 +860,7 @@ function FullPage({ theme, toggleTheme, onStart, onSignin, pages, labels }) {
         {pages.map((p, i) => (
           <div key={i} className={`fp-sec ${p.bg || ""} ${i === idx ? "on" : ""}`}>
             {p.eyebrow && <div className="eyebrow">{p.eyebrow}</div>}
-            {p.wm && <div className="wm">forge</div>}
+            {p.wm && <div className="wm">{p.wm}</div>}
             {p.content}
             {i === 0 && (
               <div className="cue" style={{ cursor: "pointer" }} onClick={() => go(1)}>SCROLL <ChevronDown size={16} /></div>
@@ -999,9 +1018,9 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
   const twoCol = { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 44, alignItems: "center" };
 
   const pages = [
-    // PAGE 1 — HERO (dark)
+    // PAGE 1 — HERO (cream)
     {
-      bg: "",
+      bg: "panel-cream", wm: "Study",
       content: (
         <>
           <div className="pin center">
@@ -1009,13 +1028,13 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
               <h1 className="display rise d1" style={{ marginBottom: 18, fontSize: "clamp(34px,5.2vw,60px)" }}>
                 Study smarter,<br /><span className="amber">remember longer.</span>
               </h1>
-              <p className="rise d2" style={{ fontSize: "clamp(16px,2vw,18px)", color: "var(--muted)", lineHeight: 1.6, maxWidth: 540, margin: "0 auto 32px" }}>
+              <p className="rise d2" style={{ fontSize: "clamp(16px,2vw,18px)", color: "var(--cream-muted)", lineHeight: 1.6, maxWidth: 540, margin: "0 auto 32px" }}>
                 Upload notes, drop a YouTube link, or search a topic — StudyForge turns it into summaries, quizzes and flashcards, then brings them back at exactly the right moment.
               </p>
               <div className="rise d3">
                 <button className="btn btn-primary" onClick={onStart}>Get started <ArrowRight size={18} /></button>
                 <div style={{ marginTop: 12 }}>
-                  <button onClick={onStart} style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", textDecoration: "underline", fontSize: 13.5, padding: 0 }}>See how it works</button>
+                  <button onClick={onStart} style={{ background: "none", border: "none", color: "var(--cream-muted)", cursor: "pointer", textDecoration: "underline", fontSize: 13.5, padding: 0 }}>See how it works</button>
                 </div>
                 <div className="faint" style={{ marginTop: 12, fontSize: 12 }}>Free while in beta · your notes stay yours</div>
               </div>
@@ -1026,7 +1045,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
     },
     // PAGE 2 — THE FLOW (alt dark)
     {
-      bg: "", eyebrow: "01 · THE FLOW", wm: true,
+      bg: "panel-cream", eyebrow: "01 · THE FLOW", wm: "smarter",
       content: (
         <div className="pin center">
           <div className="rise d1">
@@ -1049,7 +1068,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
     },
     // PAGE 3 — THE TOOLKIT (dark)
     {
-      bg: "", eyebrow: "02 · THE TOOLKIT", wm: true,
+      bg: "panel-cream", eyebrow: "02 · THE TOOLKIT", wm: "remember",
       content: (
         <div className="pin">
           <div style={{ ...twoCol, gap: 52 }}>
@@ -1067,7 +1086,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
                 <div key={i} className={`frow rise d${i + 2}`}>
                   <div className="ftile glassx"><f.icon size={22} /></div>
                   <div>
-                    <div style={{ fontWeight: 760, fontSize: 16.5, color: "var(--text)", marginBottom: 3 }}>{f.t}</div>
+                    <div style={{ fontWeight: 760, fontSize: 16.5, color: "var(--cream-ink)", marginBottom: 3 }}>{f.t}</div>
                     <div className="p-sub" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{f.d}</div>
                   </div>
                 </div>
@@ -1077,12 +1096,12 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
         </div>
       ),
     },
-    // PAGE 4 — CTA (dark)
+    // PAGE 4 — CTA (cream)
     {
-      bg: "", wm: true,
+      bg: "panel-cream", wm: "longer",
       content: (
         <div className="pin center">
-          <div className="glassx glow-border hud" style={{ borderRadius: 24, padding: "56px 40px", maxWidth: 620, margin: "0 auto", position: "relative" }}>
+          <div className="cta-card hud" style={{ borderRadius: 24, padding: "56px 40px", maxWidth: 620, margin: "0 auto", position: "relative" }}>
             <div className="mark rise d1" style={{ width: 58, height: 58, borderRadius: 17, margin: "0 auto 26px" }}><GraduationCap size={28} /></div>
             <h2 className="display rise d2" style={{ marginBottom: 30 }}>Start studying <span className="amber">today.</span></h2>
             <div className="rise d3"><button className="btn btn-primary" style={{ fontSize: 16, padding: "14px 26px" }} onClick={onStart}>Get started free <ArrowRight size={18} /></button></div>
@@ -1919,7 +1938,7 @@ function IntroOverlay({ onReveal, onDone }) {
     pencil.style.opacity = "1";
     place(toLocal(paths[0].getPointAtLength(0)), 22);
 
-    const DRAW = 1500;
+    const DRAW = 1950;
     let t0 = 0;
     const drawFrame = (ts) => {
       if (!t0) t0 = ts;
@@ -1940,11 +1959,14 @@ function IntroOverlay({ onReveal, onDone }) {
     };
 
     const afterDraw = () => {
+      // the drawn box outline dissolves into the solid coloured tile
+      const boxPath = markSvg.querySelector(".cap.box");
+      if (boxPath) boxPath.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: "ease", fill: "forwards" });
       tile.animate(
-        [{ opacity: 0, transform: "scale(.55) rotate(-12deg)" }, { opacity: 1, transform: "scale(1) rotate(0)" }],
-        { duration: 420, easing: "cubic-bezier(.2,.8,.2,1.4)", fill: "forwards" }
+        [{ opacity: 0, transform: "scale(.72)" }, { opacity: 1, transform: "scale(1)" }],
+        { duration: 440, easing: "cubic-bezier(.2,.8,.2,1.3)", fill: "forwards" }
       );
-      timers.push(setTimeout(writeWord, 400));
+      timers.push(setTimeout(writeWord, 430));
     };
 
     const writeWord = () => {
@@ -1991,11 +2013,12 @@ function IntroOverlay({ onReveal, onDone }) {
       <div className="intro-logo" ref={logoRef}>
         <span className="intro-mark">
           <span className="intro-tile" ref={tileRef} />
-          <svg ref={markRef} className="intro-cap" width="54" height="54" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-            <path className="cap" d="M50 20 L88 41 L50 62 L12 41 Z" />
-            <path className="cap" d="M28 50 L28 65 Q50 78 72 65 L72 50" />
-            <path className="cap" d="M88 41 L88 71" />
-            <path className="cap" d="M84 71 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0" />
+          <svg ref={markRef} className="intro-cap" width="72" height="72" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+            <path className="cap box" d="M29 5 L71 5 Q95 5 95 29 L95 71 Q95 95 71 95 L29 95 Q5 95 5 71 L5 29 Q5 5 29 5 Z" />
+            <path className="cap" d="M50 33 L72 44 L50 55 L28 44 Z" />
+            <path className="cap" d="M37 49 L37 59 Q50 66 63 59 L63 49" />
+            <path className="cap" d="M72 44 L72 63" />
+            <path className="cap" d="M69 63 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0" />
           </svg>
         </span>
         <span className="intro-word" ref={wordRef}>Study<span className="grad-text">Forge</span></span>
