@@ -1439,7 +1439,10 @@ function IntroOverlay({ onReveal, onDone }) {
     }, MOVE);
     const dn = setTimeout(onDone, MOVE + 1060);
     return () => { clearTimeout(mv); clearTimeout(dn); };
-  }, [onReveal, onDone]);
+    // Run exactly once. onReveal/onDone are stable state setters — leaving them
+    // out of deps prevents the sequence from replaying (which caused a double play).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="intro">
