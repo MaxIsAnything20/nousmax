@@ -9,7 +9,7 @@
   #boot{position:fixed;inset:0;display:grid;place-items:center;color:#7c89ae;
     font-family:system-ui,sans-serif;font-size:15px;background:#010207;z-index:9999;}
   #boot .dot{width:34px;height:34px;border-radius:10px;margin:0 auto 14px;
-    background:linear-gradient(120deg,#1fbfe0,#3730c4);animation:sp 1s linear infinite;}
+    background:linear-gradient(120deg,#4a6aa6,#33477c);animation:sp 1s linear infinite;}
   @keyframes sp{to{transform:rotate(360deg);}}
 </style>
 </head>
@@ -187,10 +187,10 @@ const CSS = `
 .sf{ --bg:#010207; --bg2:#02040c; --surface:#050a15; --surface2:#08101f;
   --hover:#0d1730; --border:rgba(105,145,235,.09); --border2:rgba(105,145,235,.15);
   --text:#dbe4f9; --muted:#7c89ae; --faint:#48547a;
-  --primary:#3a6bf0; --primary2:#6a90f5; --accent:#22a7e6; --accent2:#5fc8f0;
-  --grad:linear-gradient(120deg,#1fbfe0,#3a6bf0 50%,#3730c4); --glow:rgba(58,107,240,.55);
-  --shadow:0 26px 70px -26px rgba(0,3,16,.86); --danger:#f87171; --ok:#34d399;
-  --amber:#31a9ef; --amber2:#8fd4f7; --cream:#e9eefc; --cream-ink:#0f1730; --cream-muted:#566486;
+  --primary:#42639e; --primary2:#7189b6; --accent:#4f6a90; --accent2:#8194b6;
+  --grad:linear-gradient(120deg,#4a6aa6,#33477c); --glow:rgba(70,100,175,.22);
+  --shadow:0 26px 70px -26px rgba(0,3,16,.9); --danger:#f87171; --ok:#34d399;
+  --amber:#98aed4; --amber2:#bccae4; --cream:#e9eefc; --cream-ink:#0f1730; --cream-muted:#566486;
   color-scheme:dark;
 }
 .sf.light{ --bg:#f2f6fd; --bg2:#e4edfb; --surface:#ffffff; --surface2:#eef3fd;
@@ -546,6 +546,26 @@ const CSS = `
 .sf.booting .fp-sec.on .rise{ opacity:0; transform:translateY(-46px) scale(.93); filter:blur(9px); }
 /* hide the real nav logo during the intro so the flying logo becomes it (no duplicate) */
 .sf.intro-active .lnav .logo{ opacity:0; }
+
+/* ===== MUTED / LOW-GLOW: dark aesthetic, bright colour used sparingly ===== */
+.sf .fp-sec .display{ text-shadow:none; }
+.sf .logo, .sf .q-text2, .sf .intro-word{ text-shadow:none; }
+.sf .btn-primary{ box-shadow:0 10px 26px -14px rgba(0,0,0,.72); }
+.sf .btn-primary::after{ display:none; }                 /* no light sweep */
+.sf .glow-border::before{ animation:none; opacity:.28;
+  background:linear-gradient(120deg, rgba(150,172,215,.5), rgba(150,172,215,.10)); }
+.sf .glassx{ box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 22px 55px -24px rgba(0,0,0,.72); }
+.sf .paper, .sf .xmut{ box-shadow:0 42px 80px -34px rgba(0,0,0,.82), 0 0 0 1px rgba(120,150,215,.09); }
+.sf .aurora .a1, .sf .aurora .a2, .sf .aurora .a3{ opacity:.09; }
+.sf .xbeam{ background:linear-gradient(90deg,transparent,#5f7aa4 40%,#3f5f96 70%,transparent);
+  box-shadow:0 0 10px 1px rgba(120,150,215,.28); }
+.sf .fbadge{ background:var(--surface2); color:var(--muted); border:1px solid var(--border2); box-shadow:none; }
+.sf .q-ans{ color:#a9b6d2; background:rgba(120,150,215,.08); border-color:rgba(120,150,215,.22); box-shadow:none; }
+.sf .xdot{ background:#5f7aa4; box-shadow:none; }
+.sf .ftile, .sf .ftile-lg{ box-shadow:0 12px 26px -16px rgba(0,0,0,.72); }
+.sf .dot.on{ box-shadow:0 0 0 4px rgba(120,150,215,.15); }
+.sf .intro-mark svg{ filter:none; }
+.sf .intro-mark::before{ border-color:rgba(150,172,215,.4); }
 
 @media (max-width:760px){
   .sf .hide-sm{ display:none !important; }
