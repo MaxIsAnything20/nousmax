@@ -524,6 +524,12 @@ const CSS = `
 .sf .intro-cap{ position:relative; z-index:2; overflow:visible; }
 .sf .intro-cap .cap{ fill:none; stroke-linecap:round; stroke-linejoin:round;
   filter:drop-shadow(0 2px 5px rgba(0,0,0,.4)); }
+/* the morphing wordmark that the monogram grows into (matches the page watermark) */
+.sf .intro-morph{ position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center;
+  pointer-events:none; font-weight:900; font-size:24vw; letter-spacing:-.06em; white-space:nowrap;
+  opacity:0; transform:scale(.26); will-change:transform,opacity; }
+.sf .intro-morph .wm-n{ color:#0d9488; }
+.sf .intro-morph .wm-m{ color:#d9a521; }
 .sf .intro-word{ font-weight:850; font-size:40px; letter-spacing:-1px; white-space:nowrap; color:var(--text);
   clip-path:inset(0 100% 0 0); text-shadow:0 0 26px rgba(79,124,255,.5); }
 @keyframes iring{ 0%{ opacity:.7; transform:translate(-50%,-50%) scale(.6);} 100%{ opacity:0; transform:translate(-50%,-50%) scale(2.3);} }
@@ -534,7 +540,8 @@ const CSS = `
 /* hold hero elements hidden until the logo starts pulling up, then they cascade */
 .sf.booting .fp-sec.on .rise{ opacity:0; transform:translateY(-46px) scale(.93); filter:blur(9px); }
 /* hide the real nav logo during the intro so the flying logo becomes it (no duplicate) */
-.sf.intro-active .lnav .logo{ opacity:0; }
+.sf .lnav .logo{ transition:opacity .6s ease .1s; }
+.sf.intro-active .lnav .logo{ opacity:0; transition:none; }
 
 /* ===== MUTED / LOW-GLOW: dark aesthetic, bright colour used sparingly ===== */
 .sf .fp-sec .display{ text-shadow:none; }
@@ -569,6 +576,10 @@ const CSS = `
 .sf .panel-cream .flow::before{ background:linear-gradient(90deg, transparent, rgba(28,27,35,.18), transparent); }
 /* the last page's CTA sits transparent, directly on the cream */
 .sf .cta-card{ background:transparent; border:none; box-shadow:none; }
+/* landing buttons: flat, no glow/halo/border — just a subtle hover lift */
+.sf .fp .btn-primary{ box-shadow:none; border:none; outline:none; }
+.sf .fp .btn-primary:hover{ box-shadow:none; transform:translateY(-2px); filter:brightness(1.06); }
+.sf .fp .btn-primary:focus-visible{ outline:none; box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 30%, transparent); }
 /* fixed nav on cream */
 .sf .fp .lnav .logo{ color:var(--cream-ink); text-shadow:none; }
 .sf .fp .lnav .signin{ background:var(--cream-ink); color:var(--cream); }
@@ -1974,43 +1985,34 @@ function IntroOverlay({ onReveal, onDone }) {
       if (t < 1) raf = requestAnimationFrame(drawFrame); else afterDraw();
     };
 
+    // The seamless morph: the drawn NM monogram separates (N left, M right) and
+    // fades, while a full-size "NousMax" grows out of it and settles into the giant
+    // faded watermark that lives behind the hero — the logo literally becomes the
+    // background name. The overlay then dissolves onto the identical page watermark.
     const afterDraw = () => {
-      // mark is fully drawn; lift the pencil, then the mark flies up into the nav
-      pencil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, fill: "forwards" });
-      timers.push(setTimeout(flyUp, 360));
+      pencil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, fill: "forwards" });
+      timers.push(setTimeout(morph, 160));
     };
 
-    const writeWord = () => {
-      const wb = word.getBoundingClientRect(), lb = logo.getBoundingClientRect();
-      const x0 = wb.left - lb.left + 3, x1 = wb.right - lb.left - 3, by = (wb.top - lb.top) + wb.height * 0.74;
-      const WORD = 780; let w0 = 0;
-      const wf = (ts) => {
-        if (!w0) w0 = ts;
-        const t = Math.min(1, (ts - w0) / WORD);
-        word.style.clipPath = `inset(0 ${(1 - t) * 100}% 0 0)`;
-        place({ x: x0 + t * (x1 - x0), y: by }, 19);
-        if (t < 1) raf = requestAnimationFrame(wf);
-        else { pencil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 240, fill: "forwards" }); timers.push(setTimeout(flyUp, 240)); }
-      };
-      raf = requestAnimationFrame(wf);
-    };
-
-    const flyUp = () => {
-      const target = document.querySelector(".lnav .logo") || document.querySelector(".logo");
-      let tx = 0, ty = 0, scale = 0.45;
-      if (target) {
-        const t = target.getBoundingClientRect(), c = logo.getBoundingClientRect();
-        scale = t.width / c.width;
-        tx = (t.left + t.width / 2) - (c.left + c.width / 2);
-        ty = (t.top + t.height / 2) - (c.top + c.height / 2);
-      }
-      logo.animate(
-        [{ transform: "translate(0px,0px) scale(1)" }, { transform: `translate(${tx}px,${ty}px) scale(${scale})` }],
-        { duration: 900, easing: "cubic-bezier(.66,0,.2,1)", fill: "forwards" }
+    const morph = () => {
+      const morphEl = markRef.current && logoRef.current ? document.querySelector(".intro-morph") : null;
+      if (paths[0]) paths[0].animate([{ transform: "translateX(0)" }, { transform: "translateX(-52px)" }], { duration: 1000, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" });
+      if (paths[1]) paths[1].animate([{ transform: "translateX(0)" }, { transform: "translateX(52px)" }], { duration: 1000, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" });
+      markSvg.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(1.8)" }],
+        { duration: 780, easing: "ease", fill: "forwards" });
+      if (morphEl) morphEl.animate(
+        [{ opacity: 0, transform: "scale(.26)" }, { opacity: 0.16, transform: "scale(1)" }],
+        { duration: 1000, easing: "cubic-bezier(.2,.7,.2,1)", fill: "forwards" }
       );
-      if (bg) bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 820, delay: 260, easing: "ease", fill: "forwards" });
-      onReveal && onReveal();
-      timers.push(setTimeout(() => onDone && onDone(), 1000));
+      onReveal && onReveal();                       // hero + nav cascade in behind the overlay
+      timers.push(setTimeout(reveal, 1080));
+    };
+
+    const reveal = () => {
+      if (bg) bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 760, easing: "ease", fill: "forwards" });
+      const morphEl = document.querySelector(".intro-morph");
+      if (morphEl) morphEl.animate([{ opacity: 0.16 }, { opacity: 0 }], { duration: 640, easing: "ease", fill: "forwards" });
+      timers.push(setTimeout(() => onDone && onDone(), 780));
     };
 
     raf = requestAnimationFrame(drawFrame);
@@ -2021,6 +2023,7 @@ function IntroOverlay({ onReveal, onDone }) {
   return (
     <div className="intro">
       <div className="intro-bg" ref={bgRef} />
+      <div className="intro-morph" aria-hidden="true"><span className="wm-n">Nous</span><span className="wm-m">Max</span></div>
       <div className="intro-logo" ref={logoRef}>
         <span className="intro-mark">
           <svg ref={markRef} className="intro-cap" width="150" height="150" viewBox="0 0 100 100" fill="none" aria-hidden="true">
