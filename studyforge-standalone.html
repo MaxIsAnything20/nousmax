@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>StudyForge — Phase 1 Prototype</title>
 <style>
-  html,body,#root{height:100%;}
-  body{margin:0;background:#0a0b12;overflow:hidden;}
+  html,body{height:100%;} body{margin:0;background:#0a0b12;overflow:hidden;}
   #boot{position:fixed;inset:0;display:grid;place-items:center;color:#a3a9c0;
     font-family:system-ui,sans-serif;font-size:15px;background:#0a0b12;z-index:9999;}
   #boot .dot{width:34px;height:34px;border-radius:10px;margin:0 auto 14px;
@@ -191,6 +190,7 @@ const CSS = `
   --primary:#8b5cf6; --primary2:#a78bfa; --accent:#22d3ee; --accent2:#67e8f9;
   --grad:linear-gradient(120deg,#8b5cf6,#7c73ff 46%,#22d3ee); --glow:rgba(124,92,246,.5);
   --shadow:0 26px 70px -26px rgba(0,0,0,.78); --danger:#f87171; --ok:#34d399;
+  --amber:#f5c451; --amber2:#fcd77a; --cream:#f4f1ea; --cream-ink:#1b1b24; --cream-muted:#5c5c68;
   color-scheme:dark;
 }
 .sf.light{ --bg:#f6f7fc; --bg2:#eceffa; --surface:#ffffff; --surface2:#f4f6fd;
@@ -198,7 +198,9 @@ const CSS = `
   --text:#161a2b; --muted:#5a6178; --faint:#8b91a8;
   --primary:#7c3aed; --primary2:#6d28d9; --accent:#0891b2; --accent2:#06b6d4;
   --grad:linear-gradient(120deg,#7c3aed,#0891b2); --glow:rgba(124,58,237,.28);
-  --shadow:0 24px 60px -28px rgba(30,30,80,.35); color-scheme:light;
+  --shadow:0 24px 60px -28px rgba(30,30,80,.35);
+  --amber:#d99a1f; --amber2:#eab543; --cream:#efece4; --cream-ink:#1b1b24; --cream-muted:#5c5c68;
+  color-scheme:light;
 }
 .sf{ background:var(--bg); color:var(--text); min-height:100vh;
   font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -317,9 +319,11 @@ const CSS = `
 
 /* ---- full-page slide sections ---- */
 .sf .fp{ height:100vh; overflow:hidden; position:relative; }
-.sf .fp-track{ will-change:transform; transition:transform 1s cubic-bezier(.16,.84,.28,1); }
+.sf .fp-track{ will-change:transform; transition:transform .9s cubic-bezier(.62,.02,.2,1); }
 .sf .fp-sec{ height:100vh; width:100%; display:grid; place-items:center; position:relative;
-  padding:96px 22px 70px; overflow:hidden; }
+  padding:96px 22px 70px; overflow:hidden; transition:opacity .7s ease, filter .7s ease; }
+/* dim + soften the page being left behind so each change reads as a hand-off */
+.sf .fp-sec:not(.on){ opacity:.35; filter:blur(2px); }
 .sf .fp-inner{ width:100%; max-width:1120px; margin:0 auto; }
 /* content rises in only when its section is active */
 .sf .fp-sec .rise{ opacity:0; transform:translateY(38px); transition:opacity .85s cubic-bezier(.2,.7,.2,1), transform .85s cubic-bezier(.2,.7,.2,1); }
@@ -353,11 +357,89 @@ const CSS = `
   font-size:11px; letter-spacing:2px; cursor:pointer; animation:bob 2.4s ease-in-out infinite; z-index:5; }
 .sf .scrollhint:hover{ color:var(--primary2); }
 
+/* ===== Nkae-style stacked-panel scroll ===== */
+/* Each panel sticky-pins at the top; the next one scrolls up over it with a
+   rounded top + top shadow, so panels appear to slide over one another. */
+.sf .stack{ position:relative; }
+.sf .panel{ position:sticky; top:0; min-height:100vh; display:grid; place-items:center;
+  padding:120px 24px 84px; overflow:hidden; }
+.sf .panel-round{ border-radius:34px 34px 0 0; box-shadow:0 -34px 70px -24px rgba(0,0,0,.65); }
+.sf .panel-dark{ background:var(--bg); color:var(--text); }
+.sf .panel-alt{ background:var(--bg2); color:var(--text); }
+.sf .panel-cream{ background:var(--cream); color:var(--cream-ink);
+  background-image:radial-gradient(rgba(27,27,36,.10) 1px, transparent 1px); background-size:22px 22px; }
+.sf .panel-cream .p-sub{ color:var(--cream-muted); }
+.sf .pin{ width:100%; max-width:1080px; margin:0 auto; position:relative; z-index:2; }
+
+/* giant faint wordmark watermark behind a panel */
+.sf .wm{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  pointer-events:none; font-weight:900; font-size:24vw; letter-spacing:-.06em; opacity:.04;
+  color:currentColor; white-space:nowrap; z-index:0; }
+
+/* mono eyebrows + kickers */
+.sf .eyebrow{ position:absolute; top:28px; left:28px; z-index:3; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--faint); }
+.sf .panel-cream .eyebrow{ color:rgba(27,27,36,.4); }
+.sf .kicker{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px;
+  letter-spacing:4px; text-transform:uppercase; color:var(--primary2); }
+.sf .panel-cream .kicker{ color:var(--primary); }
+.sf .amber{ color:var(--amber); }
+.sf .display{ font-size:clamp(38px,6vw,72px); line-height:1.02; letter-spacing:-2.2px; font-weight:850; margin:0; }
+
+/* landing top nav (Sign in pill) */
+.sf .signin{ display:inline-flex; align-items:center; padding:9px 18px; border-radius:999px;
+  background:var(--text); color:var(--bg); font-weight:650; font-size:14px; border:none; cursor:pointer;
+  transition:transform .2s, opacity .2s; }
+.sf .signin:hover{ transform:translateY(-1px); opacity:.9; }
+
+/* tilted flashcard hero visual */
+.sf .tilt{ transform:perspective(1500px) rotateY(-17deg) rotateX(7deg) rotate(2deg);
+  transition:transform .6s cubic-bezier(.2,.8,.2,1); }
+.sf .tilt:hover{ transform:perspective(1500px) rotateY(-9deg) rotateX(4deg) rotate(1deg); }
+.sf .paper{ position:relative; width:330px; min-height:310px; border-radius:14px; padding:34px 32px 30px;
+  color:#20202a; background:#fbfaf6;
+  background-image:repeating-linear-gradient(#fbfaf6 0 28px, #dbe6f1 28px 29px);
+  box-shadow:0 46px 90px -34px rgba(0,0,0,.75), 0 0 0 1px rgba(0,0,0,.05); overflow:hidden; }
+.sf .paper::before{ content:""; position:absolute; top:0; bottom:0; left:36px; width:2px; background:#f0b4b4; }
+.sf .paper .q-tag{ font-family:ui-monospace,monospace; font-size:11px; letter-spacing:2px; color:var(--primary);
+  text-transform:uppercase; text-align:center; margin-bottom:18px; }
+.sf .paper .q-text{ font-size:21px; line-height:1.5; text-align:center; font-weight:600;
+  font-family:"Bradley Hand","Segoe Print","Comic Sans MS",cursive; }
+
+/* 3-step connector flow */
+.sf .flow{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; position:relative; }
+.sf .flow::before{ content:""; position:absolute; left:10%; right:10%; top:34px; height:2px; z-index:0;
+  background:repeating-linear-gradient(90deg,var(--border2) 0 7px, transparent 7px 15px); }
+.sf .fnode{ position:relative; z-index:2; flex:1; display:flex; flex-direction:column; align-items:center;
+  gap:16px; text-align:center; max-width:240px; }
+.sf .ftile-lg{ position:relative; width:70px; height:70px; border-radius:20px; display:grid; place-items:center;
+  background:var(--surface); border:1px solid var(--border2); color:var(--primary2); box-shadow:var(--shadow); }
+.sf .fbadge{ position:absolute; top:-9px; right:-9px; width:26px; height:26px; border-radius:99px;
+  background:var(--amber); color:#241a00; font-size:13px; font-weight:850; display:grid; place-items:center;
+  box-shadow:0 6px 14px -4px rgba(245,196,81,.6); }
+
+/* icon-row feature list (cream panel) */
+.sf .frow{ display:flex; gap:18px; align-items:flex-start; padding:22px 4px;
+  border-top:1px solid rgba(27,27,36,.12); transition:transform .2s; }
+.sf .frow:first-child{ border-top:none; }
+.sf .frow:hover{ transform:translateX(4px); }
+.sf .ftile{ flex:none; width:52px; height:52px; border-radius:14px; background:#fff; display:grid; place-items:center;
+  color:var(--primary); box-shadow:0 10px 22px -12px rgba(40,25,90,.35), 0 0 0 1px rgba(27,27,36,.05); }
+
+/* scroll cue */
+.sf .cue{ position:absolute; bottom:26px; left:50%; transform:translateX(-50%); z-index:3;
+  display:flex; flex-direction:column; align-items:center; gap:5px; color:var(--faint);
+  font-family:ui-monospace,monospace; font-size:10.5px; letter-spacing:2px; animation:bob 2.4s ease-in-out infinite; }
+
 @media (max-width:760px){
   .sf .hide-sm{ display:none !important; }
   .sf .wrap{ padding:0 16px; }
   .sf .dots{ right:12px; gap:12px; }
   .sf .fp-sec{ padding:86px 16px 60px; }
+  .sf .panel{ padding:104px 18px 70px; }
+  .sf .flow{ flex-direction:column; align-items:center; gap:26px; }
+  .sf .flow::before{ display:none; }
+  .sf .wm{ font-size:40vw; }
 }
 `;
 
@@ -431,9 +513,25 @@ const FEATURES = [
   { icon: Zap, title: "One hub", body: "Every tool generated from a single source panel.", c: "var(--accent)" },
 ];
 
-// Full-page slide controller: each child is one 100vh section; wheel / arrow
-// keys / touch-swipe advance one section at a time and the stack slides up.
-function FullPage({ pages, labels, theme, toggleTheme }) {
+// The 3-step "flow" shown with a dashed connector + numbered amber badges.
+const FLOW = [
+  { icon: Upload, t: "Add a source", d: "Upload a PDF, DOCX or screenshot — or paste a YouTube link." },
+  { icon: Sparkles, t: "Generate", d: "StudyForge turns it into summaries, quizzes and flashcards." },
+  { icon: Trophy, t: "Review & remember", d: "Take quizzes and flip cards, resurfaced at the right moment." },
+];
+// The cream "toolkit" panel's icon-row feature list.
+const TOOLS = [
+  { icon: StickyNote, t: "AI summaries", d: "Notes in, clarity out. Summaries and key points in seconds." },
+  { icon: Layers, t: "Smart flashcards", d: "Spaced repetition that resurfaces cards right before you forget." },
+  { icon: ListChecks, t: "Adaptive quizzes", d: "Active recall with explanations, generated from your own material." },
+  { icon: Youtube, t: "YouTube learning", d: "Paste a link or search a topic and learn straight from video." },
+  { icon: FileUp, t: "Any source", d: "PDF, DOCX and image/screenshot uploads with drag-and-drop." },
+];
+
+// Discrete page-transition controller: one scroll gesture (or key/swipe/dot)
+// glides to the next full page with an eased transform + staged content reveal —
+// a page hand-off, NOT a 1:1 continuous slide. Keeps the Nkae panel visuals.
+function FullPage({ theme, toggleTheme, onStart, pages, labels }) {
   const [idx, setIdx] = useState(0);
   const idxRef = useRef(0);
   const lock = useRef(false);
@@ -445,13 +543,13 @@ function FullPage({ pages, labels, theme, toggleTheme }) {
     lock.current = true;
     idxRef.current = i;
     setIdx(i);
-    setTimeout(() => { lock.current = false; }, 1050); // matches slide duration
+    setTimeout(() => { lock.current = false; }, 900); // matches transition duration
   }, [n]);
 
   useEffect(() => {
     const onWheel = (e) => {
       e.preventDefault();
-      if (lock.current || Math.abs(e.deltaY) < 12) return;
+      if (lock.current || Math.abs(e.deltaY) < 14) return;
       go(idxRef.current + (e.deltaY > 0 ? 1 : -1));
     };
     const onKey = (e) => {
@@ -483,23 +581,26 @@ function FullPage({ pages, labels, theme, toggleTheme }) {
             <span className="mark"><GraduationCap size={19} /></span>
             <span>Study<span className="grad-text">Forge</span></span>
           </div>
-          <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle theme"
-            title={theme === "dark" ? "Switch to light" : "Switch to dark"}>
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
+          <div className="row gap12">
+            <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle theme"
+              title={theme === "dark" ? "Switch to light" : "Switch to dark"}>
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button className="signin" onClick={onStart}>Sign in</button>
+          </div>
         </div>
       </div>
 
       <div className="fp-track" style={{ transform: `translateY(-${idx * 100}vh)` }}>
-        {pages.map((P, i) => (
-          <section key={i} className={`fp-sec ${i === idx ? "on" : ""}`}>
-            <div className="fp-inner">{P}</div>
+        {pages.map((p, i) => (
+          <div key={i} className={`fp-sec ${p.bg || ""} ${i === idx ? "on" : ""}`}>
+            {p.eyebrow && <div className="eyebrow">{p.eyebrow}</div>}
+            {p.wm && <div className="wm">forge</div>}
+            {p.content}
             {i === 0 && (
-              <div className="scrollhint" onClick={() => go(1)}>
-                SCROLL <ChevronDown size={18} />
-              </div>
+              <div className="cue" style={{ cursor: "pointer" }} onClick={() => go(1)}>SCROLL <ChevronDown size={16} /></div>
             )}
-          </section>
+          </div>
         ))}
       </div>
 
@@ -515,112 +616,127 @@ function FullPage({ pages, labels, theme, toggleTheme }) {
 }
 
 function Landing({ onStart, theme, toggleTheme }) {
-  const hero = (
-    <div className="center" style={{ position: "relative" }}>
-      <div className="orb" style={{ width: 440, height: 440, background: "var(--primary)", top: -190, left: -90 }} />
-      <div className="orb" style={{ width: 360, height: 360, background: "var(--accent)", top: -60, right: -110, animationDelay: "1.5s" }} />
-      <div style={{ position: "relative" }}>
-        <div className="pill rise d1" style={{ marginBottom: 22 }}>
-          <Sparkles size={14} /> Turn anything into a study session
-        </div>
-        <h1 className="rise d2" style={{ fontSize: "clamp(40px,7.3vw,72px)", lineHeight: 1.02, letterSpacing: "-2px", margin: "0 0 18px", fontWeight: 860 }}>
-          Study smarter with<br /><span className="grad-text">StudyForge</span>
-        </h1>
-        <p className="rise d3" style={{ fontSize: "clamp(16px,2.3vw,20px)", color: "var(--muted)", maxWidth: 580, margin: "0 auto 30px", lineHeight: 1.55 }}>
-          Upload notes, drop a YouTube link, or search a topic — then generate quizzes, summaries and flashcards from one place.
-        </p>
-        <div className="row gap12 rise d4" style={{ justifyContent: "center", flexWrap: "wrap" }}>
-          <button className="btn btn-primary" onClick={onStart}>Get started <ArrowRight size={18} /></button>
-          <button className="btn btn-ghost" onClick={onStart}><Play size={16} /> See how it works</button>
-        </div>
-        <div className="rise d5" style={{ maxWidth: 640, margin: "40px auto 0" }}>
-          <div className="card" style={{ padding: 14, boxShadow: "var(--shadow)" }}>
-            <div className="row gap8" style={{ marginBottom: 12 }}>
-              <span style={{ width: 10, height: 10, borderRadius: 99, background: "#f87171" }} />
-              <span style={{ width: 10, height: 10, borderRadius: 99, background: "#fbbf24" }} />
-              <span style={{ width: 10, height: 10, borderRadius: 99, background: "#34d399" }} />
-            </div>
-            <div className="grid" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
-              {[{ i: ListChecks, t: "Quiz", c: "var(--primary)" }, { i: StickyNote, t: "Notes", c: "var(--accent)" }, { i: Layers, t: "Cards", c: "var(--primary2)" }].map((x, k) => (
-                <div key={k} className="card" style={{ padding: 14, textAlign: "left", background: "var(--surface2)" }}>
-                  <span style={{ display: "grid", placeItems: "center", width: 36, height: 36, borderRadius: 10, background: x.c, color: "#fff", marginBottom: 9 }}>
-                    <x.i size={18} />
-                  </span>
-                  <div style={{ fontWeight: 700, fontSize: 13.5 }}>{x.t}</div>
-                  <div className="faint" style={{ fontSize: 11.5, marginTop: 3 }}>Auto-generated</div>
+  const twoCol = { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 44, alignItems: "center" };
+
+  const pages = [
+    // PAGE 1 — HERO (dark)
+    {
+      bg: "",
+      content: (
+        <>
+          <div className="orb" style={{ width: 460, height: 460, background: "var(--primary)", top: -200, left: -120 }} />
+          <div className="orb" style={{ width: 380, height: 380, background: "var(--accent)", top: 40, right: -140, animationDelay: "1.5s" }} />
+          <div className="pin">
+            <div style={twoCol}>
+              <div>
+                <Reveal><h1 className="display" style={{ marginBottom: 22 }}>
+                  Study smarter,<br /><span className="amber">remember longer.</span>
+                </h1></Reveal>
+                <Reveal delay={90}><p style={{ fontSize: "clamp(16px,2.2vw,19px)", color: "var(--muted)", lineHeight: 1.6, maxWidth: 460, marginBottom: 30 }}>
+                  Upload notes, drop a YouTube link, or search a topic — StudyForge turns it into summaries, quizzes and flashcards, then brings them back at exactly the right moment.
+                </p></Reveal>
+                <Reveal delay={170}>
+                  <button className="btn btn-primary" onClick={onStart}>Get started <ArrowRight size={18} /></button>
+                  <div style={{ marginTop: 14 }}>
+                    <button onClick={onStart} style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", textDecoration: "underline", fontSize: 14, padding: 0 }}>See how it works</button>
+                  </div>
+                  <div className="faint" style={{ marginTop: 18, fontSize: 12.5 }}>Free while in beta · your notes stay yours</div>
+                </Reveal>
+              </div>
+              <Reveal delay={140}>
+                <div className="center">
+                  <div className="tilt" style={{ display: "inline-block" }}>
+                    <div className="paper">
+                      <div className="q-tag">Question</div>
+                      <div className="q-text">What is the powerhouse of the cell?</div>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 22, fontFamily: "ui-monospace,monospace", fontSize: 10.5, letterSpacing: 2, textTransform: "uppercase", color: "var(--faint)" }}>
+                    Your notes become this, automatically
+                  </div>
                 </div>
+              </Reveal>
+            </div>
+          </div>
+        </>
+      ),
+    },
+    // PAGE 2 — THE FLOW (alt dark)
+    {
+      bg: "panel-alt", eyebrow: "01 · THE FLOW", wm: true,
+      content: (
+        <div className="pin center">
+          <Reveal>
+            <div className="kicker" style={{ marginBottom: 18 }}>How it works</div>
+            <h2 className="display" style={{ marginBottom: 54 }}>Three steps,<br />one <span className="amber">flow.</span></h2>
+          </Reveal>
+          <div className="flow">
+            {FLOW.map((s, i) => (
+              <Reveal key={i} delay={i * 110}>
+                <div className="fnode">
+                  <div className="ftile-lg"><s.icon size={28} /><span className="fbadge">{i + 1}</span></div>
+                  <div>
+                    <div style={{ fontWeight: 770, fontSize: 17, marginBottom: 6 }}>{s.t}</div>
+                    <div className="muted" style={{ fontSize: 14, lineHeight: 1.5 }}>{s.d}</div>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    // PAGE 3 — THE TOOLKIT (cream)
+    {
+      bg: "panel-cream", eyebrow: "02 · THE TOOLKIT", wm: true,
+      content: (
+        <div className="pin">
+          <div style={{ ...twoCol, gap: 52 }}>
+            <div>
+              <Reveal>
+                <div className="kicker" style={{ marginBottom: 18 }}>What you get</div>
+                <h2 className="display" style={{ marginBottom: 18 }}>Everything, from <span className="amber">one upload.</span></h2>
+                <p className="p-sub" style={{ fontSize: 17, lineHeight: 1.6, maxWidth: 420 }}>
+                  One source becomes a complete study system — summaries, cards and quizzes, scheduled around how memory actually works.
+                </p>
+              </Reveal>
+            </div>
+            <div>
+              {TOOLS.map((f, i) => (
+                <Reveal key={i} delay={i * 70}>
+                  <div className="frow">
+                    <div className="ftile"><f.icon size={22} /></div>
+                    <div>
+                      <div style={{ fontWeight: 760, fontSize: 16.5, color: "var(--cream-ink)", marginBottom: 3 }}>{f.t}</div>
+                      <div className="p-sub" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{f.d}</div>
+                    </div>
+                  </div>
+                </Reveal>
               ))}
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-
-  const how = (
-    <div>
-      <div className="center rise d1" style={{ marginBottom: 44 }}>
-        <div className="pill" style={{ marginBottom: 16 }}><MousePointerClick size={14} /> How it works</div>
-        <h2 style={{ fontSize: "clamp(28px,4.6vw,44px)", margin: 0, letterSpacing: "-1px", fontWeight: 840 }}>Four steps, one flow</h2>
-      </div>
-      <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 18 }}>
-        {STEPS.map((s, i) => (
-          <div key={i} className={`card card-h rise d${i + 2}`} style={{ padding: 26 }}>
-            <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
-              <span style={{ display: "grid", placeItems: "center", width: 48, height: 48, borderRadius: 14, background: "var(--grad)", color: "#fff" }}>
-                <s.icon size={22} />
-              </span>
-              <span style={{ fontSize: 44, fontWeight: 860, color: "var(--border2)", lineHeight: 1 }}>{i + 1}</span>
-            </div>
-            <div style={{ fontWeight: 760, fontSize: 17, marginBottom: 6 }}>{s.title}</div>
-            <div className="muted" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{s.body}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const feat = (
-    <div>
-      <div className="center rise d1" style={{ marginBottom: 44 }}>
-        <div className="pill" style={{ marginBottom: 16 }}><Sparkles size={14} /> Everything you need</div>
-        <h2 style={{ fontSize: "clamp(28px,4.6vw,44px)", margin: 0, letterSpacing: "-1px", fontWeight: 840 }}>One hub, every study tool</h2>
-      </div>
-      <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 18 }}>
-        {FEATURES.map((f, i) => (
-          <div key={i} className={`card card-h rise d${(i % 3) + 2}`} style={{ padding: 24 }}>
-            <span style={{ display: "grid", placeItems: "center", width: 48, height: 48, borderRadius: 14, background: f.c, color: "#fff", marginBottom: 14 }}>
-              <f.icon size={22} />
-            </span>
-            <div style={{ fontWeight: 760, fontSize: 17, marginBottom: 6 }}>{f.title}</div>
-            <div className="muted" style={{ fontSize: 14.5, lineHeight: 1.5 }}>{f.body}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const cta = (
-    <div className="rise d1" style={{ width: "100%" }}>
-      <div className="card" style={{ padding: "60px 34px", textAlign: "center", position: "relative", overflow: "hidden", background: "var(--grad)" }}>
-        <h2 style={{ color: "#fff", fontSize: "clamp(28px,4.4vw,42px)", margin: "0 0 14px", letterSpacing: "-.8px", fontWeight: 850 }}>
-          Ready to forge your first study set?
-        </h2>
-        <p style={{ color: "rgba(255,255,255,.92)", margin: "0 0 28px", fontSize: 18 }}>It takes about ten seconds.</p>
-        <button className="btn" style={{ background: "#fff", color: "#0a0b12", fontWeight: 750 }} onClick={onStart}>
-          Get started free <ArrowRight size={18} />
-        </button>
-      </div>
-    </div>
-  );
+      ),
+    },
+    // PAGE 4 — CTA (dark)
+    {
+      bg: "", wm: true,
+      content: (
+        <div className="pin center">
+          <Reveal>
+            <div className="mark" style={{ width: 58, height: 58, borderRadius: 17, margin: "0 auto 26px" }}><GraduationCap size={28} /></div>
+            <h2 className="display" style={{ marginBottom: 30 }}>Start studying <span className="amber">today.</span></h2>
+            <button className="btn btn-primary" style={{ fontSize: 16, padding: "14px 26px" }} onClick={onStart}>Get started free <ArrowRight size={18} /></button>
+            <div className="faint" style={{ marginTop: 42, fontSize: 12.5 }}>StudyForge · Phase 1 prototype · built with mock data</div>
+          </Reveal>
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <FullPage
-      pages={[hero, how, feat, cta]}
-      labels={["Home", "How it works", "Features", "Get started"]}
-      theme={theme}
-      toggleTheme={toggleTheme}
-    />
+    <FullPage theme={theme} toggleTheme={toggleTheme} onStart={onStart}
+      pages={pages} labels={["Home", "The flow", "Toolkit", "Get started"]} />
   );
 }
 
@@ -1253,7 +1369,6 @@ export default function App() {
 import { createRoot } from "react-dom/client";
 const boot = document.getElementById("boot");
 if (boot) boot.remove();
-document.body.style.overflow = "";
 createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
