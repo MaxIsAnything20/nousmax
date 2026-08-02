@@ -9,7 +9,7 @@
   #boot{position:fixed;inset:0;display:grid;place-items:center;color:#a9a4b8;
     font-family:system-ui,sans-serif;font-size:15px;background:#16151d;z-index:9999;}
   #boot .dot{width:34px;height:34px;border-radius:10px;margin:0 auto 14px;
-    background:linear-gradient(155deg,#7367f8,#5a4be6);animation:sp 1s linear infinite;}
+    background:linear-gradient(150deg,#14b8a6,#0d7d6e);animation:sp 1s linear infinite;}
   @keyframes sp{to{transform:rotate(360deg);}}
 </style>
 </head>
@@ -580,6 +580,12 @@ const CSS = `
 .sf .panel-cream .ftile{ background:#fff; color:var(--primary); box-shadow:0 10px 22px -12px rgba(40,25,90,.28); border:1px solid rgba(28,27,35,.06); }
 .sf .panel-cream .frow{ border-top:1px solid rgba(28,27,35,.12); }
 
+/* ===== all-cream landing: recolor the purple accent → teal (complements cream) =====
+   scoped to the landing + intro only, so the dark app keeps its purple identity. */
+.sf .fp, .sf .intro{
+  --primary:#0d9488; --primary2:#0f766e; --accent:#14b8a6; --accent2:#2dd4bf;
+  --grad:linear-gradient(150deg,#14b8a6,#0d7d6e); --glow:rgba(20,184,166,.3);
+}
 /* ===== all-cream landing: adapt shared text, nav, tiles & dots to cream ===== */
 .sf .panel-cream .muted{ color:var(--cream-muted); }
 .sf .panel-cream .faint{ color:rgba(28,27,35,.5); }
@@ -588,8 +594,8 @@ const CSS = `
 .sf .panel-cream .ftile-lg{ background:#fff; color:var(--primary); border:1px solid rgba(28,27,35,.06);
   box-shadow:0 14px 30px -16px rgba(40,25,90,.3); }
 .sf .panel-cream .flow::before{ background:linear-gradient(90deg, transparent, rgba(28,27,35,.18), transparent); }
-/* the CTA card on cream */
-.sf .cta-card{ background:#fff; border:1px solid rgba(28,27,35,.08); box-shadow:0 34px 80px -34px rgba(40,25,90,.28); }
+/* the last page's CTA sits transparent, directly on the cream */
+.sf .cta-card{ background:transparent; border:none; box-shadow:none; }
 /* fixed nav on cream */
 .sf .fp .lnav .logo{ color:var(--cream-ink); text-shadow:none; }
 .sf .fp .lnav .signin{ background:var(--cream-ink); color:var(--cream); }
