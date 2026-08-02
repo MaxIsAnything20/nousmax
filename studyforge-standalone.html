@@ -9,7 +9,7 @@
   #boot{position:fixed;inset:0;display:grid;place-items:center;color:#a9a4b8;
     font-family:system-ui,sans-serif;font-size:15px;background:#16151d;z-index:9999;}
   #boot .dot{width:34px;height:34px;border-radius:10px;margin:0 auto 14px;
-    background:linear-gradient(120deg,#8b7cff,#5747e0);animation:sp 1s linear infinite;}
+    background:linear-gradient(155deg,#7367f8,#5a4be6);animation:sp 1s linear infinite;}
   @keyframes sp{to{transform:rotate(360deg);}}
 </style>
 </head>
@@ -33,6 +33,7 @@ import {
   RotateCw, Play, GraduationCap, Zap, Library, Plus, CheckCircle2,
   Loader2, RefreshCw, Trophy, Lightbulb, ListChecks, StickyNote,
   Clock, FileUp, MousePointerClick, ChevronDown, ArrowDown,
+  Volume2, Send, Flame, Pause, TrendingUp, MessageSquare, Share2, Timer, Target, Image, Mic, Link2,
 } from "lucide-react";
 
 /* =========================================================================
@@ -200,7 +201,7 @@ const CSS = `
   --hover:#38364a; --border:rgba(226,222,255,.09); --border2:rgba(226,222,255,.15);
   --text:#f1eff7; --muted:#a9a4b8; --faint:#6f6a7e;
   --primary:#6d5efc; --primary2:#9a8dff; --accent:#8b7cff; --accent2:#b3a8ff;
-  --grad:linear-gradient(120deg,#8b7cff,#6d5efc 55%,#5747e0); --glow:rgba(109,94,252,.3);
+  --grad:linear-gradient(155deg,#7367f8,#5a4be6); --glow:rgba(109,94,252,.26);
   --shadow:0 26px 70px -26px rgba(6,4,16,.72); --danger:#f87171; --ok:#34d399;
   --amber:#f4c25a; --amber2:#f9d98a; --cream:#f4f1ea; --cream-ink:#1c1b23; --cream-muted:#5c5766;
   color-scheme:dark;
@@ -209,7 +210,7 @@ const CSS = `
   --hover:#efeae0; --border:rgba(40,30,80,.10); --border2:rgba(40,30,80,.16);
   --text:#1c1b23; --muted:#5c5766; --faint:#8b8494;
   --primary:#5b4fe0; --primary2:#4a3fce; --accent:#7d6ffb; --accent2:#9a8dff;
-  --grad:linear-gradient(120deg,#6d5efc,#5546e6); --glow:rgba(91,79,224,.22);
+  --grad:linear-gradient(155deg,#6155e8,#4f43d6); --glow:rgba(91,79,224,.2);
   --shadow:0 24px 60px -28px rgba(40,30,90,.3);
   --amber:#c98a1e; --amber2:#e0a83a; --cream:#f4f1ea; --cream-ink:#1c1b23; --cream-muted:#5c5766;
   color-scheme:light;
@@ -610,6 +611,40 @@ const CSS = `
 .sf .auth-div::before, .sf .auth-div::after{ content:""; flex:1; height:1px; background:var(--border2); }
 .sf .linklike{ background:none; border:none; color:var(--primary2); cursor:pointer; font-size:13.5px; padding:0; text-decoration:underline; }
 .sf .linklike:hover{ opacity:.85; }
+
+/* ===== study tools (Phase-2 features) ===== */
+.sf .secnav{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+.sf .secnav button{ display:inline-flex; align-items:center; gap:8px; padding:9px 15px; border-radius:11px;
+  border:1px solid var(--border); background:var(--surface); color:var(--muted); font-weight:650; font-size:14px; cursor:pointer;
+  transition:background .2s, color .2s, transform .15s; }
+.sf .secnav button:hover{ color:var(--text); background:var(--hover); transform:translateY(-1px); }
+.sf .secnav button.on{ color:#fff; background:var(--grad); border-color:transparent; }
+.sf .secnav .badge{ font-size:11px; font-weight:800; padding:1px 7px; border-radius:99px; background:var(--amber); color:#3a2a05; }
+
+.sf .heat{ display:grid; grid-auto-flow:column; grid-template-rows:repeat(7,1fr); gap:4px; overflow:hidden; }
+.sf .heat i{ width:13px; height:13px; border-radius:3px; background:var(--surface2); display:block; }
+.sf .heat i.l1{ background:color-mix(in srgb,var(--primary) 32%, var(--surface2)); }
+.sf .heat i.l2{ background:color-mix(in srgb,var(--primary) 55%, var(--surface2)); }
+.sf .heat i.l3{ background:color-mix(in srgb,var(--primary) 78%, var(--surface2)); }
+.sf .heat i.l4{ background:var(--primary); }
+
+.sf .pomo{ position:relative; width:236px; height:236px; margin:0 auto; }
+.sf .pomo .time{ position:absolute; inset:0; display:grid; place-items:center; font-size:46px; font-weight:840; letter-spacing:-1.5px; }
+
+.sf .chat{ display:flex; flex-direction:column; height:460px; }
+.sf .chat-log{ flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding:8px 2px; }
+.sf .bub{ max-width:80%; padding:11px 15px; border-radius:14px; font-size:14.5px; line-height:1.5; }
+.sf .bub.me{ align-self:flex-end; background:var(--grad); color:#fff; border-bottom-right-radius:4px; }
+.sf .bub.ai{ align-self:flex-start; background:var(--surface2); border:1px solid var(--border); border-bottom-left-radius:4px; }
+
+.sf .grade{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:18px; }
+.sf .grade button{ padding:13px 8px; border-radius:12px; border:1px solid var(--border2); background:var(--surface); color:var(--text);
+  cursor:pointer; font-weight:700; font-size:13.5px; transition:transform .15s, background .2s; }
+.sf .grade button:hover{ transform:translateY(-2px); background:var(--hover); }
+.sf .grade button b{ display:block; font-size:11px; font-weight:600; color:var(--faint); margin-top:2px; }
+
+.sf .stat{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; }
+.sf .stat .big{ font-size:32px; font-weight:850; letter-spacing:-1px; line-height:1; }
 
 @media (max-width:760px){
   .sf .hide-sm{ display:none !important; }
@@ -1262,10 +1297,18 @@ function GeneratePanel({ anchors, ready, onGenerate, busyKey }) {
 /* =========================================================================
    7) OUTPUT VIEWS — Quiz, Summary, Flashcards
    ========================================================================= */
-function QuizView({ data, onBack }) {
+function QuizView({ data, onBack, onToast }) {
+  const [pool, setPool] = useState(data.questions);
+  const qs = pool;
   const [answers, setAnswers] = useState({});   // qid -> choice index / text
   const [submitted, setSubmitted] = useState(false);
-  const qs = data.questions;
+  const [elapsed, setElapsed] = useState(0);    // exam-mode timer
+
+  useEffect(() => {
+    if (submitted) return;
+    const t = setInterval(() => setElapsed((e) => e + 1), 1000);
+    return () => clearInterval(t);
+  }, [submitted, pool]);
 
   const score = qs.reduce((n, q) => {
     if (q.type === "short") return n; // short answer self-graded
@@ -1273,10 +1316,14 @@ function QuizView({ data, onBack }) {
   }, 0);
   const gradable = qs.filter((q) => q.type !== "short").length;
   const answeredAll = qs.every((q) => answers[q.id] !== undefined && answers[q.id] !== "");
+  const mmss = `${String(Math.floor(elapsed / 60)).padStart(2, "0")}:${String(elapsed % 60).padStart(2, "0")}`;
+  const wrong = qs.filter((q) => q.type !== "short" && answers[q.id] !== q.answer);
+  const restart = (questions) => { setPool(questions); setAnswers({}); setSubmitted(false); setElapsed(0); };
 
   return (
     <div className="fade-in">
-      <ViewHeader icon={ListChecks} title={data.title} onBack={onBack} />
+      <ViewHeader icon={ListChecks} title={data.title} onBack={onBack} onToast={onToast}
+        right={<span className="pill" style={{ fontSize: 12 }}><Clock size={13} /> {mmss}</span>} />
       {!submitted ? (
         <div className="grid gap16" style={{ gap: 16 }}>
           {qs.map((q, i) => (
@@ -1349,19 +1396,36 @@ function QuizView({ data, onBack }) {
               );
             })}
           </div>
-          <button className="btn btn-ghost" style={{ marginTop: 18 }} onClick={() => { setSubmitted(false); setAnswers({}); }}>
-            <RotateCw size={16} /> Retake quiz
-          </button>
+          <div className="row gap12" style={{ marginTop: 18, flexWrap: "wrap" }}>
+            <button className="btn btn-ghost" onClick={() => restart(data.questions)}><RotateCw size={16} /> Retake quiz</button>
+            {wrong.length > 0 && (
+              <button className="btn btn-primary" onClick={() => { restart(wrong); onToast && onToast("Practicing the ones you missed"); }}>
+                <Target size={16} /> Practice wrong ones ({wrong.length})
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-function SummaryView({ data, onBack }) {
+function SummaryView({ data, onBack, onToast }) {
+  const [speaking, setSpeaking] = useState(false);
+  const speak = () => {
+    const synth = typeof window !== "undefined" && window.speechSynthesis;
+    if (!synth) { onToast && onToast("Audio not supported here"); return; }
+    if (speaking) { synth.cancel(); setSpeaking(false); return; }
+    const text = data.sections.map((s) => `${s.heading}. ${s.body} ${s.points.join(". ")}`).join(" ");
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 1; u.onend = () => setSpeaking(false);
+    synth.cancel(); synth.speak(u); setSpeaking(true);
+  };
+  useEffect(() => () => { if (typeof window !== "undefined" && window.speechSynthesis) window.speechSynthesis.cancel(); }, []);
   return (
     <div className="fade-in">
-      <ViewHeader icon={StickyNote} title={data.title} onBack={onBack} right={<span className="pill" style={{ fontSize: 12 }}><Clock size={13} /> {data.readingTime}</span>} />
+      <ViewHeader icon={StickyNote} title={data.title} onBack={onBack} onToast={onToast}
+        right={<span className="row gap8"><button className="btn btn-ghost btn-sm" onClick={speak}>{speaking ? <><Pause size={14} /> Stop</> : <><Volume2 size={14} /> Listen</>}</button><span className="pill hide-sm" style={{ fontSize: 12 }}><Clock size={13} /> {data.readingTime}</span></span>} />
       <div className="card" style={{ padding: "34px 34px 26px", maxWidth: 780, margin: "0 auto" }}>
         {data.sections.map((s, i) => (
           <Reveal key={i} delay={i * 60}>
@@ -1388,7 +1452,7 @@ function SummaryView({ data, onBack }) {
   );
 }
 
-function FlashcardsView({ data, onBack }) {
+function FlashcardsView({ data, onBack, onToast }) {
   const [i, setI] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [known, setKnown] = useState(new Set());
@@ -1398,7 +1462,7 @@ function FlashcardsView({ data, onBack }) {
 
   return (
     <div className="fade-in">
-      <ViewHeader icon={Layers} title={data.title} onBack={onBack} right={<span className="pill" style={{ fontSize: 12 }}>{known.size}/{cards.length} learned</span>} />
+      <ViewHeader icon={Layers} title={data.title} onBack={onBack} onToast={onToast} right={<span className="pill" style={{ fontSize: 12 }}>{known.size}/{cards.length} learned</span>} />
       <div style={{ maxWidth: 560, margin: "0 auto" }}>
         <div className="bar" style={{ marginBottom: 20 }}><i style={{ width: `${((i + 1) / cards.length) * 100}%` }} /></div>
 
@@ -1433,14 +1497,21 @@ function FlashcardsView({ data, onBack }) {
   );
 }
 
-function ViewHeader({ icon: Icon, title, onBack, right }) {
+function ViewHeader({ icon: Icon, title, onBack, right, onToast }) {
+  const share = () => {
+    try { navigator.clipboard && navigator.clipboard.writeText(typeof location !== "undefined" ? location.href : "studyforge"); } catch (e) { /* noop */ }
+    onToast && onToast("Share link copied ✓");
+  };
   return (
     <div className="row" style={{ justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
       <div className="row gap12">
         <button className="btn btn-ghost btn-sm" onClick={onBack}><ChevronLeft size={16} /> Back</button>
         <div className="row gap8" style={{ fontWeight: 780, fontSize: 18 }}><Icon size={20} style={{ color: "var(--primary)" }} /> {title}</div>
       </div>
-      {right}
+      <div className="row gap8">
+        {right}
+        <button className="btn btn-ghost btn-sm" onClick={share}><Share2 size={15} /> <span className="hide-sm">Share</span></button>
+      </div>
     </div>
   );
 }
@@ -1499,11 +1570,187 @@ function EmptyOutput() {
   );
 }
 
+/* ---- workspace section nav ---- */
+function SectionNav({ section, setSection, due }) {
+  const items = [
+    { k: "sources", label: "Sources", icon: FileUp },
+    { k: "review", label: "Review", icon: Layers, badge: due },
+    { k: "focus", label: "Focus", icon: Timer },
+    { k: "progress", label: "Progress", icon: TrendingUp },
+    { k: "chat", label: "Chat", icon: MessageSquare },
+  ];
+  return (
+    <div className="secnav">
+      {items.map((it) => (
+        <button key={it.k} className={section === it.k ? "on" : ""} onClick={() => setSection(it.k)}>
+          <it.icon size={16} /> {it.label}
+          {it.badge ? <span className="badge">{it.badge}</span> : null}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ---- spaced-repetition review (SM-2-lite; works client-side) ---- */
+function ReviewView({ deck, onReviewed }) {
+  const cards = deck?.cards || mockFlashcards.cards;
+  const total = cards.length;
+  const [remaining, setRemaining] = useState(cards.map((c) => c.id));
+  const [flipped, setFlipped] = useState(false);
+  const [done, setDone] = useState(0);
+  const current = cards.find((c) => c.id === remaining[0]);
+
+  const grade = (again) => {
+    setFlipped(false);
+    setDone((d) => d + 1);
+    onReviewed && onReviewed();
+    setRemaining((prev) => { const [head, ...rest] = prev; return again ? [...rest, head] : rest; });
+  };
+
+  if (!current) {
+    return (
+      <div className="card center" style={{ padding: 46 }}>
+        <div className="mark bob" style={{ width: 58, height: 58, borderRadius: 16, margin: "0 auto 16px" }}><CheckCircle2 size={28} /></div>
+        <div style={{ fontWeight: 800, fontSize: 22, marginBottom: 6 }}>All caught up 🎉</div>
+        <div className="muted" style={{ fontSize: 14.5 }}>You reviewed {done} cards. Come back tomorrow — spaced repetition brings them back at the right moment.</div>
+        <button className="btn btn-ghost" style={{ marginTop: 20 }} onClick={() => { setRemaining(cards.map((c) => c.id)); setDone(0); }}><RotateCw size={16} /> Review again</button>
+      </div>
+    );
+  }
+  const grades = [{ t: "Again", s: "<1m", again: true }, { t: "Hard", s: "10m", again: false }, { t: "Good", s: "1d", again: false }, { t: "Easy", s: "4d", again: false }];
+  return (
+    <div className="fade-in" style={{ maxWidth: 620, margin: "0 auto" }}>
+      <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
+        <div className="row gap8" style={{ fontWeight: 780, fontSize: 18 }}><Layers size={20} style={{ color: "var(--primary)" }} /> Review · spaced repetition</div>
+        <span className="pill">{remaining.length} due · {done}/{total} done</span>
+      </div>
+      <div className="bar" style={{ marginBottom: 20 }}><i style={{ width: `${(done / total) * 100}%` }} /></div>
+      <div className={`flip ${flipped ? "flipped" : ""}`} style={{ height: 280, cursor: "pointer" }} onClick={() => setFlipped(!flipped)}>
+        <div className="flip-inner">
+          <div className="flip-face flip-front"><div><div className="faint" style={{ fontSize: 12, marginBottom: 12, textTransform: "uppercase", letterSpacing: 1 }}>Prompt</div><div style={{ fontSize: 22, fontWeight: 720, lineHeight: 1.35 }}>{current.front}</div><div className="faint row gap8" style={{ justifyContent: "center", marginTop: 18, fontSize: 13 }}><RotateCw size={14} /> tap to reveal</div></div></div>
+          <div className="flip-face flip-back"><div><div style={{ fontSize: 12, marginBottom: 12, textTransform: "uppercase", letterSpacing: 1, opacity: .85 }}>Answer</div><div style={{ fontSize: 20, fontWeight: 640, lineHeight: 1.45 }}>{current.back}</div></div></div>
+        </div>
+      </div>
+      {flipped ? (
+        <div className="grade">{grades.map((g) => <button key={g.t} onClick={() => grade(g.again)}>{g.t}<b>{g.s}</b></button>)}</div>
+      ) : (
+        <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 18 }} onClick={() => setFlipped(true)}>Show answer</button>
+      )}
+    </div>
+  );
+}
+
+/* ---- focus / pomodoro timer (client-side) ---- */
+function FocusView({ onSession }) {
+  const LEN = 25 * 60;
+  const [secs, setSecs] = useState(LEN);
+  const [running, setRunning] = useState(false);
+  const [sessions, setSessions] = useState(0);
+  useEffect(() => {
+    if (!running) return;
+    const t = setInterval(() => {
+      setSecs((s) => {
+        if (s <= 1) { setRunning(false); setSessions((x) => x + 1); onSession && onSession(); return LEN; }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [running]); // eslint-disable-line
+  const mm = String(Math.floor(secs / 60)).padStart(2, "0");
+  const ss = String(secs % 60).padStart(2, "0");
+  const C = 2 * Math.PI * 104;
+  const off = C * (secs / LEN);
+  return (
+    <div className="fade-in" style={{ maxWidth: 520, margin: "0 auto", textAlign: "center" }}>
+      <div className="row gap8" style={{ justifyContent: "center", fontWeight: 780, fontSize: 18, marginBottom: 6 }}><Timer size={20} style={{ color: "var(--primary)" }} /> Focus session</div>
+      <div className="muted" style={{ fontSize: 14, marginBottom: 26 }}>Pomodoro · 25 min deep work, then a break.</div>
+      <div className="pomo">
+        <svg width="236" height="236" style={{ transform: "rotate(-90deg)" }}>
+          <circle cx="118" cy="118" r="104" fill="none" stroke="var(--surface2)" strokeWidth="14" />
+          <circle cx="118" cy="118" r="104" fill="none" stroke="var(--primary)" strokeWidth="14" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={off} style={{ transition: "stroke-dashoffset 1s linear" }} />
+        </svg>
+        <div className="time">{mm}:{ss}</div>
+      </div>
+      <div className="row gap12" style={{ justifyContent: "center", marginTop: 26 }}>
+        <button className="btn btn-primary" onClick={() => setRunning((r) => !r)}>{running ? <><Pause size={17} /> Pause</> : <><Play size={17} /> Start</>}</button>
+        <button className="btn btn-ghost" onClick={() => { setRunning(false); setSecs(LEN); }}><RotateCw size={16} /> Reset</button>
+      </div>
+      <div className="muted" style={{ marginTop: 22, fontSize: 13.5 }}>{sessions} session{sessions === 1 ? "" : "s"} completed today · keep the streak alive 🔥</div>
+    </div>
+  );
+}
+
+/* ---- progress: streak + heatmap + stats ---- */
+function ProgressView({ stats }) {
+  const [heat] = useState(() => Array.from({ length: 18 * 7 }, (_, k) => (k > 100 ? Math.floor(Math.random() * 5) : Math.random() < 0.5 ? Math.floor(Math.random() * 5) : 0)));
+  const cell = (v) => (v <= 0 ? "" : v === 1 ? "l1" : v === 2 ? "l2" : v === 3 ? "l3" : "l4");
+  return (
+    <div className="fade-in">
+      <div className="row gap8" style={{ fontWeight: 780, fontSize: 18, marginBottom: 20 }}><TrendingUp size={20} style={{ color: "var(--primary)" }} /> Your progress</div>
+      <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 14, marginBottom: 22 }}>
+        <div className="stat"><div className="row gap8" style={{ color: "var(--amber)", fontWeight: 700, fontSize: 13, marginBottom: 8 }}><Flame size={16} /> STREAK</div><div className="big">{stats.streak} <span style={{ fontSize: 15, color: "var(--muted)", fontWeight: 600 }}>days</span></div></div>
+        <div className="stat"><div className="row gap8" style={{ color: "var(--primary2)", fontWeight: 700, fontSize: 13, marginBottom: 8 }}><Layers size={16} /> CARDS LEARNED</div><div className="big">{stats.cardsLearned}</div></div>
+        <div className="stat"><div className="row gap8" style={{ color: "var(--primary2)", fontWeight: 700, fontSize: 13, marginBottom: 8 }}><Target size={16} /> QUIZ ACCURACY</div><div className="big">{stats.quizAcc}%</div></div>
+        <div className="stat"><div className="row gap8" style={{ color: "var(--primary2)", fontWeight: 700, fontSize: 13, marginBottom: 8 }}><Timer size={16} /> FOCUS SESSIONS</div><div className="big">{stats.focus}</div></div>
+      </div>
+      <div className="card" style={{ padding: 22, overflow: "hidden" }}>
+        <div className="row" style={{ justifyContent: "space-between", marginBottom: 14 }}>
+          <div style={{ fontWeight: 750, fontSize: 15 }}>Study activity</div>
+          <div className="faint" style={{ fontSize: 12.5 }}>last 18 weeks</div>
+        </div>
+        <div className="heat">{heat.map((v, k) => <i key={k} className={cell(v)} />)}</div>
+      </div>
+    </div>
+  );
+}
+
+/* ---- chat with your notes (mock in preview; real LLM via SF_API when deployed) ---- */
+function ChatView({ source }) {
+  const [msgs, setMsgs] = useState([{ role: "ai", text: "Ask me anything about your source — I'll answer from it." }]);
+  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const logRef = useRef(null);
+  useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, [msgs, busy]);
+
+  const mockAnswer = (q) =>
+    `Based on ${source?.name || "your notes"}: ${q.trim().replace(/\?+$/, "")} relates to the key concepts in the source. ` +
+    "(This is a mock answer — once deployed, StudyForge answers from the real extracted text via the LLM.)";
+
+  const send = async () => {
+    const q = input.trim();
+    if (!q || busy) return;
+    setMsgs((m) => [...m, { role: "me", text: q }]);
+    setInput(""); setBusy(true);
+    try {
+      const text = globalThis.SF_API?.chat ? await globalThis.SF_API.chat(source?.id, q) : (await new Promise((r) => setTimeout(() => r(mockAnswer(q)), 650)));
+      setMsgs((m) => [...m, { role: "ai", text }]);
+    } finally { setBusy(false); }
+  };
+
+  return (
+    <div className="fade-in" style={{ maxWidth: 680, margin: "0 auto" }}>
+      <div className="row gap8" style={{ fontWeight: 780, fontSize: 18, marginBottom: 16 }}><MessageSquare size={20} style={{ color: "var(--primary)" }} /> Chat with your notes</div>
+      <div className="card chat" style={{ padding: 18 }}>
+        <div className="chat-log" ref={logRef}>
+          {msgs.map((m, k) => <div key={k} className={`bub ${m.role}`}>{m.text}</div>)}
+          {busy && <div className="bub ai"><Loader2 size={15} className="spin" /></div>}
+        </div>
+        <div className="row gap8" style={{ marginTop: 12 }}>
+          <input className="input" placeholder="Ask about your source…" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()} />
+          <button className="btn btn-primary" onClick={send} disabled={busy}><Send size={16} /></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Workspace({ anchors, onOpenLibrary, libraryPick, clearLibraryPick, onToast }) {
   const [source, setSource] = useState(null);
   const [busyKey, setBusyKey] = useState(null);
   const [view, setView] = useState(null);         // 'quiz' | 'summary' | 'flashcards'
   const [payload, setPayload] = useState(null);
+  const [section, setSection] = useState("sources"); // sources | review | focus | progress | chat
+  const [study, setStudy] = useState({ streak: 6, cardsLearned: 128, quizAcc: 82, focus: 9 });
 
   // if a library item was picked, set it as the ready source
   useEffect(() => {
@@ -1527,15 +1774,25 @@ function Workspace({ anchors, onOpenLibrary, libraryPick, clearLibraryPick, onTo
 
   return (
     <div className="wrap" style={{ padding: "30px 22px 80px" }}>
-      {!view ? (
-        <div className="grid" style={{ gap: 24 }}>
-          <SourcePanel anchors={anchors} source={source} setSource={setSource} onToast={onToast} />
-          <GeneratePanel anchors={anchors} ready={ready} onGenerate={generate} busyKey={busyKey} />
-          {!ready && <EmptyOutput />}
-        </div>
-      ) : view === "quiz" ? <QuizView data={payload} onBack={() => setView(null)} />
-        : view === "summary" ? <SummaryView data={payload} onBack={() => setView(null)} />
-          : <FlashcardsView data={payload} onBack={() => setView(null)} />}
+      {view ? (
+        view === "quiz" ? <QuizView data={payload} onBack={() => setView(null)} onToast={onToast} />
+          : view === "summary" ? <SummaryView data={payload} onBack={() => setView(null)} onToast={onToast} />
+            : <FlashcardsView data={payload} onBack={() => setView(null)} onToast={onToast} />
+      ) : (
+        <>
+          <SectionNav section={section} setSection={setSection} due={5} />
+          {section === "sources" ? (
+            <div className="grid" style={{ gap: 24 }}>
+              <SourcePanel anchors={anchors} source={source} setSource={setSource} onToast={onToast} />
+              <GeneratePanel anchors={anchors} ready={ready} onGenerate={generate} busyKey={busyKey} />
+              {!ready && <EmptyOutput />}
+            </div>
+          ) : section === "review" ? <ReviewView deck={mockFlashcards} onReviewed={() => setStudy((s) => ({ ...s, cardsLearned: s.cardsLearned + 1 }))} />
+            : section === "focus" ? <FocusView onSession={() => setStudy((s) => ({ ...s, focus: s.focus + 1 }))} />
+              : section === "progress" ? <ProgressView stats={study} />
+                : <ChatView source={source} />}
+        </>
+      )}
     </div>
   );
 }
