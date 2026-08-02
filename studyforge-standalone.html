@@ -553,12 +553,22 @@ const CSS = `
 .sf .intro-cap{ position:relative; z-index:2; overflow:visible; }
 .sf .intro-cap .cap{ fill:none; stroke-linecap:round; stroke-linejoin:round;
   filter:drop-shadow(0 2px 5px rgba(0,0,0,.4)); }
-/* the morphing wordmark that the monogram grows into (matches the page watermark) */
+/* the wordmark the monogram stretches into — each letter stretches in one by one */
 .sf .intro-morph{ position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center;
   pointer-events:none; font-weight:900; font-size:24vw; letter-spacing:-.06em; white-space:nowrap;
-  opacity:0; transform:scale(.26); will-change:transform,opacity; }
+  opacity:0; transform:scale(.3); will-change:transform,opacity; }
+.sf .intro-morph .ltr{ display:inline-block; transform:scaleX(.12); opacity:0; transform-origin:left center; }
 .sf .intro-morph .wm-n{ color:#0d9488; }
 .sf .intro-morph .wm-m{ color:#d9a521; }
+.sf .intro-morph.play .ltr{ animation:ltrIn .55s cubic-bezier(.3,.8,.25,1) forwards; }
+.sf .intro-morph.play .ltr:nth-child(1){ animation-delay:0s; }
+.sf .intro-morph.play .ltr:nth-child(2){ animation-delay:.09s; }
+.sf .intro-morph.play .ltr:nth-child(3){ animation-delay:.18s; }
+.sf .intro-morph.play .ltr:nth-child(4){ animation-delay:.27s; }
+.sf .intro-morph.play .ltr:nth-child(5){ animation-delay:.36s; }
+.sf .intro-morph.play .ltr:nth-child(6){ animation-delay:.45s; }
+.sf .intro-morph.play .ltr:nth-child(7){ animation-delay:.54s; }
+@keyframes ltrIn{ from{ transform:scaleX(.12); opacity:0; } to{ transform:scaleX(1); opacity:1; } }
 .sf .intro-word{ font-weight:850; font-size:40px; letter-spacing:-1px; white-space:nowrap; color:var(--text);
   clip-path:inset(0 100% 0 0); text-shadow:0 0 26px rgba(79,124,255,.5); }
 @keyframes iring{ 0%{ opacity:.7; transform:translate(-50%,-50%) scale(.6);} 100%{ opacity:0; transform:translate(-50%,-50%) scale(2.3);} }
@@ -569,8 +579,13 @@ const CSS = `
 /* hold hero elements hidden until the logo starts pulling up, then they cascade */
 .sf.booting .fp-sec.on .rise{ opacity:0; transform:translateY(-46px) scale(.93); filter:blur(9px); }
 /* hide the real nav logo during the intro so the flying logo becomes it (no duplicate) */
-.sf .lnav .logo{ transition:opacity .6s ease .1s; }
-.sf.intro-active .lnav .logo{ opacity:0; transition:none; }
+/* nav chrome + watermark reveal only AFTER the whole intro finishes */
+.sf .lnav .logo, .sf .lnav .signin, .sf .lnav .icon-btn, .sf .dots, .sf .cue, .sf .wm-brand{ transition:opacity .6s ease; }
+.sf:not(.nav-up) .lnav .logo, .sf:not(.nav-up) .lnav .signin, .sf:not(.nav-up) .lnav .icon-btn,
+.sf:not(.nav-up) .dots, .sf:not(.nav-up) .cue, .sf:not(.nav-up) .wm-brand{ opacity:0; pointer-events:none; }
+/* the hero page arrives blurred and pulls into focus as the mark drops behind it */
+.sf:not(.booting) .fp-track{ animation:heroFocus 1.4s cubic-bezier(.3,.7,.2,1) both; }
+@keyframes heroFocus{ from{ filter:blur(16px); } to{ filter:blur(0); } }
 
 /* ===== MUTED / LOW-GLOW: dark aesthetic, bright colour used sparingly ===== */
 .sf .fp-sec .display{ text-shadow:none; }
@@ -2024,24 +2039,25 @@ function IntroOverlay({ onReveal, onDone }) {
     };
 
     const morph = () => {
-      const morphEl = markRef.current && logoRef.current ? document.querySelector(".intro-morph") : null;
-      if (paths[0]) paths[0].animate([{ transform: "translateX(0)" }, { transform: "translateX(-52px)" }], { duration: 1000, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" });
-      if (paths[1]) paths[1].animate([{ transform: "translateX(0)" }, { transform: "translateX(52px)" }], { duration: 1000, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" });
-      markSvg.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(1.8)" }],
-        { duration: 780, easing: "ease", fill: "forwards" });
-      if (morphEl) morphEl.animate(
-        [{ opacity: 0, transform: "scale(.26)" }, { opacity: 0.16, transform: "scale(1)" }],
-        { duration: 1000, easing: "cubic-bezier(.2,.7,.2,1)", fill: "forwards" }
-      );
-      onReveal && onReveal();                       // hero + nav cascade in behind the overlay
-      timers.push(setTimeout(reveal, 1080));
+      const morphEl = document.querySelector(".intro-morph");
+      // the monogram splits (N left, M right) and fades as the wordmark takes over
+      if (paths[0]) paths[0].animate([{ transform: "translateX(0)" }, { transform: "translateX(-56px)" }], { duration: 850, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" });
+      if (paths[1]) paths[1].animate([{ transform: "translateX(0)" }, { transform: "translateX(56px)" }], { duration: 850, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" });
+      markSvg.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(1.55)" }], { duration: 620, easing: "ease", fill: "forwards" });
+      if (morphEl) {
+        morphEl.classList.add("play");              // NousMax stretches in letter by letter
+        morphEl.animate([{ opacity: 0, transform: "scale(.32)" }, { opacity: 0.16, transform: "scale(1)" }],
+          { duration: 1250, easing: "cubic-bezier(.2,.7,.2,1)", fill: "forwards" });
+      }
+      onReveal && onReveal();                       // hero cascades in blurred, then pulls into focus
+      timers.push(setTimeout(reveal, 1500));
     };
 
     const reveal = () => {
-      if (bg) bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 760, easing: "ease", fill: "forwards" });
+      if (bg) bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: "ease", fill: "forwards" });
       const morphEl = document.querySelector(".intro-morph");
-      if (morphEl) morphEl.animate([{ opacity: 0.16 }, { opacity: 0 }], { duration: 640, easing: "ease", fill: "forwards" });
-      timers.push(setTimeout(() => onDone && onDone(), 780));
+      if (morphEl) morphEl.animate([{ opacity: 0.16 }, { opacity: 0 }], { duration: 680, easing: "ease", fill: "forwards" });
+      timers.push(setTimeout(() => onDone && onDone(), 700));   // nav chrome + page watermark fade in
     };
 
     raf = requestAnimationFrame(drawFrame);
@@ -2052,7 +2068,10 @@ function IntroOverlay({ onReveal, onDone }) {
   return (
     <div className="intro">
       <div className="intro-bg" ref={bgRef} />
-      <div className="intro-morph" aria-hidden="true"><span className="wm-n">Nous</span><span className="wm-m">Max</span></div>
+      <div className="intro-morph" aria-hidden="true">
+        <span className="ltr wm-n">N</span><span className="ltr wm-n">o</span><span className="ltr wm-n">u</span><span className="ltr wm-n">s</span>
+        <span className="ltr wm-m">M</span><span className="ltr wm-m">a</span><span className="ltr wm-m">x</span>
+      </div>
       <div className="intro-logo" ref={logoRef}>
         <span className="intro-mark">
           <svg ref={markRef} className="intro-cap" width="150" height="150" viewBox="0 0 100 100" fill="none" aria-hidden="true">
@@ -2182,8 +2201,9 @@ export default function App() {
   const [libOpen, setLibOpen] = useState(false);
   const [libPick, setLibPick] = useState(null);
   const [toast, setToast] = useState(null);
-  const [intro, setIntro] = useState(true);         // overlay mounted + nav logo hidden
-  const [booting, setBooting] = useState(true);     // hero held until the logo pulls up
+  const [intro, setIntro] = useState(true);         // overlay mounted
+  const [booting, setBooting] = useState(true);     // hero held + blurred until the reveal
+  const [navUp, setNavUp] = useState(false);        // nav chrome shown only after the whole intro
   const [auth, setAuth] = useState(null);           // null | 'signup' | 'signin'  (mock)
   const anchors = useRef({});
 
@@ -2206,10 +2226,10 @@ export default function App() {
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   return (
-    <div className={`sf ${theme === "light" ? "light" : ""} ${intro ? "intro-active" : ""} ${booting ? "booting" : ""}`}>
+    <div className={`sf ${theme === "light" ? "light" : ""} ${intro ? "intro-active" : ""} ${booting ? "booting" : ""} ${navUp ? "nav-up" : ""}`}>
       <style>{CSS}</style>
 
-      {intro && <IntroOverlay onReveal={() => setBooting(false)} onDone={() => setIntro(false)} />}
+      {intro && <IntroOverlay onReveal={() => setBooting(false)} onDone={() => { setIntro(false); setNavUp(true); }} />}
 
       {page === "landing" ? (
         // Landing owns its own fixed nav (theme toggle) and full-page slider.
