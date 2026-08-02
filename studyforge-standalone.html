@@ -34,6 +34,7 @@ import {
   Loader2, RefreshCw, Trophy, Lightbulb, ListChecks, StickyNote,
   Clock, FileUp, MousePointerClick, ChevronDown, ArrowDown,
   Volume2, Send, Flame, Pause, TrendingUp, MessageSquare, Share2, Timer, Target, Image, Mic, Link2,
+  Pencil,
 } from "lucide-react";
 
 /* =========================================================================
@@ -583,6 +584,42 @@ const CSS = `
 .sf .intro-mark svg{ filter:none; }
 .sf .intro-mark::before{ border-color:rgba(150,172,215,.4); }
 
+/* ===== interactive hero quiz demo (borderless, sits on the page) ===== */
+.sf .qdemo{ position:relative; width:100%; max-width:440px; margin:0 auto; text-align:left; }
+.sf .qdemo-stage{ min-height:206px; }
+.sf .qd-fade{ animation:qdIn .42s cubic-bezier(.2,.8,.2,1); }
+@keyframes qdIn{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+.sf .qd-label{ font-family:ui-monospace,monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--primary2); margin-bottom:9px; }
+.sf .qd-q{ font-size:19px; font-weight:800; letter-spacing:-.4px; line-height:1.25; margin-bottom:15px; }
+.sf .qd-opts{ display:flex; flex-direction:column; gap:8px; }
+.sf .qd-opt{ position:relative; display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:12px;
+  background:var(--surface); border:1px solid var(--border); font-size:15px; font-weight:600; transition:.35s; }
+.sf .qd-opt .qd-key{ display:grid; place-items:center; width:26px; height:26px; border-radius:8px; background:var(--surface2);
+  font-family:ui-monospace,monospace; font-size:12px; color:var(--muted); flex:none; }
+.sf .qd-opt.dim{ opacity:.5; }
+.sf .qd-opt.correct{ background:color-mix(in srgb, var(--ok) 15%, var(--surface)); border-color:var(--ok); }
+.sf .qd-opt.correct .qd-key{ background:var(--ok); color:#052b1c; }
+.sf .qd-mark{ margin-left:auto; display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:800; color:var(--ok); }
+.sf .qd-scribble{ position:absolute; left:52px; right:14px; bottom:5px; height:9px; color:var(--amber); pointer-events:none;
+  opacity:0; animation:scribble .5s ease .25s forwards; }
+@keyframes scribble{ from{ opacity:0; } to{ opacity:.95; } }
+/* generating stage */
+.sf .qd-gen{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:206px; text-align:center; }
+.sf .qd-spin{ animation:sp 1s linear infinite; }
+.sf .qd-gen > .qd-spin{ color:var(--primary2); margin-bottom:12px; }
+.sf .qd-genlabel{ font-size:17px; font-weight:800; margin-bottom:14px; }
+.sf .qd-genlist{ display:flex; flex-direction:column; gap:8px; font-family:ui-monospace,monospace; font-size:13px; color:var(--muted); }
+.sf .qd-genlist > div{ display:inline-flex; align-items:center; gap:8px; }
+.sf .qd-genlist .on{ color:var(--ok); }
+/* nav row */
+.sf .qd-nav{ display:flex; align-items:center; justify-content:space-between; margin-top:16px; }
+.sf .qd-dots{ display:flex; gap:7px; }
+.sf .qd-dots i{ width:8px; height:8px; border-radius:99px; background:var(--border2); transition:.3s; }
+.sf .qd-dots i.on{ background:var(--primary2); width:22px; }
+.sf .qd-arrow{ display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:12px; background:var(--grad);
+  color:#fff; border:none; cursor:pointer; font-weight:700; font-size:14px; box-shadow:0 8px 22px -12px var(--glow); transition:transform .2s; }
+.sf .qd-arrow:hover{ transform:translateX(2px); }
+
 /* ===== interactive flip card (hero note) ===== */
 .sf .qcard{ position:relative; display:inline-block; cursor:pointer; transform:rotate(1.5deg); transition:transform .35s cubic-bezier(.2,.8,.2,1); }
 .sf .qcard:hover{ transform:rotate(0deg) translateY(-4px); }
@@ -899,6 +936,85 @@ function QuestionCard() {
   );
 }
 
+// Interactive quiz demo that sits directly on the hero. Three arrow-navigated
+// stages: (1) question + 3 choices, (2) generating/analyzing, (3) answer key
+// with the correct option clearly marked (pencil underline + check).
+const QDEMO_Q = "What is the powerhouse of the cell?";
+const QDEMO_OPTS = [
+  { k: "A", t: "Nucleus" },
+  { k: "B", t: "Mitochondria", correct: true },
+  { k: "C", t: "Ribosome" },
+];
+function QuizDemo() {
+  const [stage, setStage] = useState(0); // 0 question · 1 generating · 2 answer
+  const next = () => setStage((s) => (s + 1) % 3);
+
+  const arrow = [
+    { label: "Generate answer", icon: ArrowRight },
+    { label: "Reveal answer", icon: ArrowRight },
+    { label: "Start over", icon: RotateCw },
+  ][stage];
+
+  return (
+    <div className="qdemo">
+      <div className="qdemo-stage" key={stage}>
+        {stage === 0 && (
+          <div className="qd-fade">
+            <div className="qd-label">Question</div>
+            <div className="qd-q">{QDEMO_Q}</div>
+            <div className="qd-opts">
+              {QDEMO_OPTS.map((o) => (
+                <div key={o.k} className="qd-opt"><span className="qd-key">{o.k}</span>{o.t}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {stage === 1 && (
+          <div className="qd-fade qd-gen">
+            <Loader2 className="qd-spin" size={30} />
+            <div className="qd-genlabel">Generating…</div>
+            <div className="qd-genlist">
+              <div className="on"><Check size={13} /> Reading your notes</div>
+              <div className="on"><Check size={13} /> Finding key concepts</div>
+              <div><Loader2 className="qd-spin" size={13} /> Writing the answer</div>
+            </div>
+          </div>
+        )}
+
+        {stage === 2 && (
+          <div className="qd-fade">
+            <div className="qd-label">Answer</div>
+            <div className="qd-q">{QDEMO_Q}</div>
+            <div className="qd-opts">
+              {QDEMO_OPTS.map((o) => (
+                <div key={o.k} className={`qd-opt ${o.correct ? "correct" : "dim"}`}>
+                  <span className="qd-key">{o.k}</span>{o.t}
+                  {o.correct && (
+                    <>
+                      <span className="qd-mark"><Pencil size={12} /> Correct <Check size={13} /></span>
+                      <svg className="qd-scribble" viewBox="0 0 220 12" preserveAspectRatio="none">
+                        <path d="M3 8 Q 45 2, 90 6 T 175 6 T 217 5" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
+                      </svg>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="qd-nav">
+        <div className="qd-dots">
+          {[0, 1, 2].map((i) => <i key={i} className={i === stage ? "on" : ""} />)}
+        </div>
+        <button className="qd-arrow" onClick={next}>{arrow.label} <arrow.icon size={16} /></button>
+      </div>
+    </div>
+  );
+}
+
 function Landing({ onStart, onSignin, theme, toggleTheme }) {
   const twoCol = { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 44, alignItems: "center" };
 
@@ -910,24 +1026,21 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
         <>
           <div className="pin center">
             <div style={{ maxWidth: 780, margin: "0 auto" }}>
-              <h1 className="display rise d1" style={{ marginBottom: 22 }}>
+              <h1 className="display rise d1" style={{ marginBottom: 12, fontSize: "clamp(30px,4.6vw,54px)" }}>
                 Study smarter,<br /><span className="amber">remember longer.</span>
               </h1>
-              <p className="rise d2" style={{ fontSize: "clamp(16px,2.2vw,19px)", color: "var(--muted)", lineHeight: 1.6, maxWidth: 560, margin: "0 auto 30px" }}>
+              <p className="rise d2" style={{ fontSize: "clamp(15px,2vw,17px)", color: "var(--muted)", lineHeight: 1.55, maxWidth: 520, margin: "0 auto 22px" }}>
                 Upload notes, drop a YouTube link, or search a topic — StudyForge turns it into summaries, quizzes and flashcards, then brings them back at exactly the right moment.
               </p>
-              <div className="rise d3">
-                <button className="btn btn-primary" onClick={onStart}>Get started <ArrowRight size={18} /></button>
-                <div style={{ marginTop: 14 }}>
-                  <button onClick={onStart} style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", textDecoration: "underline", fontSize: 14, padding: 0 }}>See how it works</button>
-                </div>
-                <div className="faint" style={{ marginTop: 18, fontSize: 12.5 }}>Free while in beta · your notes stay yours</div>
+              <div className="rise d3" style={{ marginBottom: 24 }}>
+                <QuizDemo />
               </div>
-              <div className="rise d4" style={{ marginTop: 46 }}>
-                <QuestionCard />
-                <div style={{ marginTop: 22, fontFamily: "ui-monospace,monospace", fontSize: 10.5, letterSpacing: 2, textTransform: "uppercase", color: "var(--faint)" }}>
-                  Click the note to generate its answer
+              <div className="rise d4">
+                <button className="btn btn-primary" onClick={onStart}>Get started <ArrowRight size={18} /></button>
+                <div style={{ marginTop: 12 }}>
+                  <button onClick={onStart} style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", textDecoration: "underline", fontSize: 13.5, padding: 0 }}>See how it works</button>
                 </div>
+                <div className="faint" style={{ marginTop: 12, fontSize: 12 }}>Free while in beta · your notes stay yours</div>
               </div>
             </div>
           </div>
