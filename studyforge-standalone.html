@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>StudyForge — Phase 1 Prototype</title>
+<title>NousMax — Phase 1 Prototype</title>
 <style>
   html,body{height:100%;} body{margin:0;background:#16151d;overflow:hidden;}
   #boot{position:fixed;inset:0;display:grid;place-items:center;color:#a9a4b8;
@@ -14,7 +14,7 @@
 </style>
 </head>
 <body>
-<div id="boot"><div style="text-align:center"><div class="dot"></div>Loading StudyForge prototype…</div></div>
+<div id="boot"><div style="text-align:center"><div class="dot"></div>Loading NousMax…</div></div>
 <div id="root"></div>
 <script type="importmap">
 { "imports": {
@@ -549,8 +549,8 @@ const CSS = `
 .sf .intro-tile{ position:absolute; inset:0; border-radius:20px; background:var(--grad); opacity:0; transform:scale(.55);
   box-shadow:0 0 54px -4px var(--glow), inset 0 1px 0 rgba(255,255,255,.22); }
 .sf .intro-cap{ position:relative; z-index:2; overflow:visible; }
-.sf .intro-cap .cap{ fill:none; stroke:#fff; stroke-width:7; stroke-linecap:round; stroke-linejoin:round;
-  filter:drop-shadow(0 1px 3px rgba(0,0,0,.4)); }
+.sf .intro-cap .cap{ fill:none; stroke-linecap:round; stroke-linejoin:round;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.4)); }
 .sf .intro-word{ font-weight:850; font-size:40px; letter-spacing:-1px; white-space:nowrap; color:var(--text);
   clip-path:inset(0 100% 0 0); text-shadow:0 0 26px rgba(79,124,255,.5); }
 @keyframes iring{ 0%{ opacity:.7; transform:translate(-50%,-50%) scale(.6);} 100%{ opacity:0; transform:translate(-50%,-50%) scale(2.3);} }
@@ -764,13 +764,23 @@ function Reveal({ children, delay = 0, style, className = "" }) {
 /* =========================================================================
    3) GLOBAL NAV
    ========================================================================= */
+// NousMax mark — an overlapping N (teal) + M (gold) monogram, one glyph.
+function LogoMark({ size = 28 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" className="nm-mark" aria-hidden="true">
+      <path className="nm-n" d="M22 74 L22 26 L54 74 L54 26" stroke="#0d9488" strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" />
+      <path className="nm-m" d="M42 74 L42 26 L58 52 L74 26 L74 74" stroke="#d9a521" strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+    </svg>
+  );
+}
+
 function Nav({ theme, toggleTheme, onLogo, onOpenLibrary, showApp }) {
   return (
     <div className="nav">
       <div className="wrap row" style={{ height: 66, justifyContent: "space-between" }}>
         <div className="logo" onClick={onLogo}>
-          <span className="mark"><GraduationCap size={19} /></span>
-          <span>Study<span className="grad-text">Forge</span></span>
+          <LogoMark size={30} />
+          <span>Nous<span className="grad-text">Max</span></span>
         </div>
         <div className="row gap12">
           {showApp && (
@@ -810,7 +820,7 @@ const FEATURES = [
 // The 3-step "flow" shown with a dashed connector + numbered amber badges.
 const FLOW = [
   { icon: Upload, t: "Add a source", d: "Upload a PDF, DOCX or screenshot — or paste a YouTube link." },
-  { icon: Sparkles, t: "Generate", d: "StudyForge turns it into summaries, quizzes and flashcards." },
+  { icon: Sparkles, t: "Generate", d: "NousMax turns it into summaries, quizzes and flashcards." },
   { icon: Trophy, t: "Review & remember", d: "Take quizzes and flip cards, resurfaced at the right moment." },
 ];
 // The cream "toolkit" panel's icon-row feature list.
@@ -877,8 +887,8 @@ function FullPage({ theme, toggleTheme, onStart, onSignin, pages, labels }) {
       <div className="lnav">
         <div className="lnav-in">
           <div className="logo" onClick={() => go(0)}>
-            <span className="mark"><GraduationCap size={19} /></span>
-            <span>Study<span className="grad-text">Forge</span></span>
+            <LogoMark size={30} />
+            <span>Nous<span className="grad-text">Max</span></span>
           </div>
           <div className="row gap12">
             <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle theme"
@@ -1063,7 +1073,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
                 Study smarter,<br /><span className="amber">remember longer.</span>
               </h1>
               <p className="rise d2" style={{ fontSize: "clamp(16px,2vw,18px)", color: "var(--cream-muted)", lineHeight: 1.6, maxWidth: 540, margin: "0 auto 32px" }}>
-                Upload notes, drop a YouTube link, or search a topic — StudyForge turns it into summaries, quizzes and flashcards, then brings them back at exactly the right moment.
+                Upload notes, drop a YouTube link, or search a topic — NousMax turns it into summaries, quizzes and flashcards, then brings them back at exactly the right moment.
               </p>
               <div className="rise d3">
                 <button className="btn btn-primary" onClick={onStart}>Get started <ArrowRight size={18} /></button>
@@ -1136,10 +1146,10 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
       content: (
         <div className="pin center">
           <div className="cta-card hud" style={{ borderRadius: 24, padding: "56px 40px", maxWidth: 620, margin: "0 auto", position: "relative" }}>
-            <div className="mark rise d1" style={{ width: 58, height: 58, borderRadius: 17, margin: "0 auto 26px", background: "var(--grad)", color: "#fff", display: "grid", placeItems: "center", boxShadow: "0 12px 28px -10px var(--glow)" }}><GraduationCap size={28} /></div>
+            <div className="rise d1" style={{ margin: "0 auto 24px", display: "grid", placeItems: "center" }}><LogoMark size={62} /></div>
             <h2 className="display rise d2" style={{ marginBottom: 30 }}>Start studying <span className="amber">today.</span></h2>
             <div className="rise d3"><button className="btn btn-primary" style={{ fontSize: 16, padding: "14px 26px" }} onClick={onStart}>Get started free <ArrowRight size={18} /></button></div>
-            <div className="faint rise d4" style={{ marginTop: 40, fontSize: 12.5 }}>StudyForge · Phase 1 prototype · built with mock data</div>
+            <div className="faint rise d4" style={{ marginTop: 40, fontSize: 12.5 }}>NousMax · Phase 1 prototype · built with mock data</div>
           </div>
         </div>
       ),
@@ -1221,10 +1231,10 @@ function Welcome({ onTour, onSkip }) {
   return (
     <div className="tour-mask" style={{ display: "grid", placeItems: "center", padding: 16 }}>
       <div className="tour-card pop-in" style={{ position: "relative", width: 420, maxWidth: "100%", textAlign: "center" }}>
-        <div className="bob" style={{ width: 64, height: 64, borderRadius: 18, background: "var(--grad)", display: "grid", placeItems: "center", margin: "4px auto 16px", color: "#fff" }}>
-          <GraduationCap size={30} />
+        <div className="bob" style={{ display: "grid", placeItems: "center", margin: "4px auto 14px" }}>
+          <LogoMark size={58} />
         </div>
-        <div style={{ fontWeight: 820, fontSize: 22, marginBottom: 8 }}>Welcome to StudyForge</div>
+        <div style={{ fontWeight: 820, fontSize: 22, marginBottom: 8 }}>Welcome to NousMax</div>
         <div className="muted" style={{ fontSize: 15, lineHeight: 1.55, marginBottom: 22 }}>
           Let's take a quick 4-step tour of the workspace so you know exactly where to start. It takes 20 seconds.
         </div>
@@ -1851,7 +1861,7 @@ function ChatView({ source }) {
 
   const mockAnswer = (q) =>
     `Based on ${source?.name || "your notes"}: ${q.trim().replace(/\?+$/, "")} relates to the key concepts in the source. ` +
-    "(This is a mock answer — once deployed, StudyForge answers from the real extracted text via the LLM.)";
+    "(This is a mock answer — once deployed, NousMax answers from the real extracted text via the LLM.)";
 
   const send = async () => {
     const q = input.trim();
@@ -1972,7 +1982,7 @@ function IntroOverlay({ onReveal, onDone }) {
     pencil.style.opacity = "1";
     place(toLocal(paths[0].getPointAtLength(0)), 22);
 
-    const DRAW = 1950;
+    const DRAW = 1450;
     let t0 = 0;
     const drawFrame = (ts) => {
       if (!t0) t0 = ts;
@@ -1993,14 +2003,8 @@ function IntroOverlay({ onReveal, onDone }) {
     };
 
     const afterDraw = () => {
-      // the drawn box outline dissolves into the solid coloured tile
-      const boxPath = markSvg.querySelector(".cap.box");
-      if (boxPath) boxPath.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: "ease", fill: "forwards" });
-      tile.animate(
-        [{ opacity: 0, transform: "scale(.72)" }, { opacity: 1, transform: "scale(1)" }],
-        { duration: 440, easing: "cubic-bezier(.2,.8,.2,1.3)", fill: "forwards" }
-      );
-      timers.push(setTimeout(writeWord, 430));
+      // mark is drawn (in its own teal/gold colours); move straight to the wordmark
+      timers.push(setTimeout(writeWord, 320));
     };
 
     const writeWord = () => {
@@ -2046,16 +2050,12 @@ function IntroOverlay({ onReveal, onDone }) {
       <div className="intro-bg" ref={bgRef} />
       <div className="intro-logo" ref={logoRef}>
         <span className="intro-mark">
-          <span className="intro-tile" ref={tileRef} />
-          <svg ref={markRef} className="intro-cap" width="72" height="72" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-            <path className="cap box" d="M29 5 L71 5 Q95 5 95 29 L95 71 Q95 95 71 95 L29 95 Q5 95 5 71 L5 29 Q5 5 29 5 Z" />
-            <path className="cap" d="M50 33 L72 44 L50 55 L28 44 Z" />
-            <path className="cap" d="M37 49 L37 59 Q50 66 63 59 L63 49" />
-            <path className="cap" d="M72 44 L72 63" />
-            <path className="cap" d="M69 63 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0" />
+          <svg ref={markRef} className="intro-cap" width="74" height="74" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+            <path className="cap" d="M22 74 L22 26 L54 74 L54 26" stroke="#0d9488" strokeWidth="11" />
+            <path className="cap" d="M42 74 L42 26 L58 52 L74 26 L74 74" stroke="#d9a521" strokeWidth="11" opacity="0.85" />
           </svg>
         </span>
-        <span className="intro-word" ref={wordRef}>Study<span className="grad-text">Forge</span></span>
+        <span className="intro-word" ref={wordRef}>Nous<span className="grad-text">Max</span></span>
         {/* the pencil — its tip (18,42 in its own box) is placed on the drawing point each frame */}
         <span className="intro-pencil" ref={pencilRef} aria-hidden="true">
           <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
@@ -2127,7 +2127,7 @@ function AuthModal({ mode, setMode, onClose, onAuthed }) {
     <div className="tour-mask auth-mask" style={{ zIndex: 120 }} onClick={onClose}>
       <div className="authcard glassx hud pop-in" onClick={(e) => e.stopPropagation()}>
         <button className="icon-btn" style={{ position: "absolute", top: 14, right: 14, width: 34, height: 34 }} onClick={onClose} aria-label="Close"><X size={16} /></button>
-        <div className="mark" style={{ width: 48, height: 48, borderRadius: 14, margin: "0 auto 16px" }}><GraduationCap size={24} /></div>
+        <div style={{ display: "grid", placeItems: "center", margin: "0 auto 14px" }}><LogoMark size={48} /></div>
         <h2 style={{ textAlign: "center", fontSize: 23, fontWeight: 820, letterSpacing: "-.5px", margin: "0 0 6px" }}>
           {signup ? "Create your account" : "Welcome back"}
         </h2>
@@ -2151,7 +2151,7 @@ function AuthModal({ mode, setMode, onClose, onAuthed }) {
         </form>
 
         <div className="muted" style={{ textAlign: "center", fontSize: 13.5, marginTop: 18 }}>
-          {signup ? "Already have an account? " : "New to StudyForge? "}
+          {signup ? "Already have an account? " : "New to NousMax? "}
           <button className="linklike" onClick={() => { setErr(""); setMode(signup ? "signin" : "signup"); }}>
             {signup ? "Sign in" : "Create account"}
           </button>
