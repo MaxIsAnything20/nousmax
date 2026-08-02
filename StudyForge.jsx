@@ -156,13 +156,13 @@ async function mockGenerateFlashcards() { await wait(1200); return mockFlashcard
    ========================================================================= */
 const CSS = `
 :root{ --r:16px; }
-.sf{ --bg:#060b1a; --bg2:#0b1226; --surface:#101a38; --surface2:#172247;
-  --hover:#1f2c58; --border:rgba(120,165,255,.11); --border2:rgba(120,165,255,.20);
-  --text:#e8eeff; --muted:#9aa8cf; --faint:#5f6d97;
-  --primary:#4f7cff; --primary2:#82a4ff; --accent:#38bdf8; --accent2:#7dd3fc;
-  --grad:linear-gradient(120deg,#38bdf8,#4f7cff 46%,#4f46e5); --glow:rgba(79,124,255,.58);
-  --shadow:0 26px 70px -26px rgba(2,8,30,.82); --danger:#f87171; --ok:#34d399;
-  --amber:#38bdf8; --amber2:#bae6fd; --cream:#e9eefc; --cream-ink:#0f1730; --cream-muted:#566486;
+.sf{ --bg:#02050e; --bg2:#050912; --surface:#08101f; --surface2:#0c1628;
+  --hover:#111d38; --border:rgba(110,150,240,.10); --border2:rgba(110,150,240,.17);
+  --text:#dfe7fb; --muted:#8390b6; --faint:#505d85;
+  --primary:#3a6bf0; --primary2:#6a90f5; --accent:#22a7e6; --accent2:#5fc8f0;
+  --grad:linear-gradient(120deg,#1fbfe0,#3a6bf0 50%,#3730c4); --glow:rgba(58,107,240,.55);
+  --shadow:0 26px 70px -26px rgba(0,3,16,.86); --danger:#f87171; --ok:#34d399;
+  --amber:#31a9ef; --amber2:#8fd4f7; --cream:#e9eefc; --cream-ink:#0f1730; --cream-muted:#566486;
   color-scheme:dark;
 }
 .sf.light{ --bg:#f2f6fd; --bg2:#e4edfb; --surface:#ffffff; --surface2:#eef3fd;
@@ -497,8 +497,8 @@ const CSS = `
 
 /* ===== intro: draw the logo, then pull it to the nav ===== */
 .sf .intro{ position:fixed; inset:0; z-index:200; display:grid; place-items:center; pointer-events:none; }
-.sf .intro-bg{ position:absolute; inset:0; background:#060b1a;
-  background-image:radial-gradient(circle at 50% 44%, rgba(79,124,255,.24), transparent 62%); }
+.sf .intro-bg{ position:absolute; inset:0; background:#02050e;
+  background-image:radial-gradient(circle at 50% 44%, rgba(58,107,240,.22), transparent 62%); }
 .sf .intro-logo{ position:relative; z-index:2; display:flex; align-items:center; gap:16px; will-change:transform; }
 .sf .intro-mark{ position:relative; width:76px; height:76px; display:grid; place-items:center; color:#fff; }
 .sf .intro-mark::before{ content:""; position:absolute; left:50%; top:50%; width:80px; height:80px; border-radius:24px;
