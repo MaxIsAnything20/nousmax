@@ -154,28 +154,40 @@ const VIDEO_POOL = [
   { id: "v6", title: "Chloroplast Structure & Function", channel: "MedBio", duration: "7:33", views: "640K", tone: "#0ea5e9" },
 ];
 
-// MOCK: pretend to hit a video search service. Phase 2: real YouTube search.
+// Phase 2 seam: when deployed with a backend, main.jsx sets globalThis.SF_API
+// (from src/lib/api.js) and these delegate to the real endpoints. In the static
+// preview SF_API is undefined, so the mocks run. Signatures are unchanged.
 async function mockVideoSearch(query) {
+  if (globalThis.SF_API) return globalThis.SF_API.videoSearch(query);
   await wait(900);
   return VIDEO_POOL.map((v) => ({ ...v, title: v.title }));
 }
 
-// MOCK: pretend to upload + parse a file. Phase 2: real upload + extraction.
-async function mockProcessFile(fileName) {
+async function mockProcessFile(fileOrName) {
+  if (globalThis.SF_API) return globalThis.SF_API.processFile(fileOrName);
   await wait(1600);
-  return { id: "up_" + Date.now(), kind: "file", name: fileName, meta: "Processed · ready", addedAt: "just now" };
+  const name = (fileOrName && fileOrName.name) || fileOrName;
+  return { id: "up_" + Date.now(), kind: "file", name, meta: "Processed · ready", addedAt: "just now" };
 }
 
-// MOCK: pretend to ingest a YouTube URL. Phase 2: real transcript fetch.
 async function mockFetchTranscript(url) {
+  if (globalThis.SF_API) return globalThis.SF_API.fetchTranscript(url);
   await wait(1400);
   return { id: "yt_" + Date.now(), kind: "video", name: "Pasted video · ready", meta: "YouTube · transcript ready", addedAt: "just now" };
 }
 
-// MOCK generators. Phase 2: replace with real LLM calls over the source.
-async function mockGenerateQuiz() { await wait(1500); return mockQuiz; }
-async function mockGenerateSummary() { await wait(1300); return mockSummary; }
-async function mockGenerateFlashcards() { await wait(1200); return mockFlashcards; }
+async function mockGenerateQuiz(sourceId) {
+  if (globalThis.SF_API) return globalThis.SF_API.generateQuiz(sourceId);
+  await wait(1500); return mockQuiz;
+}
+async function mockGenerateSummary(sourceId) {
+  if (globalThis.SF_API) return globalThis.SF_API.generateSummary(sourceId);
+  await wait(1300); return mockSummary;
+}
+async function mockGenerateFlashcards(sourceId) {
+  if (globalThis.SF_API) return globalThis.SF_API.generateFlashcards(sourceId);
+  await wait(1200); return mockFlashcards;
+}
 
 
 /* =========================================================================
@@ -583,8 +595,8 @@ const CSS = `
 @keyframes beamOnce{ 0%{ top:-4px; opacity:0; } 8%{ opacity:1; } 90%{ opacity:1; } 100%{ top:100%; opacity:0; } }
 
 /* ===== auth (sign-up / sign-in) modal ===== */
-.sf .authcard{ position:fixed; z-index:121; top:50%; left:50%; transform:translate(-50%,-50%);
-  width:404px; max-width:calc(100vw - 32px); border-radius:20px; padding:34px 30px; }
+.sf .authcard{ position:relative; z-index:121; width:404px; max-width:calc(100vw - 32px);
+  border-radius:20px; padding:34px 30px; max-height:calc(100vh - 40px); overflow:auto; }
 .sf .auth-div{ display:flex; align-items:center; gap:12px; margin:16px 0; color:var(--faint);
   font-size:12px; text-transform:uppercase; letter-spacing:1px; }
 .sf .auth-div::before, .sf .auth-div::after{ content:""; flex:1; height:1px; background:var(--border2); }
@@ -1586,9 +1598,8 @@ function AuthModal({ mode, setMode, onClose, onAuthed }) {
   const signup = mode === "signup";
   const submit = (e) => { e.preventDefault(); onAuthed(); };   // MOCK: no real auth
   return (
-    <>
-      <div className="tour-mask" style={{ zIndex: 120 }} onClick={onClose} />
-      <div className="authcard glassx hud pop-in">
+    <div className="tour-mask" style={{ zIndex: 120, display: "grid", placeItems: "center", padding: 16 }} onClick={onClose}>
+      <div className="authcard glassx hud pop-in" onClick={(e) => e.stopPropagation()}>
         <button className="icon-btn" style={{ position: "absolute", top: 14, right: 14, width: 34, height: 34 }} onClick={onClose} aria-label="Close"><X size={16} /></button>
         <div className="mark" style={{ width: 48, height: 48, borderRadius: 14, margin: "0 auto 16px" }}><GraduationCap size={24} /></div>
         <h2 style={{ textAlign: "center", fontSize: 23, fontWeight: 820, letterSpacing: "-.5px", margin: "0 0 6px" }}>
@@ -1622,7 +1633,7 @@ function AuthModal({ mode, setMode, onClose, onAuthed }) {
           PHASE 1 · MOCK — NO REAL AUTHENTICATION
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

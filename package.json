@@ -1,21 +1,26 @@
 {
   "name": "studyforge",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
-  "description": "StudyForge — Phase 1 UI/UX prototype (frontend only, mock data).",
+  "description": "StudyForge — AI study platform (Phase 2: real backend).",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
     "lucide-react": "^0.383.0",
+    "mammoth": "^1.8.0",
+    "pdf-parse": "^1.1.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "youtube-transcript": "^1.2.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
     "vite": "^5.4.0"
-  }
+  },
+  "comment": "Optional OCR for images: add \"tesseract.js\" to dependencies."
 }
