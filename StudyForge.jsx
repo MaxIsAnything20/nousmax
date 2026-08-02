@@ -556,32 +556,36 @@ const CSS = `
 .sf .intro-mark svg{ filter:none; }
 .sf .intro-mark::before{ border-color:rgba(150,172,215,.4); }
 
-/* ===== auto-playing hero quiz pipeline (Question → Generating → Answer, loops) ===== */
-.sf .qpipe{ display:flex; align-items:stretch; justify-content:center; gap:8px; max-width:820px; margin:0 auto; text-align:left; }
-.sf .qp-node{ flex:1 1 0; min-width:0; background:var(--surface); border:1px solid var(--border); border-radius:14px;
-  padding:14px; display:flex; flex-direction:column;
-  transition:opacity .55s ease, transform .55s ease, border-color .4s ease, box-shadow .4s ease; }
-.sf .qp-node.act{ border-color:var(--primary); box-shadow:0 0 0 1px var(--primary), 0 16px 44px -22px var(--glow); }
+/* ===== auto-playing hero quiz pipeline — spotlight focus, transparent bg ===== */
+.sf .qpipe{ display:flex; align-items:center; justify-content:center; gap:6px; max-width:900px; margin:0 auto; text-align:left; }
+.sf .qp-node{ position:relative; flex:1 1 0; min-width:0; background:transparent; border:1px solid transparent; border-radius:16px;
+  padding:16px 16px 17px; display:flex; flex-direction:column; will-change:opacity,transform,filter;
+  transition:opacity .6s cubic-bezier(.22,.9,.24,1), transform .6s cubic-bezier(.22,.9,.24,1), filter .6s ease, border-color .5s ease; }
+/* spotlight focus states */
+.sf .qp-node.hidden{ opacity:0; transform:translateX(-16px) scale(.93); filter:blur(3px); pointer-events:none; }
+.sf .qp-node.past{ opacity:.24; transform:scale(.9); filter:blur(1.4px); }
+.sf .qp-node.focus{ opacity:1; transform:scale(1); filter:none; border-color:var(--border2); }
+.sf .qp-node.focus::before{ content:""; position:absolute; inset:-2px; z-index:-1; border-radius:18px;
+  background:radial-gradient(130% 130% at 50% 8%, var(--glow), transparent 66%); opacity:.9; animation:qpGlow .6s ease both; }
+@keyframes qpGlow{ from{ opacity:0; } to{ opacity:.9; } }
 .sf .qp-cap{ font-family:ui-monospace,monospace; font-size:10px; letter-spacing:1.6px; text-transform:uppercase; color:var(--primary2); margin-bottom:9px; }
 .sf .qp-cap.ok{ color:var(--ok); }
 .sf .qp-q{ font-size:14.5px; font-weight:800; line-height:1.28; margin-bottom:13px; }
 .sf .qp-opts{ display:flex; flex-direction:column; gap:6px; margin-top:auto; }
-.sf .qp-opt{ display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:9px; background:var(--surface2); font-size:12.5px; font-weight:600; transition:.4s; }
-.sf .qp-k{ display:grid; place-items:center; width:21px; height:21px; border-radius:6px; background:var(--hover);
+.sf .qp-opt{ display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:9px;
+  background:color-mix(in srgb, var(--surface2) 55%, transparent); border:1px solid var(--border); font-size:12.5px; font-weight:600; }
+.sf .qp-k{ display:grid; place-items:center; width:21px; height:21px; border-radius:6px; background:color-mix(in srgb,var(--hover) 70%, transparent);
   font-family:ui-monospace,monospace; font-size:10.5px; color:var(--muted); flex:none; }
 .sf .qp-t{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.sf .qp-opt.correct{ background:color-mix(in srgb,var(--ok) 16%, var(--surface2)); color:var(--ok); }
-.sf .qp-opt.correct .qp-k{ background:var(--ok); color:#052b1c; }
-.sf .qp-chk{ margin-left:auto; color:var(--ok); flex:none; }
-/* arrows between the nodes */
-.sf .qp-arr{ flex:none; align-self:center; color:var(--faint); opacity:.22; transform:translateX(-5px);
-  transition:opacity .55s ease, transform .55s ease, color .55s ease; }
-.sf .qp-arr.on{ opacity:1; transform:none; color:var(--primary2); }
-/* the generating + answer nodes fade in */
-.sf .qp-mid, .sf .qp-ans{ opacity:0; transform:translateX(-10px); }
-.sf .qp-mid.in, .sf .qp-ans.in{ opacity:1; transform:none; }
+.sf .qp-k.ok{ background:var(--ok); color:#052b1c; }
+/* flowing arrows */
+.sf .qp-arr{ flex:none; align-self:center; color:var(--faint); opacity:.16;
+  transition:opacity .6s ease, color .6s ease; }
+.sf .qp-arr.on{ opacity:.75; color:var(--primary2); }
+.sf .qp-arr.flow{ opacity:1; animation:qpFlow 1.15s ease-in-out infinite; }
+@keyframes qpFlow{ 0%,100%{ transform:translateX(-3px); opacity:.5; } 50%{ transform:translateX(3px); opacity:1; } }
 /* generating */
-.sf .qp-mid{ align-items:flex-start; justify-content:center; }
+.sf .qp-mid{ justify-content:center; }
 .sf .qp-spin{ animation:sp 1s linear infinite; color:var(--primary2); margin:2px 0 11px; }
 .sf .qp-genlist{ display:flex; flex-direction:column; gap:7px; font-family:ui-monospace,monospace; font-size:11px; color:var(--muted); }
 .sf .qp-genlist > div{ display:inline-flex; align-items:center; gap:7px; }
@@ -590,15 +594,18 @@ const CSS = `
 /* answer */
 .sf .qp-ans{ justify-content:center; }
 .sf .qp-ansrow{ display:flex; align-items:center; gap:9px; font-size:15.5px; font-weight:800; margin-bottom:9px; }
-.sf .qp-k.ok{ background:var(--ok); color:#052b1c; }
-.sf .qp-ansmark{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:800; color:var(--ok); }
+.sf .qp-ansmark{ position:relative; display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:800; color:var(--ok); padding-bottom:6px; }
+.sf .qp-scribble{ position:absolute; left:0; right:0; bottom:-2px; height:9px; color:var(--amber); pointer-events:none; }
+.sf .qp-scribble path{ stroke-dasharray:220; stroke-dashoffset:220; animation:qpDraw .7s ease .3s forwards; }
+@keyframes qpDraw{ to{ stroke-dashoffset:0; } }
 
 @media (max-width:680px){
   .sf .qpipe{ flex-direction:column; align-items:stretch; }
-  .sf .qp-arr, .sf .qp-arr.on{ transform:rotate(90deg); align-self:center; }
-  .sf .qp-mid, .sf .qp-ans{ transform:translateY(-10px); }
-  .sf .qp-mid.in, .sf .qp-ans.in{ transform:none; }
+  .sf .qp-node.hidden{ transform:translateY(-16px) scale(.93); }
+  .sf .qp-arr{ transform:rotate(90deg); align-self:center; }
+  .sf .qp-arr.flow{ animation:qpFlowV 1.15s ease-in-out infinite; }
 }
+@keyframes qpFlowV{ 0%,100%{ transform:rotate(90deg) translateX(-3px); opacity:.5; } 50%{ transform:rotate(90deg) translateX(3px); opacity:1; } }
 
 /* ===== interactive flip card (hero note) ===== */
 .sf .qcard{ position:relative; display:inline-block; cursor:pointer; transform:rotate(1.5deg); transition:transform .35s cubic-bezier(.2,.8,.2,1); }
@@ -928,35 +935,35 @@ const QDEMO_OPTS = [
 function QuizDemo() {
   const [step, setStep] = useState(0);
   useEffect(() => {
-    const hold = [1500, 2100, 2800][step]; // question · generating · answer
+    const hold = [1700, 2200, 2900][step]; // question · generating · answer
     const id = setTimeout(() => setStep((s) => (s + 1) % 3), hold);
     return () => clearTimeout(id);
   }, [step]);
 
-  const showGen = step >= 1;
-  const showAns = step >= 2;
+  // spotlight focus: only the current stage is sharp; earlier stages fade &
+  // blur out ("past"), upcoming stages are not shown yet ("hidden").
+  const cls = (i) => (step === i ? "focus" : step > i ? "past" : "hidden");
 
   return (
     <div className="qpipe">
-      {/* Question — always on the left */}
-      <div className={`qp-node ${step === 0 ? "act" : ""}`}>
+      {/* Question */}
+      <div className={`qp-node ${cls(0)}`}>
         <div className="qp-cap">Question</div>
         <div className="qp-q">{QDEMO_Q}</div>
         <div className="qp-opts">
           {QDEMO_OPTS.map((o) => (
-            <div key={o.k} className={`qp-opt ${showAns && o.correct ? "correct" : ""}`}>
+            <div key={o.k} className="qp-opt">
               <span className="qp-k">{o.k}</span>
               <span className="qp-t">{o.t}</span>
-              {showAns && o.correct && <Check size={13} className="qp-chk" />}
             </div>
           ))}
         </div>
       </div>
 
-      <div className={`qp-arr ${showGen ? "on" : ""}`}><ArrowRight size={22} /></div>
+      <div className={`qp-arr ${step >= 1 ? "on" : ""} ${step === 1 ? "flow" : ""}`}><ArrowRight size={22} /></div>
 
       {/* Generating */}
-      <div className={`qp-node qp-mid ${showGen ? "in" : ""} ${step === 1 ? "act" : ""}`}>
+      <div className={`qp-node qp-mid ${cls(1)}`}>
         <div className="qp-cap">Generating</div>
         <Loader2 className="qp-spin" size={24} />
         <div className="qp-genlist">
@@ -966,16 +973,21 @@ function QuizDemo() {
         </div>
       </div>
 
-      <div className={`qp-arr ${showAns ? "on" : ""}`}><ArrowRight size={22} /></div>
+      <div className={`qp-arr ${step >= 2 ? "on" : ""} ${step === 2 ? "flow" : ""}`}><ArrowRight size={22} /></div>
 
       {/* Answer */}
-      <div className={`qp-node qp-ans ${showAns ? "in" : ""} ${step === 2 ? "act" : ""}`}>
+      <div className={`qp-node qp-ans ${cls(2)}`}>
         <div className="qp-cap ok">Answer</div>
         <div className="qp-ansrow">
           <span className="qp-k ok">B</span>
           <span className="qp-t">Mitochondria</span>
         </div>
-        <div className="qp-ansmark"><Pencil size={12} /> Correct <Check size={13} /></div>
+        <div className="qp-ansmark">
+          <Pencil size={12} /> Correct <Check size={13} />
+          <svg className="qp-scribble" viewBox="0 0 130 10" preserveAspectRatio="none">
+            <path d="M3 7 Q 28 2, 60 6 T 127 5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+          </svg>
+        </div>
       </div>
     </div>
   );
