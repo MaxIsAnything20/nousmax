@@ -617,6 +617,35 @@ const CSS = `
 @keyframes heroLtrIn{ from{ opacity:0; transform:translateY(.5em) scale(.94); filter:blur(5px); } to{ opacity:1; transform:none; filter:blur(0); } }
 @media (max-width:860px){ .sf .pin.hero-left{ justify-content:center; }
   .sf .hero-col, .sf.hero-shift .hero-col{ text-align:center; max-width:600px; margin:0 auto; transform:none; } }
+/* drifting mood-board in the reserved right half — small framed cards that slowly float */
+.sf .hero-art{ position:absolute; top:0; right:0; width:46%; height:100%; pointer-events:none; z-index:2;
+  opacity:0; transition:opacity 1s ease .15s; }
+.sf.nav-up .hero-art{ opacity:1; }
+.sf .fcard{ position:absolute; width:236px; background:#fff; border:1px solid rgba(28,27,35,.09); border-radius:16px;
+  box-shadow:0 26px 55px -26px rgba(40,25,90,.32), 0 2px 8px -3px rgba(40,25,90,.12); padding:16px 16px 15px; }
+.sf .fc-cap{ display:inline-flex; align-items:center; gap:6px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:10px; letter-spacing:1.2px; text-transform:uppercase; color:var(--primary); margin-bottom:11px; }
+.sf .fc-q{ font-weight:770; font-size:15.5px; line-height:1.3; color:var(--cream-ink); }
+.sf .fc-hint{ font-size:11.5px; color:var(--cream-muted); margin-top:12px; }
+.sf .fc-opt{ padding:8px 11px; border-radius:9px; border:1px solid rgba(28,27,35,.1); font-size:13px; font-weight:600;
+  color:var(--cream-ink); margin-top:8px; display:flex; align-items:center; gap:7px; }
+.sf .fc-opt.correct{ background:color-mix(in srgb,var(--ok) 15%, #fff); border-color:var(--ok); color:#0a6b4d; }
+.sf .fc-line{ height:9px; border-radius:5px; background:rgba(28,27,35,.09); margin-top:9px; }
+.sf .fc-line:first-of-type{ margin-top:2px; }
+.sf .fc-streak{ display:flex; align-items:baseline; gap:6px; font-size:13px; color:var(--cream-muted); }
+.sf .fc-streak b{ font-size:30px; font-weight:850; letter-spacing:-1px; color:var(--cream-ink); }
+.sf .fc-heat{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-top:12px; }
+.sf .fc-heat i{ aspect-ratio:1; border-radius:3px; background:rgba(28,27,35,.08); }
+.sf .fc-heat i.on{ background:var(--primary); opacity:.85; }
+.sf .fc-a{ top:12%; left:-2%; width:250px; animation:driftA 9s ease-in-out infinite; }
+.sf .fc-b{ top:47%; right:-4%; animation:driftB 11s ease-in-out infinite; }
+.sf .fc-c{ top:3%; right:9%; width:210px; animation:driftC 10s ease-in-out infinite; }
+.sf .fc-d{ bottom:7%; left:13%; width:202px; animation:driftD 12s ease-in-out infinite; }
+@keyframes driftA{ 0%,100%{ transform:translate(0,0) rotate(-5deg); } 50%{ transform:translate(6px,-18px) rotate(-3.5deg); } }
+@keyframes driftB{ 0%,100%{ transform:translate(0,0) rotate(4deg); } 50%{ transform:translate(-8px,-14px) rotate(2.5deg); } }
+@keyframes driftC{ 0%,100%{ transform:translate(0,0) rotate(3deg); } 50%{ transform:translate(-5px,16px) rotate(4.5deg); } }
+@keyframes driftD{ 0%,100%{ transform:translate(0,0) rotate(-3deg); } 50%{ transform:translate(7px,-12px) rotate(-1.5deg); } }
+@media (max-width:980px){ .sf .hero-art{ display:none; } }
 /* fixed nav on cream */
 .sf .fp .lnav .logo{ color:var(--cream-ink); text-shadow:none; }
 .sf .fp .lnav .signin{ background:var(--cream-ink); color:var(--cream); }
@@ -1119,6 +1148,32 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
               </p>
               <div className="rise d3">
                 <div className="faint" style={{ fontSize: 12.5 }}>Free while in beta · your notes stay yours</div>
+              </div>
+            </div>
+
+            {/* drifting mood-board of what NousMax makes — fills the reserved right space */}
+            <div className="hero-art" aria-hidden="true">
+              <div className="fcard fc-a">
+                <div className="fc-cap"><Layers size={12} /> Flashcard</div>
+                <div className="fc-q">What is the powerhouse of the cell?</div>
+                <div className="fc-hint">tap to flip →</div>
+              </div>
+              <div className="fcard fc-b">
+                <div className="fc-cap"><ListChecks size={12} /> Quiz · Photosynthesis</div>
+                <div className="fc-opt correct"><Check size={12} /> Chloroplast</div>
+                <div className="fc-opt">Mitochondrion</div>
+              </div>
+              <div className="fcard fc-c">
+                <div className="fc-cap"><StickyNote size={12} /> Summary</div>
+                <div className="fc-line" style={{ width: "92%" }} />
+                <div className="fc-line" style={{ width: "78%" }} />
+                <div className="fc-line" style={{ width: "85%" }} />
+                <div className="fc-line" style={{ width: "60%" }} />
+              </div>
+              <div className="fcard fc-d">
+                <div className="fc-cap"><Flame size={12} /> Streak</div>
+                <div className="fc-streak"><b>6</b> days</div>
+                <div className="fc-heat">{Array.from({ length: 21 }, (_, i) => <i key={i} className={(i * 5 + 2) % 4 ? "on" : ""} />)}</div>
               </div>
             </div>
           </div>
