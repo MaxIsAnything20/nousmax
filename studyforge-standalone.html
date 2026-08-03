@@ -566,15 +566,15 @@ const CSS = `
    grows in it physically pushes the N and M apart — the monogram "splits". */
 .sf .nmw .mt-n, .sf .nmw .mt-m{ vertical-align:bottom; padding-right:.03em; }
 .sf .intro-morph .nmw .g{ max-width:0; opacity:0; overflow:hidden; will-change:max-width,opacity,filter; }
-.sf .intro-morph.play .nmw .g{ animation:writeLtr .95s cubic-bezier(.22,1,.34,1) forwards; }
-.sf .intro-morph.play .nmw > span:nth-child(2){ animation-delay:0s; }
-.sf .intro-morph.play .nmw > span:nth-child(3){ animation-delay:.13s; }
-.sf .intro-morph.play .nmw > span:nth-child(4){ animation-delay:.26s; }
-.sf .intro-morph.play .nmw > span:nth-child(6){ animation-delay:.39s; }
-.sf .intro-morph.play .nmw > span:nth-child(7){ animation-delay:.52s; }
-@keyframes writeLtr{
-  0%{ max-width:0; opacity:0; filter:blur(8px); }
-  55%{ opacity:1; }
+/* PHASE 1 (0–45%): the fillers open their width while invisible — this glides the
+   N and M apart to leave the gaps. PHASE 2 (45–100%): they fade in to fill them. */
+.sf .intro-morph.play .nmw .g{ animation:splitFade 1.5s cubic-bezier(.45,0,.15,1) forwards; }
+.sf .intro-morph.play .nmw > span:nth-child(6){ animation-delay:.1s; }
+.sf .intro-morph.play .nmw > span:nth-child(7){ animation-delay:.14s; }
+@keyframes splitFade{
+  0%{ max-width:0; opacity:0; filter:blur(7px); }
+  45%{ max-width:1.15em; opacity:0; filter:blur(7px); }
+  62%{ opacity:0; }
   100%{ max-width:1.15em; opacity:1; filter:blur(0); }
 }
 /* resting page watermark: filler letters natural width, SAME box model as the
