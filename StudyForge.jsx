@@ -2121,10 +2121,17 @@ function IntroOverlay({ onReveal, onShift, onDone }) {
     place(toLocal(paths[0].getPointAtLength(0)), 22);
 
     const DRAW = 1450;
-    let t0 = 0;
+    // Advance by *rendered* frames (with a clamped delta) instead of wall-clock time.
+    // This guarantees the pencil visibly traces the whole monogram even if the page
+    // janks or the tab is briefly throttled — the draw never skips ahead to the end,
+    // and the morph (afterDraw) only fires once the strokes are genuinely complete.
+    let prev = 0, prog = 0;
     const drawFrame = (ts) => {
-      if (!t0) t0 = ts;
-      const t = Math.min(1, (ts - t0) / DRAW);
+      if (!prev) prev = ts;
+      let dt = ts - prev; prev = ts;
+      if (dt > 45) dt = 45;
+      prog = Math.min(1, prog + dt / DRAW);
+      const t = prog;
       const drawn = easeIO(t) * total;
       let acc = 0;
       for (let i = 0; i < paths.length; i++) {
