@@ -660,13 +660,13 @@ const CSS = `
 .sf.nav-up .vl-2{ transition-delay:.2s; } .sf.nav-up .vl-3{ transition-delay:.4s; }
 
 /* wide-tracked serif captions that fade in and out, one at a time */
-.sf .cap{ position:absolute; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+.sf .hcap{ position:absolute; font-family:Georgia,'Times New Roman',serif; font-style:italic;
   font-size:15px; letter-spacing:.42em; text-transform:uppercase; color:var(--cream-muted);
   white-space:nowrap; opacity:0; }
-.sf .cap-1{ top:33%; left:38%; } .sf .cap-2{ bottom:31%; left:56%; } .sf .cap-3{ top:63%; left:87%; }
-.sf.nav-up .cap-1{ animation:capCyc 16s ease-in-out .8s infinite; }
-.sf.nav-up .cap-2{ animation:capCyc 16s ease-in-out 6.1s infinite; }
-.sf.nav-up .cap-3{ animation:capCyc 16s ease-in-out 11.4s infinite; }
+.sf .hcap-1{ top:33%; left:38%; } .sf .hcap-2{ bottom:31%; left:56%; } .sf .hcap-3{ top:63%; left:87%; }
+.sf.nav-up .hcap-1{ animation:capCyc 16s ease-in-out .8s infinite; }
+.sf.nav-up .hcap-2{ animation:capCyc 16s ease-in-out 6.1s infinite; }
+.sf.nav-up .hcap-3{ animation:capCyc 16s ease-in-out 11.4s infinite; }
 @keyframes capCyc{ 0%{opacity:0;letter-spacing:.26em} 11%,23%{opacity:.6;letter-spacing:.42em} 36%,100%{opacity:0;letter-spacing:.52em} }
 
 /* abstract framed 'photos' of mixed shapes — the drifting backdrop */
@@ -1222,9 +1222,9 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
             <div className="hero-art" aria-hidden="true">
               <span className="vline vl-1" /><span className="vline vl-2" /><span className="vline vl-3" />
 
-              <span className="cap cap-1">recall</span>
-              <span className="cap cap-2">focus</span>
-              <span className="cap cap-3">remember</span>
+              <span className="hcap hcap-1">recall</span>
+              <span className="hcap hcap-2">focus</span>
+              <span className="hcap hcap-3">remember</span>
 
               <div className="frame fr-a" /><div className="frame fr-b" /><div className="frame fr-c" /><div className="frame fr-d" />
 
