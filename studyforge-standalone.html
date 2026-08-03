@@ -38,6 +38,7 @@ import {
   Pencil,
 } from "lucide-react";
 
+
 /* =========================================================================
    StudyForge — Phase 1 (UI/UX ONLY)  ·  Working name, swap later.
    -------------------------------------------------------------------------
@@ -638,7 +639,7 @@ const CSS = `
 .sf .fp .btn-primary:focus-visible{ outline:none; box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 30%, transparent); }
 /* hero page 1: headline reveals letter-by-letter, appears centred, then glides left */
 .sf .pin.hero-left{ display:flex; justify-content:flex-start; align-items:center; }
-.sf .hero-col{ max-width:560px; text-align:left; transform:translateX(clamp(0px,21vw,300px));
+.sf .hero-col{ max-width:560px; text-align:left; position:relative; z-index:3; transform:translateX(clamp(0px,21vw,300px));
   transition:transform 1.05s cubic-bezier(.16,1,.3,1); }
 .sf.hero-shift .hero-col{ transform:translateX(0); }
 .sf .hl{ display:inline-block; white-space:pre; opacity:0; transform:translateY(.5em) scale(.94); filter:blur(5px); }
@@ -646,12 +647,49 @@ const CSS = `
 @keyframes heroLtrIn{ from{ opacity:0; transform:translateY(.5em) scale(.94); filter:blur(5px); } to{ opacity:1; transform:none; filter:blur(0); } }
 @media (max-width:860px){ .sf .pin.hero-left{ justify-content:center; }
   .sf .hero-col, .sf.hero-shift .hero-col{ text-align:center; max-width:600px; margin:0 auto; transform:none; } }
-/* drifting mood-board in the reserved right half — small framed cards that slowly float */
-.sf .hero-art{ position:absolute; top:0; right:0; width:46%; height:100%; pointer-events:none; z-index:2;
-  opacity:0; transition:opacity 1s ease .15s; }
-.sf.nav-up .hero-art{ opacity:1; }
+/* full-page drifting collage behind the headline — mixed-shape framed panels, lines & captions */
+.sf .hero-art{ position:absolute; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
+@media (max-width:980px){ .sf .hero-art{ display:none; } }
+
+/* thin vertical divider lines */
+.sf .vline{ position:absolute; top:9%; height:82%; width:1px;
+  background:linear-gradient(180deg,transparent,rgba(28,27,35,.14) 18%,rgba(28,27,35,.14) 82%,transparent);
+  opacity:0; transition:opacity 1.6s ease; }
+.sf .vl-1{ left:31%; } .sf .vl-2{ left:56%; } .sf .vl-3{ left:79%; }
+.sf.nav-up .vline{ opacity:1; }
+.sf.nav-up .vl-2{ transition-delay:.2s; } .sf.nav-up .vl-3{ transition-delay:.4s; }
+
+/* wide-tracked serif captions that fade in and out, one at a time */
+.sf .cap{ position:absolute; font-family:Georgia,'Times New Roman',serif; font-style:italic;
+  font-size:15px; letter-spacing:.42em; text-transform:uppercase; color:var(--cream-muted);
+  white-space:nowrap; opacity:0; }
+.sf .cap-1{ top:31%; left:41%; } .sf .cap-2{ bottom:30%; left:62%; } .sf .cap-3{ top:66%; left:81%; }
+.sf.nav-up .cap-1{ animation:capCyc 16s ease-in-out .8s infinite; }
+.sf.nav-up .cap-2{ animation:capCyc 16s ease-in-out 6.1s infinite; }
+.sf.nav-up .cap-3{ animation:capCyc 16s ease-in-out 11.4s infinite; }
+@keyframes capCyc{ 0%{opacity:0;letter-spacing:.26em} 11%,23%{opacity:.6;letter-spacing:.42em} 36%,100%{opacity:0;letter-spacing:.52em} }
+
+/* abstract framed 'photos' of mixed shapes — the drifting backdrop */
+.sf .frame{ position:absolute; border:1px solid rgba(28,27,35,.11); border-radius:10px;
+  background:linear-gradient(145deg,#efece4 0%,#e4dfd3 55%,#d7d1c3 100%);
+  box-shadow:0 26px 52px -30px rgba(40,25,90,.3); opacity:0; transition:opacity 1.2s ease; }
+.sf .frame::after{ content:""; position:absolute; inset:8px; border:1px solid rgba(28,27,35,.06); border-radius:5px; }
+.sf .fr-a{ top:14%; left:5%; width:150px; height:208px; animation:driftE 13s ease-in-out infinite; }
+.sf .fr-b{ bottom:15%; left:20%; width:158px; height:158px; animation:driftF 15s ease-in-out infinite; }
+.sf .fr-c{ top:45%; left:49%; width:232px; height:146px; animation:driftG 12s ease-in-out infinite; }
+.sf .fr-d{ top:9%; left:83%; width:122px; height:122px; animation:driftH 16s ease-in-out infinite; }
+.sf.nav-up .frame{ opacity:.9; }
+.sf.nav-up .fr-a, .sf.nav-up .fr-b{ opacity:.5; }
+.sf.nav-up .fr-b{ transition-delay:.2s; } .sf.nav-up .fr-c{ transition-delay:.35s; } .sf.nav-up .fr-d{ transition-delay:.5s; }
+@keyframes driftE{ 0%,100%{ transform:translate(0,0) rotate(-4deg); } 50%{ transform:translate(5px,-16px) rotate(-2.5deg); } }
+@keyframes driftF{ 0%,100%{ transform:translate(0,0) rotate(3.5deg); } 50%{ transform:translate(-7px,-13px) rotate(2deg); } }
+@keyframes driftG{ 0%,100%{ transform:translate(0,0) rotate(-2.5deg); } 50%{ transform:translate(8px,14px) rotate(-4deg); } }
+@keyframes driftH{ 0%,100%{ transform:translate(0,0) rotate(5deg); } 50%{ transform:translate(-6px,-11px) rotate(3deg); } }
+
 .sf .fcard{ position:absolute; width:236px; background:#fff; border:1px solid rgba(28,27,35,.09); border-radius:16px;
+  opacity:0; transition:opacity 1.2s ease;
   box-shadow:0 26px 55px -26px rgba(40,25,90,.32), 0 2px 8px -3px rgba(40,25,90,.12); padding:16px 16px 15px; }
+.sf.nav-up .fcard{ opacity:1; }
 .sf .fc-cap{ display:inline-flex; align-items:center; gap:6px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
   font-size:10px; letter-spacing:1.2px; text-transform:uppercase; color:var(--primary); margin-bottom:11px; }
 .sf .fc-q{ font-weight:770; font-size:15.5px; line-height:1.3; color:var(--cream-ink); }
@@ -666,15 +704,15 @@ const CSS = `
 .sf .fc-heat{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-top:12px; }
 .sf .fc-heat i{ aspect-ratio:1; border-radius:3px; background:rgba(28,27,35,.08); }
 .sf .fc-heat i.on{ background:var(--primary); opacity:.85; }
-.sf .fc-a{ top:12%; left:-2%; width:250px; animation:driftA 9s ease-in-out infinite; }
-.sf .fc-b{ top:47%; right:-4%; animation:driftB 11s ease-in-out infinite; }
-.sf .fc-c{ top:3%; right:9%; width:210px; animation:driftC 10s ease-in-out infinite; }
-.sf .fc-d{ bottom:7%; left:13%; width:202px; animation:driftD 12s ease-in-out infinite; }
+.sf .fc-a{ top:13%; left:52%; width:248px; animation:driftA 11s ease-in-out infinite; }
+.sf .fc-b{ bottom:10%; left:75%; width:236px; animation:driftB 13s ease-in-out infinite; }
+.sf .fc-c{ top:5%; left:67%; width:210px; animation:driftC 12s ease-in-out infinite; }
+.sf .fc-d{ bottom:25%; left:58%; width:202px; animation:driftD 14s ease-in-out infinite; }
+.sf.nav-up .fc-b{ transition-delay:.15s; } .sf.nav-up .fc-c{ transition-delay:.3s; } .sf.nav-up .fc-d{ transition-delay:.45s; }
 @keyframes driftA{ 0%,100%{ transform:translate(0,0) rotate(-5deg); } 50%{ transform:translate(6px,-18px) rotate(-3.5deg); } }
 @keyframes driftB{ 0%,100%{ transform:translate(0,0) rotate(4deg); } 50%{ transform:translate(-8px,-14px) rotate(2.5deg); } }
 @keyframes driftC{ 0%,100%{ transform:translate(0,0) rotate(3deg); } 50%{ transform:translate(-5px,16px) rotate(4.5deg); } }
 @keyframes driftD{ 0%,100%{ transform:translate(0,0) rotate(-3deg); } 50%{ transform:translate(7px,-12px) rotate(-1.5deg); } }
-@media (max-width:980px){ .sf .hero-art{ display:none; } }
 /* fixed nav on cream */
 .sf .fp .lnav .logo{ color:var(--cream-ink); text-shadow:none; }
 .sf .fp .lnav .signin{ background:var(--cream-ink); color:var(--cream); }
@@ -1180,8 +1218,16 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
               </div>
             </div>
 
-            {/* drifting mood-board of what NousMax makes — fills the reserved right space */}
+            {/* full-page drifting collage (mood-board) behind the headline */}
             <div className="hero-art" aria-hidden="true">
+              <span className="vline vl-1" /><span className="vline vl-2" /><span className="vline vl-3" />
+
+              <span className="cap cap-1">recall</span>
+              <span className="cap cap-2">focus</span>
+              <span className="cap cap-3">remember</span>
+
+              <div className="frame fr-a" /><div className="frame fr-b" /><div className="frame fr-c" /><div className="frame fr-d" />
+
               <div className="fcard fc-a">
                 <div className="fc-cap"><Layers size={12} /> Flashcard</div>
                 <div className="fc-q">What is the powerhouse of the cell?</div>
