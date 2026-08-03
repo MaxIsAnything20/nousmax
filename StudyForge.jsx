@@ -528,23 +528,25 @@ const CSS = `
    watermark, so the hand-off is seamless. In the intro each letter expands in,
    one after another; on the page they're simply all present (solid, faded). */
 .sf .nmw{ font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  font-weight:900; font-size:24vw; letter-spacing:-.06em; white-space:nowrap; line-height:1; }
+  font-weight:900; font-size:min(16vw,17vh); letter-spacing:-.05em; white-space:nowrap; line-height:1; }
 .sf .nmw .mt-n{ display:inline-block; color:#0d9488; }
 .sf .nmw .mt-m{ display:inline-block; color:#d9a521; }
 .sf .intro-morph{ position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center;
   pointer-events:none; opacity:0; transform:scale(.5); will-change:transform,opacity; }
 /* the filler letters (o u s a x) start with zero width, so only N M show; as each
    grows in it physically pushes the N and M apart — the monogram "splits". */
-.sf .intro-morph .nmw .g{ max-width:0; opacity:0; overflow:hidden; }
-.sf .intro-morph.play .nmw .g{ animation:writeLtr .62s cubic-bezier(.3,.85,.3,1) forwards; }
+.sf .nmw .mt-n, .sf .nmw .mt-m{ vertical-align:bottom; }
+.sf .intro-morph .nmw .g{ max-width:0; opacity:0; overflow:hidden; will-change:max-width,opacity; }
+.sf .intro-morph.play .nmw .g{ animation:writeLtr .66s cubic-bezier(.22,1,.36,1) forwards; }
 .sf .intro-morph.play .nmw > span:nth-child(2){ animation-delay:0s; }
 .sf .intro-morph.play .nmw > span:nth-child(3){ animation-delay:.17s; }
 .sf .intro-morph.play .nmw > span:nth-child(4){ animation-delay:.34s; }
 .sf .intro-morph.play .nmw > span:nth-child(6){ animation-delay:.51s; }
 .sf .intro-morph.play .nmw > span:nth-child(7){ animation-delay:.68s; }
 @keyframes writeLtr{ from{ max-width:0; opacity:0; } to{ max-width:1.05em; opacity:1; } }
-/* resting page watermark: filler letters at their natural width */
-.sf .wm-brand .nmw .g{ max-width:2em; opacity:1; overflow:visible; }
+/* resting page watermark: filler letters natural width, SAME box model as the
+   intro word (overflow:hidden shifts the baseline, so both must match — no jump). */
+.sf .wm-brand .nmw .g{ max-width:2em; opacity:1; overflow:hidden; }
 .sf .intro-word{ font-weight:850; font-size:40px; letter-spacing:-1px; white-space:nowrap; color:var(--text);
   clip-path:inset(0 100% 0 0); text-shadow:0 0 26px rgba(79,124,255,.5); }
 @keyframes iring{ 0%{ opacity:.7; transform:translate(-50%,-50%) scale(.6);} 100%{ opacity:0; transform:translate(-50%,-50%) scale(2.3);} }
@@ -2059,11 +2061,13 @@ function IntroOverlay({ onReveal, onShift, onDone }) {
         ], { duration: 2050, easing: "cubic-bezier(.3,.55,.2,1)", fill: "forwards" });
         timers.push(setTimeout(() => morphEl.classList.add("play"), 470));   // then N M split + o u s / a x write in
       }
-      onReveal && onReveal();                       // page pulls into focus, hero appears centred
+      // NB: the page reveal (blur/focus + hero) is deferred to reveal() so the
+      // letter write runs on its own — no competing reflow — and stays smooth.
       timers.push(setTimeout(reveal, 2250));
     };
 
     const reveal = () => {
+      onReveal && onReveal();                       // page pulls into focus, hero appears centred
       if (bg) bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: "ease", fill: "forwards" });
       timers.push(setTimeout(shift, 620));
     };
