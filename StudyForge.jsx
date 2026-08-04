@@ -408,9 +408,12 @@ const CSS = `
   pointer-events:none; will-change:transform; border-radius:3px;
   background:linear-gradient(90deg, transparent 0%, rgba(45,212,191,.45) 28%, #eafffb 50%, rgba(45,212,191,.45) 72%, transparent 100%);
   box-shadow:0 0 10px 1px rgba(45,212,191,.7), 0 0 4px 0 rgba(255,255,255,.6); }
-/* only the icon glyph glows when the light hits — quick rise (~150ms), then a
-   gradual (~780ms) fade; the tile itself stays completely untouched */
+/* when the light hits: the tile scales up a touch (the enlarge you liked) and
+   ONLY the icon glyph glows — quick rise (~150ms), gradual (~780ms) fade.
+   No ring/border on the tile — just the size bump + the icon's own glow. */
+.sf .flow .ftile-lg{ transition:transform 780ms ease-out; }
 .sf .flow .ftile-lg svg{ transition:filter 780ms ease-out, color 780ms ease-out; }
+.sf .flow .ftile-lg.lit{ transition:transform 150ms ease-out; transform:scale(1.09); }
 .sf .flow .ftile-lg.lit svg{ transition:filter 150ms ease-out, color 150ms ease-out;
   color:var(--accent2) !important;
   filter:drop-shadow(0 0 6px rgba(45,212,191,.95)) drop-shadow(0 0 13px rgba(45,212,191,.55)); }
