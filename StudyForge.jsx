@@ -410,13 +410,13 @@ const CSS = `
   box-shadow:0 0 10px 1px rgba(45,212,191,.7), 0 0 4px 0 rgba(255,255,255,.6); }
 /* icon pulse: rises fast when the light hits (~150ms), then fades out
    gradually (~780ms) — the asymmetric timing is what makes it feel seamless */
-.sf .ftile-lg{ transition:box-shadow 780ms ease-out, transform 780ms ease-out, border-color 780ms ease-out, color 780ms ease-out; }
-.sf .ftile-lg svg{ transition:filter 780ms ease-out; }
-.sf .ftile-lg.lit{ transition:box-shadow 150ms ease-out, transform 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out;
-  border-color:var(--accent2); color:var(--accent2);
-  box-shadow:0 0 0 1.5px var(--accent2), 0 0 32px 5px rgba(45,212,191,.6), 0 14px 30px -14px rgba(40,25,90,.42);
+.sf .flow .ftile-lg{ transition:box-shadow 780ms ease-out, transform 780ms ease-out, border-color 780ms ease-out, color 780ms ease-out; }
+.sf .flow .ftile-lg svg{ transition:filter 780ms ease-out; }
+.sf .flow .ftile-lg.lit{ transition:box-shadow 150ms ease-out, transform 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out;
+  border-color:var(--accent2) !important; color:var(--accent2) !important;
+  box-shadow:0 0 0 1.5px var(--accent2), 0 0 32px 5px rgba(45,212,191,.6), 0 16px 32px -14px rgba(40,25,90,.42) !important;
   transform:translateY(-3px) scale(1.07); }
-.sf .ftile-lg.lit svg{ transition:filter 150ms ease-out; filter:drop-shadow(0 0 8px rgba(45,212,191,.95)); }
+.sf .flow .ftile-lg.lit svg{ transition:filter 150ms ease-out; filter:drop-shadow(0 0 8px rgba(45,212,191,.95)); }
 @media (prefers-reduced-motion:reduce){ .sf .flow-orb{ display:none; } }
 @media (max-width:820px){ .sf .flow-orb{ display:none; } }
 .sf .fnode{ position:relative; z-index:2; flex:1; display:flex; flex-direction:column; align-items:center;
