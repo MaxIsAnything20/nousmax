@@ -425,6 +425,57 @@ const CSS = `
 .sf .flow .ftile-lg.lit svg{ transition:filter 150ms ease-out, color 150ms ease-out;
   color:var(--accent2) !important;
   filter:drop-shadow(0 0 6px rgba(45,212,191,.95)) drop-shadow(0 0 13px rgba(45,212,191,.55)); }
+/* ===== Try it live — interactive demo ===== */
+.sf .tryit{ display:flex; flex-direction:column; align-items:center; width:100%; max-width:1040px; margin:0 auto; }
+.sf .tryit-src{ width:100%; max-width:680px; display:flex; flex-direction:column; align-items:center; gap:14px; margin:4px 0 24px; }
+.sf .chips{ display:flex; flex-wrap:wrap; gap:9px; justify-content:center; }
+.sf .chip{ padding:8px 15px; border-radius:999px; border:1px solid rgba(28,27,35,.14); background:#fff; color:var(--cream-ink);
+  font-size:13.5px; font-weight:600; cursor:pointer; transition:border-color .18s ease, background .18s ease, color .18s ease; }
+.sf .chip:hover{ border-color:var(--primary); }
+.sf .chip.active{ background:color-mix(in srgb,var(--primary) 12%,#fff); border-color:var(--primary); color:var(--primary2); }
+.sf .tryit-ta{ width:100%; min-height:50px; max-height:96px; resize:vertical; border-radius:14px; border:1px solid rgba(28,27,35,.14);
+  background:#fff; padding:11px 14px; font:inherit; font-size:14px; line-height:1.5; color:var(--cream-ink); outline:none; }
+.sf .tryit-ta::placeholder{ color:rgba(28,27,35,.4); }
+.sf .tryit-ta:focus{ border-color:var(--primary); box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 16%,transparent); }
+.sf .spin{ animation:spin 1s linear infinite; } @keyframes spin{ to{ transform:rotate(360deg); } }
+.sf .tryit-out{ width:100%; min-height:236px; }
+.sf .tryit-empty{ text-align:center; color:var(--cream-muted); font-size:13.5px; padding:70px 0; }
+.sf .tgrid{ display:grid; grid-template-columns:1.25fr 1fr 1fr; gap:16px; align-items:stretch; }
+.sf .tcard{ background:#fff; border:1px solid rgba(28,27,35,.08); border-radius:16px; padding:18px;
+  box-shadow:0 20px 46px -26px rgba(40,25,90,.28); }
+.sf .tcard-cap{ display:inline-flex; align-items:center; gap:6px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:10px; letter-spacing:1.1px; text-transform:uppercase; color:var(--primary); margin-bottom:12px; }
+.sf .tcard-sum{ font-size:14px; line-height:1.6; color:var(--cream-ink); }
+.sf .reveal{ opacity:0; transform:translateY(10px); animation:tReveal .5s cubic-bezier(.2,.8,.25,1) forwards; }
+.sf .reveal.r2{ animation-delay:.1s; } .sf .reveal.r3{ animation-delay:.2s; }
+@keyframes tReveal{ to{ opacity:1; transform:none; } }
+.sf .t-card{ position:relative; display:flex; padding:0; cursor:pointer; perspective:1100px; background:transparent; border:none; box-shadow:none; }
+.sf .flip-inner{ position:relative; flex:1; min-height:158px; transform-style:preserve-3d; transition:transform .62s cubic-bezier(.4,.12,.2,1); }
+.sf .t-card.flip .flip-inner{ transform:rotateY(180deg); }
+.sf .flip-face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; display:flex; flex-direction:column;
+  padding:18px; box-sizing:border-box; background:#fff; border:1px solid rgba(28,27,35,.08); border-radius:16px;
+  box-shadow:0 20px 46px -26px rgba(40,25,90,.28); }
+.sf .flip-back{ transform:rotateY(180deg); }
+.sf .fq{ font-weight:750; font-size:15px; line-height:1.36; color:var(--cream-ink); }
+.sf .fa{ font-size:13.5px; line-height:1.55; color:var(--primary2); }
+.sf .fhint{ margin-top:auto; font-size:11.5px; color:var(--cream-muted); padding-top:12px; }
+.sf .qq{ font-weight:730; font-size:14.5px; line-height:1.36; color:var(--cream-ink); margin-bottom:6px; }
+.sf .qopt{ display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; text-align:left;
+  padding:9px 12px; border-radius:10px; border:1px solid rgba(28,27,35,.12); background:#fff; color:var(--cream-ink);
+  font-size:13.5px; font-weight:600; cursor:pointer; margin-top:8px; transition:border-color .15s ease, background .15s ease; }
+.sf .qopt:hover:not(:disabled){ border-color:var(--primary); }
+.sf .qopt:disabled{ cursor:default; }
+.sf .qopt.ok{ background:color-mix(in srgb,var(--ok) 15%,#fff); border-color:var(--ok); color:#0a6b4d; }
+.sf .qopt.bad{ background:color-mix(in srgb,#e5484d 12%,#fff); border-color:#e5484d; color:#b0343a; }
+.sf .qfeed{ margin-top:12px; font-size:13px; font-weight:650; color:var(--cream-ink); }
+.sf .tskel .sk{ height:11px; border-radius:6px; background:linear-gradient(90deg,rgba(28,27,35,.06),rgba(28,27,35,.12),rgba(28,27,35,.06));
+  background-size:200% 100%; animation:shimmer 1.15s linear infinite; margin-top:11px; }
+.sf .tskel .sk.cap{ width:42%; margin-top:0; } .sf .tskel .sk.short{ width:58%; }
+@keyframes shimmer{ to{ background-position:-200% 0; } }
+.sf .tryit-again{ margin-top:20px; text-align:center; }
+.sf .tryit-again button{ background:none; border:none; color:var(--primary2); font-weight:650; font-size:13.5px; cursor:pointer;
+  display:inline-flex; align-items:center; gap:6px; }
+@media (max-width:860px){ .sf .tgrid{ grid-template-columns:1fr; } .sf .flip-inner{ min-height:132px; } }
 @media (prefers-reduced-motion:reduce){ .sf .web-orb{ display:none; } }
 @media (max-width:820px){ .sf .flow.web{ height:auto; display:flex; flex-direction:column; align-items:center; gap:26px; margin-top:0; }
   .sf .flow.web .fnode{ position:static; transform:none; width:auto; max-width:240px; }
@@ -1055,6 +1106,136 @@ function FlowSteps() {
   );
 }
 
+// Try-it-live demo: pick a sample topic (fully authored) or paste your own
+// notes, hit generate, and NousMax "produces" a summary, a flip flashcard and
+// a working quiz. Mock content, but the interaction is real.
+const TRY_SAMPLES = [
+  { topic: "Photosynthesis",
+    summary: "Photosynthesis is how plants turn light energy into chemical energy. Inside the chloroplasts, chlorophyll captures sunlight to convert carbon dioxide and water into glucose and oxygen. It runs in two stages — the light-dependent reactions and the Calvin cycle.",
+    card: { q: "Where in the plant cell does photosynthesis take place?", a: "In the chloroplasts — chlorophyll in the thylakoid membranes captures the light." },
+    quiz: { q: "Which gas is released as a by-product of photosynthesis?", options: ["Carbon dioxide", "Oxygen", "Nitrogen", "Hydrogen"], correct: 1 } },
+  { topic: "Newton's Laws",
+    summary: "Newton's three laws describe how objects move. The first (inertia) says an object keeps its state of motion unless a force acts on it. The second gives F = ma. The third says every action has an equal and opposite reaction.",
+    card: { q: "State Newton's second law as an equation.", a: "F = ma — force equals mass times acceleration." },
+    quiz: { q: "Which law explains a rocket moving forward as it expels gas backward?", options: ["First law", "Second law", "Third law", "Law of gravity"], correct: 2 } },
+  { topic: "The French Revolution",
+    summary: "The French Revolution (1789–1799) swept away the monarchy and feudal privileges. Fuelled by financial crisis, Enlightenment ideas and inequality between the estates, it produced the Declaration of the Rights of Man, the Reign of Terror, and eventually the rise of Napoleon.",
+    card: { q: "What 1789 document proclaimed liberty and equality as natural rights?", a: "The Declaration of the Rights of Man and of the Citizen." },
+    quiz: { q: "Which problem helped trigger the Revolution?", options: ["A trade surplus", "State debt & heavy taxes", "A gold discovery", "Falling food prices"], correct: 1 } },
+  { topic: "The Water Cycle",
+    summary: "The water cycle circulates water through evaporation, condensation, precipitation and collection. The sun evaporates surface water into vapour, which cools and condenses into clouds, then falls as rain or snow and gathers in oceans, rivers and groundwater.",
+    card: { q: "What process turns water vapour back into liquid droplets in clouds?", a: "Condensation — vapour cools and changes into liquid, forming clouds." },
+    quiz: { q: "Which process returns water to the air from plants?", options: ["Precipitation", "Transpiration", "Collection", "Infiltration"], correct: 1 } },
+];
+function TryItLive() {
+  const [pick, setPick] = useState(0);
+  const [text, setText] = useState("");
+  const [phase, setPhase] = useState("idle");   // idle | loading | done
+  const [flip, setFlip] = useState(false);
+  const [ans, setAns] = useState(null);
+  const tRef = useRef([]);
+  useEffect(() => () => tRef.current.forEach(clearTimeout), []);
+  const custom = text.trim();
+  const s = TRY_SAMPLES[pick];
+  const out = custom
+    ? { label: "Your notes", summary: custom.length > 240 ? custom.slice(0, 240).trim() + "…" : custom, card: null, quiz: null }
+    : { label: s.topic, summary: s.summary, card: s.card, quiz: s.quiz };
+  const reset = () => { setPhase("idle"); setFlip(false); setAns(null); };
+  const run = () => {
+    tRef.current.forEach(clearTimeout); tRef.current = [];
+    setFlip(false); setAns(null); setPhase("loading");
+    tRef.current.push(setTimeout(() => setPhase("done"), 1500));
+  };
+  return (
+    <div className="pin tryit">
+      <div className="rise d1" style={{ textAlign: "center", marginBottom: 20 }}>
+        <div className="kicker" style={{ marginBottom: 14 }}>Try it live</div>
+        <h2 className="display" style={{ marginBottom: 14 }}>See it work in <span className="amber">seconds.</span></h2>
+        <p className="p-sub" style={{ fontSize: 16, lineHeight: 1.6, maxWidth: 520, margin: "0 auto" }}>Pick a topic or paste your own notes — watch NousMax turn it into a summary, a flashcard and a quiz.</p>
+      </div>
+      <div className="tryit-src rise d2">
+        <div className="chips">
+          {TRY_SAMPLES.map((x, i) => (
+            <button key={i} className={`chip ${!custom && pick === i ? "active" : ""}`} onClick={() => { setPick(i); setText(""); reset(); }}>{x.topic}</button>
+          ))}
+        </div>
+        <textarea className="tryit-ta" placeholder="…or paste your own notes here" value={text} onChange={(e) => { setText(e.target.value); reset(); }} />
+        <button className="btn btn-primary" onClick={run} disabled={phase === "loading"}>
+          {phase === "loading" ? (<><Loader2 className="spin" size={18} /> Generating…</>) : (<><Sparkles size={18} /> Generate study set</>)}
+        </button>
+      </div>
+      <div className="tryit-out">
+        {phase === "idle" && <div className="tryit-empty">Your summary, flashcard and quiz will appear here.</div>}
+        {phase === "loading" && (
+          <div className="tgrid">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="tcard tskel"><div className="sk cap" /><div className="sk" /><div className="sk" /><div className="sk short" /></div>
+            ))}
+          </div>
+        )}
+        {phase === "done" && (
+          <>
+            <div className="tgrid">
+              <div className="tcard t-sum reveal r1">
+                <div className="tcard-cap"><StickyNote size={13} /> Summary · {out.label}</div>
+                <p className="tcard-sum">{out.summary}</p>
+              </div>
+              {out.card ? (
+                <div className={`tcard t-card reveal r2 ${flip ? "flip" : ""}`} onClick={() => setFlip((f) => !f)}>
+                  <div className="flip-inner">
+                    <div className="flip-face flip-front">
+                      <div className="tcard-cap"><Layers size={13} /> Flashcard</div>
+                      <div className="fq">{out.card.q}</div>
+                      <div className="fhint">tap to reveal →</div>
+                    </div>
+                    <div className="flip-face flip-back">
+                      <div className="tcard-cap"><Check size={13} /> Answer</div>
+                      <div className="fa">{out.card.a}</div>
+                      <div className="fhint">tap to flip back</div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="tcard reveal r2">
+                  <div className="tcard-cap"><Layers size={13} /> Flashcards</div>
+                  <div className="fq">NousMax builds recall flashcards from this too.</div>
+                  <div className="fhint" style={{ marginTop: 12 }}>Pick a sample topic to see a full card — or sign up to run it on your own notes.</div>
+                </div>
+              )}
+              {out.quiz ? (
+                <div className="tcard t-quiz reveal r3">
+                  <div className="tcard-cap"><ListChecks size={13} /> Quick quiz</div>
+                  <div className="qq">{out.quiz.q}</div>
+                  {out.quiz.options.map((o, i) => {
+                    const chosen = ans !== null;
+                    const isCorrect = i === out.quiz.correct;
+                    const cls = chosen ? (isCorrect ? "qopt ok" : (i === ans ? "qopt bad" : "qopt")) : "qopt";
+                    return (
+                      <button key={i} className={cls} disabled={chosen} onClick={() => setAns(i)}>
+                        <span>{o}</span>
+                        {chosen && isCorrect && <Check size={15} />}
+                        {chosen && i === ans && !isCorrect && <X size={15} />}
+                      </button>
+                    );
+                  })}
+                  {ans !== null && <div className="qfeed">{ans === out.quiz.correct ? "Correct — nicely done." : "Not quite — the highlighted answer is right."}</div>}
+                </div>
+              ) : (
+                <div className="tcard reveal r3">
+                  <div className="tcard-cap"><ListChecks size={13} /> Quiz</div>
+                  <div className="qq">…and active-recall quizzes to test yourself.</div>
+                  <div className="fhint" style={{ marginTop: 12 }}>Sample topics include a full interactive quiz.</div>
+                </div>
+              )}
+            </div>
+            <div className="tryit-again"><button onClick={reset}><RefreshCw size={14} /> Try another</button></div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // Discrete page-transition controller: one scroll gesture (or key/swipe/dot)
 // glides to the next full page with an eased transform + staged content reveal —
 // a page hand-off, NOT a 1:1 continuous slide. Keeps the Nkae panel visuals.
@@ -1382,6 +1563,11 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
         </div>
       ),
     },
+    // PAGE 3.5 — TRY IT LIVE (cream)
+    {
+      bg: "panel-cream", eyebrow: "03 · TRY IT", wm: "try",
+      content: (<TryItLive />),
+    },
     // PAGE 4 — CTA (cream)
     {
       bg: "panel-cream", wm: "longer",
@@ -1400,7 +1586,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
 
   return (
     <FullPage theme={theme} toggleTheme={toggleTheme} onStart={onStart} onSignin={onSignin}
-      pages={pages} labels={["Home", "The flow", "Toolkit", "Get started"]} />
+      pages={pages} labels={["Home", "The flow", "Toolkit", "Try it", "Get started"]} />
   );
 }
 
