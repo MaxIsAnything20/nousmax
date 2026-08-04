@@ -402,13 +402,18 @@ const CSS = `
 .sf .flow::before{ content:""; position:absolute; left:10%; right:10%; top:34px; height:2px; z-index:0;
   background:repeating-linear-gradient(90deg,var(--border2) 0 7px, transparent 7px 15px); }
 /* a light pulse that travels along the connector line, continuously looping */
-.sf .flow::after{ content:""; position:absolute; top:31px; height:8px; width:88px; z-index:1; border-radius:8px;
-  pointer-events:none; will-change:left,opacity;
-  background:linear-gradient(90deg, transparent 0%, var(--accent2) 45%, #fff 62%, var(--accent2) 78%, transparent 100%);
-  box-shadow:0 0 14px 2px rgba(45,212,191,.65);
-  animation:flowLight 3.1s cubic-bezier(.55,0,.45,1) infinite; }
-@keyframes flowLight{ 0%{ left:7%; opacity:0; } 12%{ opacity:1; } 88%{ opacity:1; } 100%{ left:84%; opacity:0; } }
-@media (prefers-reduced-motion:reduce){ .sf .flow::after{ animation:none; opacity:0; } }
+/* a small curved light that travels the connector, reverses at each end, and
+   lights up each step icon as it passes (position + glow driven by FlowSteps JS) */
+.sf .flow-orb{ position:absolute; top:34px; left:0; width:28px; height:28px; margin:-14px 0 0 -14px; z-index:1;
+  pointer-events:none; will-change:transform;
+  background:radial-gradient(circle at 33% 50%, transparent 0 50%, rgba(45,212,191,.9) 58%, #fff 71%, rgba(45,212,191,.45) 81%, transparent 90%);
+  filter:drop-shadow(0 0 7px rgba(45,212,191,.85)); }
+.sf .ftile-lg{ transition:box-shadow .3s ease, transform .3s ease, border-color .3s ease, color .3s ease; }
+.sf .ftile-lg.lit{ border-color:var(--accent2); color:var(--accent2);
+  box-shadow:0 0 0 1.5px var(--accent2), 0 0 26px 3px rgba(45,212,191,.5), 0 14px 30px -14px rgba(40,25,90,.42);
+  transform:translateY(-3px) scale(1.05); }
+@media (prefers-reduced-motion:reduce){ .sf .flow-orb{ display:none; } }
+@media (max-width:820px){ .sf .flow-orb{ display:none; } }
 .sf .fnode{ position:relative; z-index:2; flex:1; display:flex; flex-direction:column; align-items:center;
   gap:16px; text-align:center; max-width:240px; }
 .sf .ftile-lg{ position:relative; width:70px; height:70px; border-radius:20px; display:grid; place-items:center;
@@ -950,6 +955,57 @@ const TOOLS = [
   { icon: FileUp, t: "Any source", d: "PDF, DOCX and image/screenshot uploads with drag-and-drop." },
 ];
 
+// The 3-step flow with a light that pings back and forth along the connector,
+// lighting each icon as it arrives. Motion is JS-driven so the icon glow stays
+// perfectly in sync with the light and the reversal at each end is seamless.
+function FlowSteps() {
+  const wrapRef = useRef(null);
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const orb = wrap.querySelector(".flow-orb");
+    const tiles = Array.from(wrap.querySelectorAll(".ftile-lg"));
+    if (!orb || tiles.length < 2) return;
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+    let raf = 0, start = 0;
+    const DUR = 5200, HOLD = 400;
+    const litUntil = tiles.map(() => 0);
+    const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+    const loop = (ts) => {
+      if (!start) start = ts;
+      const p = ((ts - start) % DUR) / DUR;
+      const tri = p < 0.5 ? p / 0.5 : (1 - p) / 0.5;   // 0 → 1 → 0 : ping-pong
+      const e = ease(tri);
+      const wrapRect = wrap.getBoundingClientRect();
+      const cxs = tiles.map((t) => { const r = t.getBoundingClientRect(); return r.left - wrapRect.left + r.width / 2; });
+      const x = cxs[0] + e * (cxs[cxs.length - 1] - cxs[0]);
+      orb.style.transform = `translateX(${x}px)`;
+      cxs.forEach((cx, i) => {
+        if (Math.abs(x - cx) < 30) { tiles[i].classList.add("lit"); litUntil[i] = ts + HOLD; }
+        else if (ts > litUntil[i]) tiles[i].classList.remove("lit");
+      });
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => { cancelAnimationFrame(raf); tiles.forEach((t) => t.classList.remove("lit")); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return (
+    <div className="flow" ref={wrapRef}>
+      <span className="flow-orb" aria-hidden="true" />
+      {FLOW.map((s, i) => (
+        <div key={i} className={`fnode rise d${i + 2}`}>
+          <div className="ftile-lg glassx hud"><s.icon size={28} /><span className="fbadge">{i + 1}</span></div>
+          <div>
+            <div style={{ fontWeight: 770, fontSize: 17, marginBottom: 6 }}>{s.t}</div>
+            <div className="muted" style={{ fontSize: 14, lineHeight: 1.5 }}>{s.d}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // Discrete page-transition controller: one scroll gesture (or key/swipe/dot)
 // glides to the next full page with an eased transform + staged content reveal —
 // a page hand-off, NOT a 1:1 continuous slide. Keeps the Nkae panel visuals.
@@ -1243,17 +1299,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
             <div className="kicker" style={{ marginBottom: 18 }}>How it works</div>
             <h2 className="display" style={{ marginBottom: 54 }}>Three steps,<br />one <span className="amber">flow.</span></h2>
           </div>
-          <div className="flow">
-            {FLOW.map((s, i) => (
-              <div key={i} className={`fnode rise d${i + 2}`}>
-                <div className="ftile-lg glassx hud"><s.icon size={28} /><span className="fbadge">{i + 1}</span></div>
-                <div>
-                  <div style={{ fontWeight: 770, fontSize: 17, marginBottom: 6 }}>{s.t}</div>
-                  <div className="muted" style={{ fontSize: 14, lineHeight: 1.5 }}>{s.d}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <FlowSteps />
         </div>
       ),
     },
