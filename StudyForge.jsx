@@ -404,10 +404,10 @@ const CSS = `
 /* a light pulse that travels along the connector line, continuously looping */
 /* a small curved light that travels the connector, reverses at each end, and
    lights up each step icon as it passes (position + glow driven by FlowSteps JS) */
-.sf .flow-orb{ position:absolute; top:34px; left:0; width:28px; height:28px; margin:-14px 0 0 -14px; z-index:1;
-  pointer-events:none; will-change:transform;
-  background:radial-gradient(circle at 33% 50%, transparent 0 50%, rgba(45,212,191,.9) 58%, #fff 71%, rgba(45,212,191,.45) 81%, transparent 90%);
-  filter:drop-shadow(0 0 7px rgba(45,212,191,.85)); }
+.sf .flow-orb{ position:absolute; top:34px; left:0; width:52px; height:3px; margin:-1.5px 0 0 -26px; z-index:1;
+  pointer-events:none; will-change:transform; border-radius:3px;
+  background:linear-gradient(90deg, transparent 0%, rgba(45,212,191,.45) 28%, #eafffb 50%, rgba(45,212,191,.45) 72%, transparent 100%);
+  box-shadow:0 0 10px 1px rgba(45,212,191,.7), 0 0 4px 0 rgba(255,255,255,.6); }
 .sf .ftile-lg{ transition:box-shadow .3s ease, transform .3s ease, border-color .3s ease, color .3s ease; }
 .sf .ftile-lg.lit{ border-color:var(--accent2); color:var(--accent2);
   box-shadow:0 0 0 1.5px var(--accent2), 0 0 26px 3px rgba(45,212,191,.5), 0 14px 30px -14px rgba(40,25,90,.42);
