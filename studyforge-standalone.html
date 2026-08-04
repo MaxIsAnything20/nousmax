@@ -513,6 +513,12 @@ const CSS = `
 .sf .tryit-out{ min-height:210px; }
 .sf .tryit .tcard, .sf .tryit .flip-face{ padding:15px 16px; }
 .sf .tryit .flip-inner{ min-height:146px; }
+.sf .typing-box{ display:flex; align-items:center; gap:10px; min-height:48px; font-size:15.5px; font-weight:600; color:var(--cream-ink); cursor:default; }
+.sf .typing-box .tqi{ color:var(--primary); flex:none; }
+.sf .typing-box .ttext{ white-space:pre; }
+.sf .tcaret{ display:inline-block; width:2px; height:1.15em; background:var(--primary); border-radius:1px; animation:blink 1.05s steps(1) infinite; }
+@keyframes blink{ 50%{ opacity:0; } }
+.sf .tryit .t-card{ cursor:default; }
 @media (max-width:860px){ .sf .tgrid{ grid-template-columns:1fr; } .sf .flip-inner{ min-height:132px; } }
 @media (prefers-reduced-motion:reduce){ .sf .web-orb{ display:none; } }
 @media (max-width:820px){ .sf .flow.web{ height:auto; display:flex; flex-direction:column; align-items:center; gap:26px; margin-top:0; }
@@ -1166,44 +1172,43 @@ const TRY_SAMPLES = [
     quiz: { q: "Which process returns water to the air from plants?", options: ["Precipitation", "Transpiration", "Collection", "Infiltration"], correct: 1 } },
 ];
 function TryItLive() {
-  const [pick, setPick] = useState(0);
-  const [text, setText] = useState("");
-  const [phase, setPhase] = useState("idle");   // idle | loading | done
+  const [idx, setIdx] = useState(0);          // current topic
+  const [typed, setTyped] = useState("");     // text being typed in the box
+  const [phase, setPhase] = useState("loading"); // loading | done
   const [flip, setFlip] = useState(false);
   const [ans, setAns] = useState(null);
-  const tRef = useRef([]);
-  useEffect(() => () => tRef.current.forEach(clearTimeout), []);
-  const custom = text.trim();
-  const s = TRY_SAMPLES[pick];
-  const out = custom
-    ? { label: "Your notes", summary: custom.length > 240 ? custom.slice(0, 240).trim() + "…" : custom, card: null, quiz: null }
-    : { label: s.topic, summary: s.summary, card: s.card, quiz: s.quiz };
-  const reset = () => { setPhase("idle"); setFlip(false); setAns(null); };
-  const run = () => {
-    tRef.current.forEach(clearTimeout); tRef.current = [];
-    setFlip(false); setAns(null); setPhase("loading");
-    tRef.current.push(setTimeout(() => setPhase("done"), 1500));
-  };
+  const aliveRef = useRef(true);
+  useEffect(() => {
+    aliveRef.current = true;
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    (async () => {
+      let i = 0;
+      while (aliveRef.current) {
+        const s = TRY_SAMPLES[i];
+        setIdx(i); setFlip(false); setAns(null); setPhase("loading"); setTyped("");
+        for (let c = 1; c <= s.topic.length; c++) { if (!aliveRef.current) return; setTyped(s.topic.slice(0, c)); await sleep(58); }
+        await sleep(720); if (!aliveRef.current) return;
+        setPhase("done");
+        await sleep(1500); if (!aliveRef.current) return; setFlip(true);      // auto-reveal the flashcard
+        await sleep(1500); if (!aliveRef.current) return; setAns(s.quiz.correct); // auto-answer the quiz
+        await sleep(2800); if (!aliveRef.current) return;
+        i = (i + 1) % TRY_SAMPLES.length;
+      }
+    })();
+    return () => { aliveRef.current = false; };
+  }, []);
+  const out = TRY_SAMPLES[idx];
   return (
     <div className="pin tryit">
-      <div className="rise d1" style={{ textAlign: "center", marginBottom: 20 }}>
-        <div className="kicker" style={{ marginBottom: 14 }}>Try it live</div>
-        <h2 className="display" style={{ marginBottom: 14 }}>See it work in <span className="amber">seconds.</span></h2>
-        <p className="p-sub" style={{ fontSize: 16, lineHeight: 1.6, maxWidth: 520, margin: "0 auto" }}>Pick a topic or paste your own notes — watch NousMax turn it into a summary, a flashcard and a quiz.</p>
+      <div className="rise d1" style={{ textAlign: "center", marginBottom: 16 }}>
+        <div className="kicker" style={{ marginBottom: 12 }}>Try it live</div>
+        <h2 className="display" style={{ marginBottom: 12 }}>See it work in <span className="amber">seconds.</span></h2>
+        <p className="p-sub" style={{ fontSize: 16, lineHeight: 1.6, maxWidth: 520, margin: "0 auto" }}>Watch NousMax turn any topic into a summary, a flashcard and a quiz — instantly.</p>
       </div>
       <div className="tryit-src rise d2">
-        <div className="chips">
-          {TRY_SAMPLES.map((x, i) => (
-            <button key={i} className={`chip ${!custom && pick === i ? "active" : ""}`} onClick={() => { setPick(i); setText(""); reset(); }}>{x.topic}</button>
-          ))}
-        </div>
-        <textarea className="tryit-ta" placeholder="…or paste your own notes here" value={text} onChange={(e) => { setText(e.target.value); reset(); }} />
-        <button className="btn btn-primary" onClick={run} disabled={phase === "loading"}>
-          {phase === "loading" ? (<><Loader2 className="spin" size={18} /> Generating…</>) : (<><Sparkles size={18} /> Generate study set</>)}
-        </button>
+        <div className="tryit-ta typing-box"><Search size={17} className="tqi" /><span className="ttext">{typed}</span><span className="tcaret" /></div>
       </div>
       <div className="tryit-out">
-        {phase === "idle" && <div className="tryit-empty">Your summary, flashcard and quiz will appear here.</div>}
         {phase === "loading" && (
           <div className="tgrid">
             {[0, 1, 2].map((i) => (
@@ -1212,62 +1217,40 @@ function TryItLive() {
           </div>
         )}
         {phase === "done" && (
-          <>
-            <div className="tgrid">
-              <div className="tcard t-sum reveal r1">
-                <div className="tcard-cap"><StickyNote size={13} /> Summary · {out.label}</div>
-                <p className="tcard-sum">{out.summary}</p>
-              </div>
-              {out.card ? (
-                <div className={`tcard t-card reveal r2 ${flip ? "flip" : ""}`} onClick={() => setFlip((f) => !f)}>
-                  <div className="flip-inner">
-                    <div className="flip-face flip-front">
-                      <div className="tcard-cap"><Layers size={13} /> Flashcard</div>
-                      <div className="fq">{out.card.q}</div>
-                      <div className="fhint">tap to reveal →</div>
-                    </div>
-                    <div className="flip-face flip-back">
-                      <div className="tcard-cap"><Check size={13} /> Answer</div>
-                      <div className="fa">{out.card.a}</div>
-                      <div className="fhint">tap to flip back</div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="tcard reveal r2">
-                  <div className="tcard-cap"><Layers size={13} /> Flashcards</div>
-                  <div className="fq">NousMax builds recall flashcards from this too.</div>
-                  <div className="fhint" style={{ marginTop: 12 }}>Pick a sample topic to see a full card — or sign up to run it on your own notes.</div>
-                </div>
-              )}
-              {out.quiz ? (
-                <div className="tcard t-quiz reveal r3">
-                  <div className="tcard-cap"><ListChecks size={13} /> Quick quiz</div>
-                  <div className="qq">{out.quiz.q}</div>
-                  {out.quiz.options.map((o, i) => {
-                    const chosen = ans !== null;
-                    const isCorrect = i === out.quiz.correct;
-                    const cls = chosen ? (isCorrect ? "qopt ok" : (i === ans ? "qopt bad" : "qopt")) : "qopt";
-                    return (
-                      <button key={i} className={cls} disabled={chosen} onClick={() => setAns(i)}>
-                        <span>{o}</span>
-                        {chosen && isCorrect && <Check size={15} />}
-                        {chosen && i === ans && !isCorrect && <X size={15} />}
-                      </button>
-                    );
-                  })}
-                  {ans !== null && <div className="qfeed">{ans === out.quiz.correct ? "Correct — nicely done." : "Not quite — the highlighted answer is right."}</div>}
-                </div>
-              ) : (
-                <div className="tcard reveal r3">
-                  <div className="tcard-cap"><ListChecks size={13} /> Quiz</div>
-                  <div className="qq">…and active-recall quizzes to test yourself.</div>
-                  <div className="fhint" style={{ marginTop: 12 }}>Sample topics include a full interactive quiz.</div>
-                </div>
-              )}
+          <div className="tgrid">
+            <div className="tcard t-sum reveal r1">
+              <div className="tcard-cap"><StickyNote size={13} /> Summary · {out.topic}</div>
+              <p className="tcard-sum">{out.summary}</p>
             </div>
-            <div className="tryit-again"><button onClick={reset}><RefreshCw size={14} /> Try another</button></div>
-          </>
+            <div className={`tcard t-card reveal r2 ${flip ? "flip" : ""}`}>
+              <div className="flip-inner">
+                <div className="flip-face flip-front">
+                  <div className="tcard-cap"><Layers size={13} /> Flashcard</div>
+                  <div className="fq">{out.card.q}</div>
+                  <div className="fhint">reveal answer →</div>
+                </div>
+                <div className="flip-face flip-back">
+                  <div className="tcard-cap"><Check size={13} /> Answer</div>
+                  <div className="fa">{out.card.a}</div>
+                </div>
+              </div>
+            </div>
+            <div className="tcard t-quiz reveal r3">
+              <div className="tcard-cap"><ListChecks size={13} /> Quick quiz</div>
+              <div className="qq">{out.quiz.q}</div>
+              {out.quiz.options.map((o, i) => {
+                const chosen = ans !== null;
+                const isCorrect = i === out.quiz.correct;
+                const cls = chosen ? (isCorrect ? "qopt ok" : (i === ans ? "qopt bad" : "qopt")) : "qopt";
+                return (
+                  <div key={i} className={cls}>
+                    <span>{o}</span>
+                    {chosen && isCorrect && <Check size={15} />}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         )}
       </div>
     </div>
