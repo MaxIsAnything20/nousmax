@@ -1554,11 +1554,6 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
         </div>
       ),
     },
-    // PAGE 3.5 — TRY IT LIVE (cream)
-    {
-      bg: "panel-cream", eyebrow: "03 · TRY IT", wm: "try",
-      content: (<TryItLive />),
-    },
     // PAGE 4 — CTA (cream)
     {
       bg: "panel-cream", wm: "longer",
@@ -1577,7 +1572,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
 
   return (
     <FullPage theme={theme} toggleTheme={toggleTheme} onStart={onStart} onSignin={onSignin}
-      pages={pages} labels={["Home", "The flow", "Toolkit", "Try it", "Get started"]} />
+      pages={pages} labels={["Home", "The flow", "Toolkit", "Get started"]} />
   );
 }
 
