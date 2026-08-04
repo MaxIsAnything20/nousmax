@@ -439,6 +439,8 @@ const CSS = `
 .sf .web-edge{ stroke:rgba(45,212,191,.3); stroke-width:1.2; stroke-dasharray:2 7; stroke-linecap:round; fill:none; }
 .sf .web-edge.faint{ stroke:rgba(45,212,191,.13); stroke-width:1; stroke-dasharray:2 8; }
 .sf .web-dot{ fill:rgba(45,212,191,.42); }
+/* icons float on the web — no card behind them */
+.sf .flow.web .ftile-lg{ background:transparent; border-color:transparent; box-shadow:none; backdrop-filter:none; }
 .sf .flow.web .fnode{ position:absolute; width:200px; max-width:200px; transform:translateX(-50%); z-index:2; gap:14px; }
 .sf .web-orb{ position:absolute; top:0; left:0; width:46px; height:3px; margin:-1.5px 0 0 -23px; border-radius:3px;
   z-index:1; pointer-events:none; transform-origin:center; will-change:transform;
