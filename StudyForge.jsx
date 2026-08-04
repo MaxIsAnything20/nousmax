@@ -425,70 +425,6 @@ const CSS = `
 .sf .flow .ftile-lg.lit svg{ transition:filter 150ms ease-out, color 150ms ease-out;
   color:var(--accent2) !important;
   filter:drop-shadow(0 0 6px rgba(45,212,191,.95)) drop-shadow(0 0 13px rgba(45,212,191,.55)); }
-/* ===== Try it live — interactive demo ===== */
-.sf .tryit{ display:flex; flex-direction:column; align-items:center; width:100%; max-width:1040px; margin:0 auto; }
-.sf .tryit-src{ width:100%; max-width:680px; display:flex; flex-direction:column; align-items:center; gap:14px; margin:4px 0 24px; }
-.sf .chips{ display:flex; flex-wrap:wrap; gap:9px; justify-content:center; }
-.sf .chip{ padding:8px 15px; border-radius:999px; border:1px solid rgba(28,27,35,.14); background:#fff; color:var(--cream-ink);
-  font-size:13.5px; font-weight:600; cursor:pointer; transition:border-color .18s ease, background .18s ease, color .18s ease; }
-.sf .chip:hover{ border-color:var(--primary); }
-.sf .chip.active{ background:color-mix(in srgb,var(--primary) 12%,#fff); border-color:var(--primary); color:var(--primary2); }
-.sf .tryit-ta{ width:100%; min-height:50px; max-height:96px; resize:vertical; border-radius:14px; border:1px solid rgba(28,27,35,.14);
-  background:#fff; padding:11px 14px; font:inherit; font-size:14px; line-height:1.5; color:var(--cream-ink); outline:none; }
-.sf .tryit-ta::placeholder{ color:rgba(28,27,35,.4); }
-.sf .tryit-ta:focus{ border-color:var(--primary); box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 16%,transparent); }
-.sf .spin{ animation:spin 1s linear infinite; } @keyframes spin{ to{ transform:rotate(360deg); } }
-.sf .tryit-out{ width:100%; min-height:236px; }
-.sf .tryit-empty{ text-align:center; color:var(--cream-muted); font-size:13.5px; padding:70px 0; }
-.sf .tgrid{ display:grid; grid-template-columns:1.25fr 1fr 1fr; gap:16px; align-items:stretch; }
-.sf .tcard{ background:#fff; border:1px solid rgba(28,27,35,.08); border-radius:16px; padding:18px;
-  box-shadow:0 20px 46px -26px rgba(40,25,90,.28); }
-.sf .tcard-cap{ display:inline-flex; align-items:center; gap:6px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-  font-size:10px; letter-spacing:1.1px; text-transform:uppercase; color:var(--primary); margin-bottom:12px; }
-.sf .tcard-sum{ font-size:14px; line-height:1.6; color:var(--cream-ink); }
-.sf .reveal{ opacity:0; transform:translateY(10px); animation:tReveal .5s cubic-bezier(.2,.8,.25,1) forwards; }
-.sf .reveal.r2{ animation-delay:.1s; } .sf .reveal.r3{ animation-delay:.2s; }
-@keyframes tReveal{ to{ opacity:1; transform:none; } }
-.sf .t-card{ position:relative; display:flex; padding:0; cursor:pointer; perspective:1100px; background:transparent; border:none; box-shadow:none; }
-.sf .flip-inner{ position:relative; flex:1; min-height:158px; transform-style:preserve-3d; transition:transform .62s cubic-bezier(.4,.12,.2,1); }
-.sf .t-card.flip .flip-inner{ transform:rotateY(180deg); }
-.sf .flip-face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; display:flex; flex-direction:column;
-  padding:18px; box-sizing:border-box; background:#fff; border:1px solid rgba(28,27,35,.08); border-radius:16px;
-  box-shadow:0 20px 46px -26px rgba(40,25,90,.28); }
-.sf .flip-back{ transform:rotateY(180deg); }
-.sf .fq{ font-weight:750; font-size:15px; line-height:1.36; color:var(--cream-ink); }
-.sf .fa{ font-size:13.5px; line-height:1.55; color:var(--primary2); }
-.sf .fhint{ margin-top:auto; font-size:11.5px; color:var(--cream-muted); padding-top:12px; }
-.sf .qq{ font-weight:730; font-size:14.5px; line-height:1.36; color:var(--cream-ink); margin-bottom:6px; }
-.sf .qopt{ display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; text-align:left;
-  padding:9px 12px; border-radius:10px; border:1px solid rgba(28,27,35,.12); background:#fff; color:var(--cream-ink);
-  font-size:13.5px; font-weight:600; cursor:pointer; margin-top:8px; transition:border-color .15s ease, background .15s ease; }
-.sf .qopt:hover:not(:disabled){ border-color:var(--primary); }
-.sf .qopt:disabled{ cursor:default; }
-.sf .qopt.ok{ background:color-mix(in srgb,var(--ok) 15%,#fff); border-color:var(--ok); color:#0a6b4d; }
-.sf .qopt.bad{ background:color-mix(in srgb,#e5484d 12%,#fff); border-color:#e5484d; color:#b0343a; }
-.sf .qfeed{ margin-top:12px; font-size:13px; font-weight:650; color:var(--cream-ink); }
-.sf .tskel .sk{ height:11px; border-radius:6px; background:linear-gradient(90deg,rgba(28,27,35,.06),rgba(28,27,35,.12),rgba(28,27,35,.06));
-  background-size:200% 100%; animation:shimmer 1.15s linear infinite; margin-top:11px; }
-.sf .tskel .sk.cap{ width:42%; margin-top:0; } .sf .tskel .sk.short{ width:58%; }
-@keyframes shimmer{ to{ background-position:-200% 0; } }
-.sf .tryit-again{ margin-top:20px; text-align:center; }
-.sf .tryit-again button{ background:none; border:none; color:var(--primary2); font-weight:650; font-size:13.5px; cursor:pointer;
-  display:inline-flex; align-items:center; gap:6px; }
-/* keep the whole demo inside one viewport slide */
-.sf .tryit .display{ font-size:clamp(26px,3.4vw,40px); }
-.sf .tryit > .rise.d1{ margin-bottom:12px !important; }
-.sf .tryit-src{ margin-top:2px; margin-bottom:16px; }
-.sf .tryit-ta{ min-height:44px; }
-.sf .tryit-out{ min-height:210px; }
-.sf .tryit .tcard, .sf .tryit .flip-face{ padding:15px 16px; }
-.sf .tryit .flip-inner{ min-height:146px; }
-.sf .typing-box{ display:flex; align-items:center; gap:10px; min-height:48px; font-size:15.5px; font-weight:600; color:var(--cream-ink); cursor:default; }
-.sf .typing-box .tqi{ color:var(--primary); flex:none; }
-.sf .typing-box .ttext{ white-space:pre; }
-.sf .tcaret{ display:inline-block; width:2px; height:1.15em; background:var(--primary); border-radius:1px; animation:blink 1.05s steps(1) infinite; }
-@keyframes blink{ 50%{ opacity:0; } }
-.sf .tryit .t-card{ cursor:default; }
 /* ===== Why it works — the forgetting curve ===== */
 .sf .curve{ display:flex; flex-direction:column; align-items:center; text-align:center; width:100%; max-width:900px; margin:0 auto; }
 .sf .curve .display{ font-size:clamp(25px,3.5vw,40px); line-height:1.12; margin-bottom:14px; }
@@ -762,9 +698,10 @@ const CSS = `
 @keyframes capCyc{ 0%{opacity:0;letter-spacing:.26em} 11%,23%{opacity:.6;letter-spacing:.42em} 36%,100%{opacity:0;letter-spacing:.52em} }
 
 /* abstract framed 'photos' of mixed shapes — the drifting backdrop */
-.sf .frame{ position:absolute; border:1px solid rgba(28,27,35,.14); border-radius:10px;
+.sf .frame{ position:absolute; display:grid; place-items:center; border:1px solid rgba(28,27,35,.14); border-radius:10px;
   background:linear-gradient(145deg,#edeae1 0%,#e0dacd 55%,#cfc8b7 100%);
   box-shadow:0 26px 52px -30px rgba(40,25,90,.32); opacity:0; transition:opacity 1.2s ease; }
+.sf .frame svg{ color:rgba(28,27,35,.16); }
 .sf .frame::after{ content:""; position:absolute; inset:8px; border:1px solid rgba(28,27,35,.08); border-radius:5px; }
 .sf .fr-a{ top:13%; left:3%; width:152px; height:210px; animation:driftE 13s ease-in-out infinite; }
 .sf .fr-b{ bottom:11%; left:14%; width:158px; height:158px; animation:driftF 15s ease-in-out infinite; }
@@ -1148,113 +1085,6 @@ function FlowSteps() {
   );
 }
 
-// Try-it-live demo: pick a sample topic (fully authored) or paste your own
-// notes, hit generate, and NousMax "produces" a summary, a flip flashcard and
-// a working quiz. Mock content, but the interaction is real.
-const TRY_SAMPLES = [
-  { topic: "Photosynthesis",
-    summary: "Photosynthesis is how plants turn light energy into chemical energy. Inside the chloroplasts, chlorophyll captures sunlight to convert carbon dioxide and water into glucose and oxygen. It runs in two stages — the light-dependent reactions and the Calvin cycle.",
-    card: { q: "Where in the plant cell does photosynthesis take place?", a: "In the chloroplasts — chlorophyll in the thylakoid membranes captures the light." },
-    quiz: { q: "Which gas is released as a by-product of photosynthesis?", options: ["Carbon dioxide", "Oxygen", "Nitrogen", "Hydrogen"], correct: 1 } },
-  { topic: "Newton's Laws",
-    summary: "Newton's three laws describe how objects move. The first (inertia) says an object keeps its state of motion unless a force acts on it. The second gives F = ma. The third says every action has an equal and opposite reaction.",
-    card: { q: "State Newton's second law as an equation.", a: "F = ma — force equals mass times acceleration." },
-    quiz: { q: "Which law explains a rocket moving forward as it expels gas backward?", options: ["First law", "Second law", "Third law", "Law of gravity"], correct: 2 } },
-  { topic: "The French Revolution",
-    summary: "The French Revolution (1789–1799) swept away the monarchy and feudal privileges. Fuelled by financial crisis, Enlightenment ideas and inequality between the estates, it produced the Declaration of the Rights of Man, the Reign of Terror, and eventually the rise of Napoleon.",
-    card: { q: "What 1789 document proclaimed liberty and equality as natural rights?", a: "The Declaration of the Rights of Man and of the Citizen." },
-    quiz: { q: "Which problem helped trigger the Revolution?", options: ["A trade surplus", "State debt & heavy taxes", "A gold discovery", "Falling food prices"], correct: 1 } },
-  { topic: "The Water Cycle",
-    summary: "The water cycle circulates water through evaporation, condensation, precipitation and collection. The sun evaporates surface water into vapour, which cools and condenses into clouds, then falls as rain or snow and gathers in oceans, rivers and groundwater.",
-    card: { q: "What process turns water vapour back into liquid droplets in clouds?", a: "Condensation — vapour cools and changes into liquid, forming clouds." },
-    quiz: { q: "Which process returns water to the air from plants?", options: ["Precipitation", "Transpiration", "Collection", "Infiltration"], correct: 1 } },
-];
-function TryItLive() {
-  const [idx, setIdx] = useState(0);          // current topic
-  const [typed, setTyped] = useState("");     // text being typed in the box
-  const [phase, setPhase] = useState("loading"); // loading | done
-  const [flip, setFlip] = useState(false);
-  const [ans, setAns] = useState(null);
-  const aliveRef = useRef(true);
-  useEffect(() => {
-    aliveRef.current = true;
-    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-    (async () => {
-      let i = 0;
-      while (aliveRef.current) {
-        const s = TRY_SAMPLES[i];
-        setIdx(i); setFlip(false); setAns(null); setPhase("loading"); setTyped("");
-        for (let c = 1; c <= s.topic.length; c++) { if (!aliveRef.current) return; setTyped(s.topic.slice(0, c)); await sleep(58); }
-        await sleep(720); if (!aliveRef.current) return;
-        setPhase("done");
-        await sleep(1500); if (!aliveRef.current) return; setFlip(true);      // auto-reveal the flashcard
-        await sleep(1500); if (!aliveRef.current) return; setAns(s.quiz.correct); // auto-answer the quiz
-        await sleep(2800); if (!aliveRef.current) return;
-        i = (i + 1) % TRY_SAMPLES.length;
-      }
-    })();
-    return () => { aliveRef.current = false; };
-  }, []);
-  const out = TRY_SAMPLES[idx];
-  return (
-    <div className="pin tryit">
-      <div className="rise d1" style={{ textAlign: "center", marginBottom: 16 }}>
-        <div className="kicker" style={{ marginBottom: 12 }}>Try it live</div>
-        <h2 className="display" style={{ marginBottom: 12 }}>See it work in <span className="amber">seconds.</span></h2>
-        <p className="p-sub" style={{ fontSize: 16, lineHeight: 1.6, maxWidth: 520, margin: "0 auto" }}>Watch NousMax turn any topic into a summary, a flashcard and a quiz — instantly.</p>
-      </div>
-      <div className="tryit-src rise d2">
-        <div className="tryit-ta typing-box"><Search size={17} className="tqi" /><span className="ttext">{typed}</span><span className="tcaret" /></div>
-      </div>
-      <div className="tryit-out">
-        {phase === "loading" && (
-          <div className="tgrid">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="tcard tskel"><div className="sk cap" /><div className="sk" /><div className="sk" /><div className="sk short" /></div>
-            ))}
-          </div>
-        )}
-        {phase === "done" && (
-          <div className="tgrid">
-            <div className="tcard t-sum reveal r1">
-              <div className="tcard-cap"><StickyNote size={13} /> Summary · {out.topic}</div>
-              <p className="tcard-sum">{out.summary}</p>
-            </div>
-            <div className={`tcard t-card reveal r2 ${flip ? "flip" : ""}`}>
-              <div className="flip-inner">
-                <div className="flip-face flip-front">
-                  <div className="tcard-cap"><Layers size={13} /> Flashcard</div>
-                  <div className="fq">{out.card.q}</div>
-                  <div className="fhint">reveal answer →</div>
-                </div>
-                <div className="flip-face flip-back">
-                  <div className="tcard-cap"><Check size={13} /> Answer</div>
-                  <div className="fa">{out.card.a}</div>
-                </div>
-              </div>
-            </div>
-            <div className="tcard t-quiz reveal r3">
-              <div className="tcard-cap"><ListChecks size={13} /> Quick quiz</div>
-              <div className="qq">{out.quiz.q}</div>
-              {out.quiz.options.map((o, i) => {
-                const chosen = ans !== null;
-                const isCorrect = i === out.quiz.correct;
-                const cls = chosen ? (isCorrect ? "qopt ok" : (i === ans ? "qopt bad" : "qopt")) : "qopt";
-                return (
-                  <div key={i} className={cls}>
-                    <span>{o}</span>
-                    {chosen && isCorrect && <Check size={15} />}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // "Why it works" — the forgetting curve. Without review, memory decays fast
 // (dashed line). NousMax resurfaces each idea at spaced intervals, resetting
 // retention to full and flattening the curve so it sticks (teal line + markers).
@@ -1369,10 +1199,6 @@ function FullPage({ theme, toggleTheme, onStart, onSignin, pages, labels }) {
             <LogoMark size={38} />
           </div>
           <div className="row gap12">
-            <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle theme"
-              title={theme === "dark" ? "Switch to light" : "Switch to dark"}>
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
             <button className="signin" onClick={onSignin || onStart}>Sign in</button>
           </div>
         </div>
@@ -1566,7 +1392,10 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
               <span className="hcap hcap-2">focus</span>
               <span className="hcap hcap-3">remember</span>
 
-              <div className="frame fr-a" /><div className="frame fr-b" /><div className="frame fr-c" /><div className="frame fr-d" />
+              <div className="frame fr-a"><BrainCircuit size={46} /></div>
+              <div className="frame fr-b"><Lightbulb size={40} /></div>
+              <div className="frame fr-c"><TrendingUp size={44} /></div>
+              <div className="frame fr-d"><Target size={38} /></div>
 
               <div className="fcard fc-a">
                 <div className="fc-cap"><Layers size={12} /> Flashcard</div>
@@ -2698,11 +2527,15 @@ export default function App() {
   const [libOpen, setLibOpen] = useState(false);
   const [libPick, setLibPick] = useState(null);
   const [toast, setToast] = useState(null);
-  const [intro, setIntro] = useState(true);         // overlay mounted
-  const [booting, setBooting] = useState(true);     // hero held + blurred until the reveal
-  const [navUp, setNavUp] = useState(false);        // nav chrome shown only after the whole intro
-  const [wmOn, setWmOn] = useState(false);          // page watermark takes over from the intro word
-  const [heroShift, setHeroShift] = useState(false);// hero appears centred, then slides left
+  // Play the pencil intro only on a visitor's first load; returning visitors go
+  // straight to the hero. The "seen" flag persists in localStorage.
+  let _seenIntro = false; try { _seenIntro = !!window.localStorage.getItem("nm_intro_seen"); } catch (e) {}
+  const [intro, setIntro] = useState(!_seenIntro);        // overlay mounted (first visit only)
+  const [booting, setBooting] = useState(!_seenIntro);    // hero held + blurred until the reveal
+  const [navUp, setNavUp] = useState(_seenIntro);         // nav chrome shown only after the whole intro
+  const [wmOn, setWmOn] = useState(_seenIntro);           // page watermark takes over from the intro word
+  const [heroShift, setHeroShift] = useState(_seenIntro); // hero appears centred, then slides left
+  useEffect(() => { try { window.localStorage.setItem("nm_intro_seen", "1"); } catch (e) {} }, []);
   const [auth, setAuth] = useState(null);           // null | 'signup' | 'signin'  (mock)
   const anchors = useRef({});
 
