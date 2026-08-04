@@ -475,6 +475,14 @@ const CSS = `
 .sf .tryit-again{ margin-top:20px; text-align:center; }
 .sf .tryit-again button{ background:none; border:none; color:var(--primary2); font-weight:650; font-size:13.5px; cursor:pointer;
   display:inline-flex; align-items:center; gap:6px; }
+/* keep the whole demo inside one viewport slide */
+.sf .tryit .display{ font-size:clamp(26px,3.4vw,40px); }
+.sf .tryit > .rise.d1{ margin-bottom:12px !important; }
+.sf .tryit-src{ margin-top:2px; margin-bottom:16px; }
+.sf .tryit-ta{ min-height:44px; }
+.sf .tryit-out{ min-height:210px; }
+.sf .tryit .tcard, .sf .tryit .flip-face{ padding:15px 16px; }
+.sf .tryit .flip-inner{ min-height:146px; }
 @media (max-width:860px){ .sf .tgrid{ grid-template-columns:1fr; } .sf .flip-inner{ min-height:132px; } }
 @media (prefers-reduced-motion:reduce){ .sf .web-orb{ display:none; } }
 @media (max-width:820px){ .sf .flow.web{ height:auto; display:flex; flex-direction:column; align-items:center; gap:26px; margin-top:0; }
