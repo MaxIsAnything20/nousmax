@@ -519,6 +519,34 @@ const CSS = `
 .sf .tcaret{ display:inline-block; width:2px; height:1.15em; background:var(--primary); border-radius:1px; animation:blink 1.05s steps(1) infinite; }
 @keyframes blink{ 50%{ opacity:0; } }
 .sf .tryit .t-card{ cursor:default; }
+/* ===== Why it works — the forgetting curve ===== */
+.sf .curve{ display:flex; flex-direction:column; align-items:center; text-align:center; width:100%; max-width:900px; margin:0 auto; }
+.sf .curve .display{ font-size:clamp(25px,3.5vw,40px); line-height:1.12; margin-bottom:14px; }
+.sf .curve-sub{ font-size:16px; line-height:1.6; color:var(--cream-muted); max-width:560px; margin:0 auto 22px; }
+.sf .curve-wrap{ width:100%; max-width:740px; }
+.sf .curve-svg{ width:100%; height:auto; overflow:visible; }
+.sf .curve-svg .grid{ stroke:rgba(28,27,35,.10); stroke-width:1; }
+.sf .curve-svg .axis-t{ fill:var(--cream-muted); font-size:11px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+.sf .curve-svg .c-decay{ fill:none; stroke:rgba(28,27,35,.34); stroke-width:2.4; stroke-dasharray:5 6; stroke-linecap:round; opacity:0; transition:opacity .8s ease .2s; }
+.sf .curve.play .curve-svg .c-decay{ opacity:1; }
+.sf .curve-svg .c-nm{ fill:none; stroke:var(--primary); stroke-width:3.4; stroke-linecap:round; stroke-linejoin:round;
+  filter:drop-shadow(0 3px 7px rgba(13,148,136,.3)); stroke-dasharray:1; stroke-dashoffset:1; }
+.sf .curve.play .curve-svg .c-nm{ animation:drawC 1.7s ease .2s forwards; }
+@keyframes drawC{ to{ stroke-dashoffset:0; } }
+.sf .curve-svg .c-rev{ fill:#fff; stroke:var(--primary); stroke-width:2.6; opacity:0; transform-box:fill-box; transform-origin:center; }
+.sf .curve.play .curve-svg .c-rev{ animation:popC .45s cubic-bezier(.2,1.4,.4,1) forwards; }
+@keyframes popC{ from{ opacity:0; transform:scale(.2); } to{ opacity:1; transform:scale(1); } }
+.sf .curve-svg .ann{ font-size:12px; font-weight:700; font-family:ui-sans-serif,system-ui,sans-serif; opacity:0; }
+.sf .curve.play .curve-svg .ann{ animation:annIn .6s ease 1.55s forwards; }
+.sf .curve-svg .ann-decay{ fill:rgba(28,27,35,.5); }
+.sf .curve-svg .ann-nm{ fill:var(--primary2); }
+@keyframes annIn{ to{ opacity:1; } }
+.sf .curve-legend{ display:flex; gap:24px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
+.sf .curve-legend .lg{ display:inline-flex; align-items:center; gap:8px; font-size:13px; color:var(--cream-ink); }
+.sf .curve-legend .lg::before{ content:""; width:18px; height:3px; border-radius:2px; flex:none; }
+.sf .lg-decay::before{ background:rgba(28,27,35,.34); }
+.sf .lg-nm::before{ background:var(--primary); }
+@media (max-width:860px){ .sf .curve .display{ font-size:24px; } .sf .curve-legend{ gap:14px; } }
 @media (max-width:860px){ .sf .tgrid{ grid-template-columns:1fr; } .sf .flip-inner{ min-height:132px; } }
 @media (prefers-reduced-motion:reduce){ .sf .web-orb{ display:none; } }
 @media (max-width:820px){ .sf .flow.web{ height:auto; display:flex; flex-direction:column; align-items:center; gap:26px; margin-top:0; }
@@ -1257,6 +1285,62 @@ function TryItLive() {
   );
 }
 
+// "Why it works" — the forgetting curve. Without review, memory decays fast
+// (dashed line). NousMax resurfaces each idea at spaced intervals, resetting
+// retention to full and flattening the curve so it sticks (teal line + markers).
+// The curve draws itself when the slide scrolls into view.
+function ForgettingCurve() {
+  const ref = useRef(null);
+  const [play, setPlay] = useState(false);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) setPlay(true); }), { threshold: 0.25 });
+    io.observe(el); return () => io.disconnect();
+  }, []);
+  const padL = 50, padR = 22, padT = 20, padB = 42, W = 700, H = 300;
+  const x0 = padL, x1 = W - padR, y0 = H - padB, y1 = padT, DAYS = 30;
+  const mx = (d) => x0 + (d / DAYS) * (x1 - x0);
+  const my = (r) => y0 - r * (y0 - y1);
+  const toPath = (pts) => pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+  const decay = []; for (let d = 0; d <= DAYS + 1e-9; d += 0.5) decay.push([mx(d), my(Math.exp(-d / 2.8))]);
+  const reviews = [1, 3, 7, 15]; const nm = []; let S = 2.8, seg = 0;
+  const into = (from, to, s) => { for (let d = from; d <= to + 1e-9; d += 0.5) nm.push([mx(d), my(Math.exp(-(d - from) / s))]); };
+  reviews.forEach((rev) => { into(seg, rev, S); nm.push([mx(rev), my(1)]); S *= 2.2; seg = rev; });
+  into(seg, DAYS, S);
+  const rows = [1, 0.5, 0]; const cols = [[0, "Today"], [7, "1 week"], [30, "1 month"]];
+  return (
+    <div className={`pin curve ${play ? "play" : ""}`} ref={ref}>
+      <div className="rise d1">
+        <div className="kicker" style={{ marginBottom: 14 }}>Why NousMax</div>
+        <h2 className="display">You don't have a studying problem.<br />You have a <span className="amber">remembering</span> problem.</h2>
+        <p className="curve-sub">Most of what you learn is gone within days. NousMax resurfaces each idea right before you'd forget it — so it actually sticks.</p>
+      </div>
+      <div className="curve-wrap rise d2">
+        <svg viewBox={`0 0 ${W} ${H}`} className="curve-svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          {rows.map((r, i) => (
+            <g key={i}>
+              <line className="grid" x1={x0} y1={my(r)} x2={x1} y2={my(r)} />
+              <text className="axis-t" x={x0 - 8} y={my(r) + 4} textAnchor="end">{Math.round(r * 100)}%</text>
+            </g>
+          ))}
+          {cols.map(([d, lbl], i) => (
+            <text key={i} className="axis-t" x={mx(d)} y={y0 + 22} textAnchor={i === 0 ? "start" : i === cols.length - 1 ? "end" : "middle"}>{lbl}</text>
+          ))}
+          <path className="c-decay" d={toPath(decay)} />
+          <path className="c-nm" pathLength="1" d={toPath(nm)} />
+          {reviews.map((rev, i) => <circle key={i} className="c-rev" style={{ animationDelay: `${0.95 + i * 0.18}s` }} cx={mx(rev)} cy={my(1)} r="5" />)}
+          <text className="ann ann-decay" x={x1} y={my(0.02) - 8} textAnchor="end">≈ 3% left</text>
+          <text className="ann ann-nm" x={x1} y={my(0.80) - 12} textAnchor="end">≈ 80% remembered</text>
+        </svg>
+        <div className="curve-legend">
+          <span className="lg lg-decay">Without review — forgotten in days</span>
+          <span className="lg lg-nm">With NousMax — reviewed at the right moment</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Discrete page-transition controller: one scroll gesture (or key/swipe/dot)
 // glides to the next full page with an eased transform + staged content reveal —
 // a page hand-off, NOT a 1:1 continuous slide. Keeps the Nkae panel visuals.
@@ -1541,9 +1625,14 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
         </>
       ),
     },
+    // PAGE 1.5 — WHY IT WORKS / FORGETTING CURVE (cream)
+    {
+      bg: "panel-cream", eyebrow: "01 · WHY IT WORKS", wm: "recall",
+      content: (<ForgettingCurve />),
+    },
     // PAGE 2 — THE FLOW (alt dark)
     {
-      bg: "panel-cream", eyebrow: "01 · THE FLOW", wm: "smarter",
+      bg: "panel-cream", eyebrow: "02 · THE FLOW", wm: "smarter",
       content: (
         <div className="pin center">
           <div className="rise d1">
@@ -1556,7 +1645,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
     },
     // PAGE 3 — THE TOOLKIT (dark)
     {
-      bg: "panel-cream", eyebrow: "02 · THE TOOLKIT", wm: "remember",
+      bg: "panel-cream", eyebrow: "03 · THE TOOLKIT", wm: "remember",
       content: (
         <div className="pin">
           <div style={{ ...twoCol, gap: 52 }}>
@@ -1602,7 +1691,7 @@ function Landing({ onStart, onSignin, theme, toggleTheme }) {
 
   return (
     <FullPage theme={theme} toggleTheme={toggleTheme} onStart={onStart} onSignin={onSignin}
-      pages={pages} labels={["Home", "The flow", "Toolkit", "Get started"]} />
+      pages={pages} labels={["Home", "Why", "The flow", "Toolkit", "Get started"]} />
   );
 }
 
