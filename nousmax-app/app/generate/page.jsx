@@ -157,19 +157,53 @@ function QuizPlayer({ quiz, sourceText }) {
   );
 }
 
-function FlashcardDeck({ cards }) {
+function FlashcardDeck({ cards, sourceText }) {
+  const [list, setList] = useState(cards);
   const [i, setI] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [ended, setEnded] = useState(false);
+  const [moreErr, setMoreErr] = useState("");
 
-  if (!cards.length) return <div className="quiz-end">No flashcards were generated — try regenerating.</div>;
+  if (!list.length) return <div className="quiz-end">No flashcards were generated — try regenerating.</div>;
 
-  const c = cards[i];
-  const go = (d) => { setFlipped(false); setI((x) => Math.min(cards.length - 1, Math.max(0, x + d))); };
+  const c = list[i];
+  const atLast = i === list.length - 1;
+
+  const loadMore = async () => {
+    setMoreErr(""); setLoadingMore(true);
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: "more-flashcards", text: sourceText, existing: list.map((x) => x.q) }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Couldn't load more cards.");
+      const more = Array.isArray(data.flashcards) ? data.flashcards.filter((x) => x && x.q && x.a) : [];
+      if (more.length === 0) { setEnded(true); }
+      else {
+        setList((L) => L.concat(more));
+        setFlipped(false);
+        setI((idx) => idx + 1);
+      }
+    } catch (e) {
+      setMoreErr(e.message);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const prev = () => { if (i > 0) { setFlipped(false); setI(i - 1); } };
+  const next = () => {
+    if (i < list.length - 1) { setFlipped(false); setI(i + 1); }
+    else if (!ended) loadMore();
+  };
 
   return (
     <div>
       <div className="deck-head">
-        <span className="quiz-prog">Card {i + 1} of {cards.length}</span>
+        <span className="quiz-prog">Card {i + 1} of {list.length}</span>
         <span className="quiz-prog">Tap the card to flip</span>
       </div>
       <div className={"flashcard" + (flipped ? " flipped" : "")} onClick={() => setFlipped((f) => !f)}>
@@ -184,9 +218,17 @@ function FlashcardDeck({ cards }) {
           </div>
         </div>
       </div>
+
+      {moreErr && <div className="err" style={{ marginTop: 12 }}>{moreErr}</div>}
+      {ended && atLast && (
+        <div className="quiz-end">You've reached the end of the cards from these notes — {list.length} in total. Use Prev to review them again.</div>
+      )}
+
       <div className="quiz-nav">
-        <button className="qnav" onClick={() => go(-1)} disabled={i === 0}>← Prev</button>
-        <button className="qnav primary" onClick={() => go(1)} disabled={i === cards.length - 1}>Next →</button>
+        <button className="qnav" onClick={prev} disabled={i === 0}>← Prev</button>
+        <button className="qnav primary" onClick={next} disabled={loadingMore || (atLast && ended)}>
+          {loadingMore ? "Generating…" : atLast ? "More cards →" : "Next →"}
+        </button>
       </div>
     </div>
   );
@@ -229,11 +271,12 @@ export default function Page() {
     if (!sb) { setSaveMsg("Saving isn't set up yet."); return; }
     if (!session) { signIn(); return; }
     setSaveMsg("Saving…");
+    const summaryText = Array.isArray(out.summary) ? out.summary.join(String.fromCharCode(10)) : out.summary;
     const { error } = await sb.from("study_sets").insert({
       user_id: session.user.id,
       title: out.title,
       tool: tool,
-      summary: out.summary,
+      summary: summaryText,
       flashcards: out.flashcards,
       quiz: out.quiz,
       source: srcUsed,
@@ -338,7 +381,7 @@ export default function Page() {
 
       <div className="wrap">
         <h1 className="display">Turn any notes into a <span className="amber">study set.</span></h1>
-        <p className="sub">Add a source, pick a tool, and NousMax builds it — all in one place.</p>
+        <p className="sub">Add a source, pick your tools, and NousMax builds it — all in one place.</p>
 
         <section className="sec">
           <div className="eyebrow">01 · Add your source</div>
@@ -460,6 +503,7 @@ export default function Page() {
             <section className="sec">
               <div className="eyebrow">03 · Your study set</div>
               <div className="stats">
+                {tool === "summary" && <span className="stat"><b>{Array.isArray(out.summary) ? out.summary.length : 1}</b> summary points</span>}
                 {tool === "flashcards" && <span className="stat"><b>{out.flashcards.length}</b> flashcards</span>}
                 {tool === "quiz" && <span className="stat"><b>{out.quiz.length}</b> quiz questions</span>}
                 <span className="stat"><b>~{readMin}</b> min of source</span>
@@ -477,7 +521,13 @@ export default function Page() {
                 <div className="eyebrow">Summary notes</div>
                 <div className="panel">
                   <div className="cap">{out.title}</div>
-                  <p className="sumtext">{out.summary}</p>
+                  {Array.isArray(out.summary) ? (
+                    <ul className="sumlist">
+                      {out.summary.map((b, k) => <li key={k}>{b}</li>)}
+                    </ul>
+                  ) : (
+                    <p className="sumtext">{out.summary}</p>
+                  )}
                 </div>
               </section>
             )}
@@ -486,7 +536,7 @@ export default function Page() {
               <section className="sec">
                 <div className="eyebrow">Flashcards</div>
                 <div className="panel">
-                  <FlashcardDeck key={genId} cards={out.flashcards} />
+                  <FlashcardDeck key={genId} cards={out.flashcards} sourceText={srcUsed} />
                 </div>
               </section>
             )}
