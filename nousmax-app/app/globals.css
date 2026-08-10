@@ -134,3 +134,16 @@ button.gen:disabled{ opacity:.55; cursor:default; box-shadow:none; }
 .stat b{ color:var(--cream-ink); font-weight:750; }
 .qblock{ margin-bottom:14px; }
 .qblock:last-child{ margin-bottom:0; }
+
+/* source-type tabs */
+.srctabs{ display:inline-flex; gap:4px; background:color-mix(in srgb,var(--cream-ink) 4%,#fff); border:1px solid rgba(28,27,35,.1);
+  border-radius:12px; padding:4px; margin-bottom:16px; flex-wrap:wrap; }
+.srctab{ border:none; background:transparent; color:var(--cream-muted); font-size:13.5px; font-weight:650; padding:8px 16px;
+  border-radius:9px; cursor:pointer; transition:color .15s ease; }
+.srctab:hover{ color:var(--cream-ink); }
+.srctab.on{ background:var(--grad); color:#fff; box-shadow:0 8px 18px -8px var(--glow); }
+.srchelp{ font-size:13.5px; color:var(--cream-muted); line-height:1.55; }
+.srchelp p{ margin:0 0 6px; }
+.srchelp ol{ margin:8px 0 12px; padding-left:20px; }
+.srchelp li{ margin:4px 0; }
+.srchelp b{ color:var(--cream-ink); font-weight:700; }
