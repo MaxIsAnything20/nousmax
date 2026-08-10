@@ -1,12 +1,14 @@
-import { generateStudySet } from "../../../lib/generate";
+import { generateStudySet, generateMoreQuiz } from "../../../lib/generate";
 
-// POST { text: string }  ->  { title, summary, flashcards[], quiz[] }
+// POST { text }                              -> { title, summary, flashcards[], quiz[] }
+// POST { text, mode:"more-quiz", existing[] } -> { quiz[] }  (may be empty when exhausted)
 export async function POST(req) {
   try {
-    const { text } = await req.json();
+    const body = await req.json();
+    const text = body.text;
     if (!text || text.trim().length < 20) {
       return Response.json(
-        { error: "Please paste at least a sentence or two of notes to study." },
+        { error: "Please add at least a sentence or two of notes to study." },
         { status: 400 }
       );
     }
@@ -16,6 +18,10 @@ export async function POST(req) {
         { error: "Server is missing GEMINI_API_KEY. Add it in your environment." },
         { status: 500 }
       );
+    }
+    if (body.mode === "more-quiz") {
+      const quiz = await generateMoreQuiz(text.slice(0, 12000), body.existing || [], key);
+      return Response.json({ quiz });
     }
     const set = await generateStudySet(text.slice(0, 12000), key);
     return Response.json(set);
