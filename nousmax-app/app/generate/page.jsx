@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import "../globals.css";
 import { getSupabase, supabaseConfigured } from "../../lib/supabase";
+import { logEvent } from "../../lib/activity";
 
 const SAMPLES = {
   Photosynthesis:
@@ -74,6 +75,7 @@ function QuizPlayer({ quiz, sourceText }) {
   const pick = (o) => {
     if (answered) return;
     setAnswers((arr) => { const n = arr.slice(); n[i] = o; return n; });
+    logEvent(o === q.correct ? "quiz_correct" : "quiz_wrong");
   };
 
   const loadMore = async () => {
@@ -164,11 +166,20 @@ function FlashcardDeck({ cards, sourceText }) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [ended, setEnded] = useState(false);
   const [moreErr, setMoreErr] = useState("");
+  const studied = useRef(new Set());
 
   if (!list.length) return <div className="quiz-end">No flashcards were generated — try regenerating.</div>;
 
   const c = list[i];
   const atLast = i === list.length - 1;
+
+  const flip = () => {
+    setFlipped((f) => {
+      const nf = !f;
+      if (nf && !studied.current.has(i)) { studied.current.add(i); logEvent("card"); }
+      return nf;
+    });
+  };
 
   const loadMore = async () => {
     setMoreErr(""); setLoadingMore(true);
@@ -206,7 +217,7 @@ function FlashcardDeck({ cards, sourceText }) {
         <span className="quiz-prog">Card {i + 1} of {list.length}</span>
         <span className="quiz-prog">Tap the card to flip</span>
       </div>
-      <div className={"flashcard" + (flipped ? " flipped" : "")} onClick={() => setFlipped((f) => !f)}>
+      <div className={"flashcard" + (flipped ? " flipped" : "")} onClick={flip}>
         <div className="flashcard-inner">
           <div className="flashcard-face front">
             <span className="flashcard-label">Question</span>
@@ -343,6 +354,7 @@ export default function Page() {
       if (!res.ok) throw new Error(data.error || "Something went wrong.");
       setOut(data);
       setGenId((g) => g + 1);
+      logEvent("generate");
     } catch (e) {
       setErr(e.message);
     } finally {
@@ -367,7 +379,7 @@ export default function Page() {
             <div className="authbox">
               {session ? (
                 <>
-                  <a className="authlink" href="/library">My library</a>
+                  <a className="authlink" href="/profile">My profile</a>
                   <span className="authuser">{session.user.email}</span>
                   <button className="authbtn" onClick={signOut}>Sign out</button>
                 </>
