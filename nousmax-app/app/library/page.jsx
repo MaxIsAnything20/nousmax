@@ -113,7 +113,14 @@ export default function Library() {
                       {s.summary && (
                         <div className="libsec">
                           <div className="cap">Summary</div>
-                          <p className="sumtext">{s.summary}</p>
+                          {(() => {
+                            const pts = String(s.summary).split(String.fromCharCode(10)).map((x) => x.trim()).filter(Boolean);
+                            return pts.length > 1 ? (
+                              <ul className="sumlist">{pts.map((p, k) => <li key={k}>{p}</li>)}</ul>
+                            ) : (
+                              <p className="sumtext">{s.summary}</p>
+                            );
+                          })()}
                         </div>
                       )}
                       {Array.isArray(s.flashcards) && s.flashcards.length > 0 && (
