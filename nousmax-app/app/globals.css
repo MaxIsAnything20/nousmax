@@ -56,6 +56,12 @@ button.gen:disabled{ opacity:.55; cursor:default; box-shadow:none; }
 .cap{ display:inline-flex; align-items:center; gap:6px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px;
   letter-spacing:1.2px; text-transform:uppercase; color:var(--primary); margin-bottom:12px; }
 .sumtext{ font-size:14px; line-height:1.6; color:var(--cream-ink); }
+.sumlist{ list-style:none; margin:0; padding:0; }
+.sumlist li{ position:relative; padding:8px 0 8px 22px; font-size:14px; line-height:1.6; color:var(--cream-ink);
+  border-top:1px solid rgba(28,27,35,.07); }
+.sumlist li:first-child{ border-top:none; }
+.sumlist li::before{ content:""; position:absolute; left:4px; top:15px; width:6px; height:6px; border-radius:50%;
+  background:var(--primary); }
 .fc{ border-top:1px solid rgba(28,27,35,.08); padding:11px 0; }
 .fc:first-of-type{ border-top:none; }
 .fc .q{ font-weight:750; font-size:14px; color:var(--cream-ink); }
@@ -215,6 +221,7 @@ button.gen:disabled{ opacity:.55; cursor:default; box-shadow:none; }
   transition:border-color .15s ease, transform .15s ease; }
 .startbtn:hover{ border-color:var(--primary); transform:translateY(-1px); }
 .startbtn.primary{ background:var(--grad); color:#fff; border:none; box-shadow:0 12px 30px -10px var(--glow); }
+.startbtn.primary svg path{ }
 .startbtn.ghost{ background:transparent; border-style:dashed; }
 .startdiv{ display:flex; align-items:center; gap:12px; color:var(--cream-muted); font-size:12px; text-transform:uppercase; letter-spacing:1px; margin:5px 0; }
 .startdiv::before, .startdiv::after{ content:""; flex:1; height:1px; background:rgba(28,27,35,.12); }
