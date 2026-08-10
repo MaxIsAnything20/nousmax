@@ -62,6 +62,7 @@ export default function Page() {
   const [drag, setDrag] = useState(false);
   const inputRef = useRef(null);
   const [ytUrl, setYtUrl] = useState("");
+  const [src, setSrc] = useState("pdf");
   const [tools, setTools] = useState({ summary: true, flashcards: true, quiz: true });
 
   const toggleTool = (k) => {
@@ -146,59 +147,76 @@ export default function Page() {
         <section className="sec">
           <div className="eyebrow">01 · Add your source</div>
           <div className="panel">
-            <div
-              className={"drop" + (drag ? " over" : "")}
-              onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
-              onDragLeave={() => setDrag(false)}
-              onDrop={onDrop}
-              onClick={() => inputRef.current && inputRef.current.click()}
-            >
-              <input
-                ref={inputRef}
-                type="file"
-                accept=".pdf,.txt,.md,text/plain"
-                style={{ display: "none" }}
-                onChange={(e) => handleFile(e.target.files && e.target.files[0])}
-              />
-              {reading ? (
-                <span className="drop-main">Reading {fileName}…</span>
-              ) : fileName ? (
-                <span className="drop-main">✓ {fileName} — {text.length.toLocaleString()} characters loaded</span>
-              ) : (
-                <>
-                  <span className="drop-main">Drop a PDF, .txt or .md here, or click to browse</span>
-                  <span className="drop-sub">Up to 40 pages · your file is read in your browser</span>
-                </>
-              )}
+            <div className="srctabs">
+              <button className={"srctab" + (src === "pdf" ? " on" : "")} onClick={() => setSrc("pdf")}>PDF / file</button>
+              <button className={"srctab" + (src === "youtube" ? " on" : "")} onClick={() => setSrc("youtube")}>YouTube</button>
+              <button className={"srctab" + (src === "paste" ? " on" : "")} onClick={() => setSrc("paste")}>Paste text</button>
             </div>
 
-            <details className="ythelp">
-              <summary>Studying a YouTube video?</summary>
-              <div className="ythelp-body">
+            {src === "pdf" && (
+              <div
+                className={"drop" + (drag ? " over" : "")}
+                onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+                onDragLeave={() => setDrag(false)}
+                onDrop={onDrop}
+                onClick={() => inputRef.current && inputRef.current.click()}
+              >
+                <input
+                  ref={inputRef}
+                  type="file"
+                  accept=".pdf,.txt,.md,text/plain"
+                  style={{ display: "none" }}
+                  onChange={(e) => handleFile(e.target.files && e.target.files[0])}
+                />
+                {reading ? (
+                  <span className="drop-main">Reading {fileName}…</span>
+                ) : fileName ? (
+                  <span className="drop-main">✓ {fileName} — {text.length.toLocaleString()} characters loaded</span>
+                ) : (
+                  <>
+                    <span className="drop-main">Drop a PDF, .txt or .md here, or click to browse</span>
+                    <span className="drop-sub">Up to 40 pages · your file is read in your browser</span>
+                  </>
+                )}
+              </div>
+            )}
+
+            {src === "youtube" && (
+              <div className="srchelp">
                 <p>YouTube blocks automatic transcript downloads, so grab it in two quick steps:</p>
                 <ol>
                   <li>Open the video, click <b>…more</b> under the title, then <b>Show transcript</b>.</li>
-                  <li>Select the transcript text, copy it, and paste it in the box below.</li>
+                  <li>Select the transcript text and copy it, then paste it below.</li>
                 </ol>
                 <div className="ytrow">
                   <input className="yt" placeholder="Paste a YouTube link to open it" value={ytUrl} onChange={(e) => setYtUrl(e.target.value)} />
                   <button className="ytbtn" onClick={openYoutube} disabled={!ytUrl.trim()}>Open video ↗</button>
                 </div>
+                <textarea
+                  style={{ marginTop: 12 }}
+                  placeholder="Paste the transcript here"
+                  value={text}
+                  onChange={(e) => { setText(e.target.value); if (fileName) setFileName(""); }}
+                />
               </div>
-            </details>
+            )}
 
-            <div className="samples">
-              <span className="samples-lbl">Or try a sample:</span>
-              {Object.keys(SAMPLES).map((k) => (
-                <button key={k} className="chip" onClick={() => { setFileName(""); setText(SAMPLES[k]); }}>{k}</button>
-              ))}
-            </div>
+            {src === "paste" && (
+              <>
+                <div className="samples">
+                  <span className="samples-lbl">Try a sample:</span>
+                  {Object.keys(SAMPLES).map((k) => (
+                    <button key={k} className="chip" onClick={() => { setFileName(""); setText(SAMPLES[k]); }}>{k}</button>
+                  ))}
+                </div>
+                <textarea
+                  placeholder="Paste your notes here"
+                  value={text}
+                  onChange={(e) => { setText(e.target.value); if (fileName) setFileName(""); }}
+                />
+              </>
+            )}
 
-            <textarea
-              placeholder="…or paste your notes here"
-              value={text}
-              onChange={(e) => { setText(e.target.value); if (fileName) setFileName(""); }}
-            />
             <div className="hintrow">
               <span className="count">{text.length.toLocaleString()} characters</span>
               {words > 0 && <span className="count">· {words.toLocaleString()} words · ~{readMin} min read</span>}
