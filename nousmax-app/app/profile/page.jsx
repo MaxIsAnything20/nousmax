@@ -15,6 +15,13 @@ function LogoMark({ size = 30 }) {
 const TOOL_LABEL = { summary: "Summary notes", flashcards: "Flashcards", quiz: "Quiz" };
 const DAY = 86400000;
 
+function firstName(session) {
+  if (!session) return "";
+  const m = session.user.user_metadata || {};
+  const n = m.given_name || m.full_name || m.name || session.user.email || "there";
+  return String(n).split(" ")[0];
+}
+
 function dayKey(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -228,8 +235,8 @@ export default function Profile() {
             <section className="profhead">
               <div className="profavatar">{initial}</div>
               <div className="profid">
-                <div className="profname">{session.user.email}</div>
-                <div className="profsince">Member since {fmtDate(session.user.created_at)}</div>
+                <div className="profname">Hey {firstName(session)} 👋</div>
+                <div className="profsince">{session.user.email} · Member since {fmtDate(session.user.created_at)}</div>
               </div>
             </section>
 
