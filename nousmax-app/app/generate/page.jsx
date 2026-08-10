@@ -157,6 +157,41 @@ function QuizPlayer({ quiz, sourceText }) {
   );
 }
 
+function FlashcardDeck({ cards }) {
+  const [i, setI] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+
+  if (!cards.length) return <div className="quiz-end">No flashcards were generated — try regenerating.</div>;
+
+  const c = cards[i];
+  const go = (d) => { setFlipped(false); setI((x) => Math.min(cards.length - 1, Math.max(0, x + d))); };
+
+  return (
+    <div>
+      <div className="deck-head">
+        <span className="quiz-prog">Card {i + 1} of {cards.length}</span>
+        <span className="quiz-prog">Tap the card to flip</span>
+      </div>
+      <div className={"flashcard" + (flipped ? " flipped" : "")} onClick={() => setFlipped((f) => !f)}>
+        <div className="flashcard-inner">
+          <div className="flashcard-face front">
+            <span className="flashcard-label">Question</span>
+            <div className="flashcard-text">{c.q}</div>
+          </div>
+          <div className="flashcard-face back">
+            <span className="flashcard-label">Answer</span>
+            <div className="flashcard-text">{c.a}</div>
+          </div>
+        </div>
+      </div>
+      <div className="quiz-nav">
+        <button className="qnav" onClick={() => go(-1)} disabled={i === 0}>← Prev</button>
+        <button className="qnav primary" onClick={() => go(1)} disabled={i === cards.length - 1}>Next →</button>
+      </div>
+    </div>
+  );
+}
+
 export default function Page() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -207,9 +242,21 @@ export default function Page() {
   };
 
   const openYoutube = () => {
-    const u = ytUrl.trim();
+    let u = ytUrl.trim();
     if (!u) return;
-    const full = u.indexOf("http") === 0 ? u : "https://" + u;
+    const low = u.toLowerCase();
+    let idx = -1;
+    for (const h of ["youtube.com", "youtu.be"]) {
+      const p = low.indexOf(h);
+      if (p >= 0 && (idx < 0 || p < idx)) idx = p;
+    }
+    let full = u;
+    if (idx > 0) {
+      let start = idx;
+      if (low.slice(idx - 4, idx) === "www.") start = idx - 4;
+      full = u.slice(start);
+    }
+    if (full.indexOf("http") !== 0) full = "https://" + full;
     window.open(full, "_blank", "noopener");
   };
 
@@ -439,12 +486,7 @@ export default function Page() {
               <section className="sec">
                 <div className="eyebrow">Flashcards</div>
                 <div className="panel">
-                  {out.flashcards.map((f, i) => (
-                    <div key={i} className="fc">
-                      <div className="q">{f.q}</div>
-                      <div className="a">{f.a}</div>
-                    </div>
-                  ))}
+                  <FlashcardDeck key={genId} cards={out.flashcards} />
                 </div>
               </section>
             )}
