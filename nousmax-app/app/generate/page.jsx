@@ -167,17 +167,9 @@ export default function Page() {
   const inputRef = useRef(null);
   const [ytUrl, setYtUrl] = useState("");
   const [src, setSrc] = useState("pdf");
-  const [tools, setTools] = useState({ summary: true, flashcards: true, quiz: true });
+  const [tool, setTool] = useState("summary");
   const [srcUsed, setSrcUsed] = useState("");
   const [genId, setGenId] = useState(0);
-
-  const toggleTool = (k) => {
-    setTools((t) => {
-      const n = { ...t, [k]: !t[k] };
-      if (!n.summary && !n.flashcards && !n.quiz) return t;
-      return n;
-    });
-  };
 
   const openYoutube = () => {
     const u = ytUrl.trim();
@@ -249,7 +241,7 @@ export default function Page() {
 
       <div className="wrap">
         <h1 className="display">Turn any notes into a <span className="amber">study set.</span></h1>
-        <p className="sub">Add a source, pick your tools, and NousMax builds it — all in one place.</p>
+        <p className="sub">Add a source, pick a tool, and NousMax builds it — all in one place.</p>
 
         <section className="sec">
           <div className="eyebrow">01 · Add your source</div>
@@ -332,14 +324,14 @@ export default function Page() {
         </section>
 
         <section className="sec">
-          <div className="eyebrow">02 · Choose your tools</div>
+          <div className="eyebrow">02 · Pick a tool</div>
           <div className="panel">
             <div className="tools">
               {TOOLS.map((t) => (
-                <button key={t.key} className={"tool" + (tools[t.key] ? " on" : "")} onClick={() => toggleTool(t.key)}>
+                <button key={t.key} className={"tool" + (tool === t.key ? " on" : "")} onClick={() => setTool(t.key)}>
                   <span className="tool-top">
                     <span className="ti"><ToolIcon name={t.key} /></span>
-                    <span className={"tick" + (tools[t.key] ? " on" : "")}>{tools[t.key] ? "✓" : ""}</span>
+                    <span className={"tick" + (tool === t.key ? " on" : "")}>{tool === t.key ? "✓" : ""}</span>
                   </span>
                   <span className="tool-label">{t.label}</span>
                   <span className="tool-desc">{t.desc}</span>
@@ -371,13 +363,13 @@ export default function Page() {
             <section className="sec">
               <div className="eyebrow">03 · Your study set</div>
               <div className="stats">
-                <span className="stat"><b>{out.flashcards.length}</b> flashcards</span>
-                <span className="stat"><b>{out.quiz.length}</b> quiz questions</span>
+                {tool === "flashcards" && <span className="stat"><b>{out.flashcards.length}</b> flashcards</span>}
+                {tool === "quiz" && <span className="stat"><b>{out.quiz.length}</b> quiz questions</span>}
                 <span className="stat"><b>~{readMin}</b> min of source</span>
               </div>
             </section>
 
-            {tools.summary && (
+            {tool === "summary" && (
               <section className="sec">
                 <div className="eyebrow">Summary notes</div>
                 <div className="panel">
@@ -387,7 +379,7 @@ export default function Page() {
               </section>
             )}
 
-            {tools.flashcards && (
+            {tool === "flashcards" && (
               <section className="sec">
                 <div className="eyebrow">Flashcards</div>
                 <div className="panel">
@@ -401,7 +393,7 @@ export default function Page() {
               </section>
             )}
 
-            {tools.quiz && (
+            {tool === "quiz" && (
               <section className="sec">
                 <div className="eyebrow">Quiz</div>
                 <div className="panel">
