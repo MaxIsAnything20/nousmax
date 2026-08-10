@@ -52,6 +52,110 @@ const TOOLS = [
   { key: "quiz", label: "Quiz", desc: "Multiple-choice questions to test yourself." },
 ];
 
+function QuizPlayer({ quiz, sourceText }) {
+  const [list, setList] = useState(quiz);
+  const [i, setI] = useState(0);
+  const [answers, setAnswers] = useState(() => quiz.map(() => null));
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [ended, setEnded] = useState(false);
+  const [moreErr, setMoreErr] = useState("");
+
+  if (!list.length) return <div className="quiz-end">No quiz questions were generated — try regenerating.</div>;
+
+  const q = list[i];
+  const chosen = answers[i];
+  const answered = chosen !== null && chosen !== undefined;
+  const isRight = answered && chosen === q.correct;
+  const answeredCount = answers.filter((a) => a !== null && a !== undefined).length;
+  const correctCount = answers.filter((a, k) => a !== null && a !== undefined && a === list[k].correct).length;
+  const atLast = i === list.length - 1;
+
+  const pick = (o) => {
+    if (answered) return;
+    setAnswers((arr) => { const n = arr.slice(); n[i] = o; return n; });
+  };
+
+  const loadMore = async () => {
+    setMoreErr(""); setLoadingMore(true);
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: "more-quiz", text: sourceText, existing: list.map((x) => x.q) }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Couldn't load more questions.");
+      const more = Array.isArray(data.quiz) ? data.quiz.filter((x) => x && x.q && Array.isArray(x.options) && x.options.length === 4) : [];
+      if (more.length === 0) { setEnded(true); }
+      else {
+        setList((L) => L.concat(more));
+        setAnswers((A) => A.concat(more.map(() => null)));
+        setI((idx) => idx + 1);
+      }
+    } catch (e) {
+      setMoreErr(e.message);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const next = () => { if (i < list.length - 1) setI(i + 1); else loadMore(); };
+  const back = () => { if (i > 0) setI(i - 1); };
+
+  return (
+    <div className="quiz">
+      <div className="quiz-head">
+        <span className="quiz-prog">Question {i + 1} of {list.length}</span>
+        <span className="quiz-score">Score {correctCount}/{answeredCount}</span>
+      </div>
+      <div className="quiz-q">{q.q}</div>
+      <div className="quiz-opts">
+        {q.options.map((o, j) => {
+          let cls = "qopt";
+          if (answered) {
+            if (j === q.correct) cls += " correct";
+            else if (j === chosen) cls += " wrong";
+            else cls += " dim";
+          }
+          const mark = answered && j === q.correct ? "✓" : answered && j === chosen ? "✗" : String.fromCharCode(65 + j);
+          return (
+            <button key={j} className={cls} onClick={() => pick(j)} disabled={answered}>
+              <span className="qopt-mark">{mark}</span>
+              <span>{o}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {answered && (
+        <div className={"quiz-explain" + (isRight ? " ok" : " no")}>
+          <b>{isRight ? "Correct! " : "Not quite. "}</b>
+          {q.explanation || (isRight ? "Nicely done." : "The highlighted option is the right answer.")}
+        </div>
+      )}
+
+      {moreErr && <div className="err" style={{ marginTop: 12 }}>{moreErr}</div>}
+
+      {ended && atLast && (
+        <div className="quiz-end">
+          You've reached the end of the questions from these notes. You answered {correctCount} of {answeredCount} correctly.
+        </div>
+      )}
+
+      <div className="quiz-nav">
+        <button className="qnav" onClick={back} disabled={i === 0}>← Back</button>
+        {atLast && ended ? (
+          <button className="qnav primary" onClick={() => setI(0)}>Review from start</button>
+        ) : (
+          <button className="qnav primary" onClick={next} disabled={!answered || loadingMore}>
+            {loadingMore ? "Generating…" : atLast ? "More questions →" : "Next →"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Page() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -64,6 +168,8 @@ export default function Page() {
   const [ytUrl, setYtUrl] = useState("");
   const [src, setSrc] = useState("pdf");
   const [tools, setTools] = useState({ summary: true, flashcards: true, quiz: true });
+  const [srcUsed, setSrcUsed] = useState("");
+  const [genId, setGenId] = useState(0);
 
   const toggleTool = (k) => {
     setTools((t) => {
@@ -109,7 +215,7 @@ export default function Page() {
   };
 
   const run = async () => {
-    setErr(""); setOut(null); setLoading(true);
+    setErr(""); setOut(null); setLoading(true); setSrcUsed(text);
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -119,6 +225,7 @@ export default function Page() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong.");
       setOut(data);
+      setGenId((g) => g + 1);
     } catch (e) {
       setErr(e.message);
     } finally {
@@ -298,14 +405,7 @@ export default function Page() {
               <section className="sec">
                 <div className="eyebrow">Quiz</div>
                 <div className="panel">
-                  {out.quiz.map((q, i) => (
-                    <div key={i} className="qblock">
-                      <div className="qq">{q.q}</div>
-                      {q.options.map((o, j) => (
-                        <div key={j} className={"opt" + (j === q.correct ? " ok" : "")}>{o}</div>
-                      ))}
-                    </div>
-                  ))}
+                  <QuizPlayer key={genId} quiz={out.quiz} sourceText={srcUsed} />
                 </div>
               </section>
             )}
