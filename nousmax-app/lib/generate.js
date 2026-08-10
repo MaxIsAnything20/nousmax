@@ -17,19 +17,22 @@ const QUIZ_ITEM = {
   required: ["q", "options", "correct", "explanation"],
 };
 
+const FLASHCARD_ITEM = {
+  type: "object",
+  properties: { q: { type: "string" }, a: { type: "string" } },
+  required: ["q", "a"],
+};
+
 const SCHEMA = {
   type: "object",
   properties: {
     title: { type: "string", description: "A short topic title (2-5 words)." },
-    summary: { type: "string", description: "2-4 clear sentences capturing the key ideas." },
-    flashcards: {
+    summary: {
       type: "array",
-      items: {
-        type: "object",
-        properties: { q: { type: "string" }, a: { type: "string" } },
-        required: ["q", "a"],
-      },
+      items: { type: "string" },
+      description: "Comprehensive study notes as bullet points. Cover essentially everything in the source: every key idea, definition, fact, name, date, formula, cause/effect and relationship. Each item is one clear, self-contained bullet. Use as many bullets as the material needs — do not artificially shorten.",
     },
+    flashcards: { type: "array", items: FLASHCARD_ITEM },
     quiz: { type: "array", items: QUIZ_ITEM },
   },
   required: ["title", "summary", "flashcards", "quiz"],
@@ -41,12 +44,18 @@ const QUIZ_SCHEMA = {
   required: ["quiz"],
 };
 
+const FLASHCARDS_SCHEMA = {
+  type: "object",
+  properties: { flashcards: { type: "array", items: FLASHCARD_ITEM } },
+  required: ["flashcards"],
+};
+
 function buildPrompt(src) {
   return [
     "You are NousMax, a study assistant. From the SOURCE below, build a study set:",
     "- title: a short topic title.",
-    "- summary: 2-4 clear, accurate sentences capturing the key ideas.",
-    "- flashcards: 4-6 active-recall question/answer pairs. Questions test understanding, not trivia.",
+    "- summary: comprehensive study notes as an array of bullet points. Cover essentially EVERYTHING in the source — every key idea, definition, fact, name, date, formula, cause/effect and relationship — so a student could revise from the bullets alone. Each bullet is one clear, self-contained point. Use as many bullets as the material needs (there is no upper limit); do not artificially shorten or drop details.",
+    "- flashcards: 6 active-recall question/answer pairs. Questions test understanding, not trivia.",
     "- quiz: 3-4 multiple-choice questions. Each has EXACTLY 4 options, correct is the 0-based index of the right one, and explanation is one sentence on why that option is right. Make the wrong options plausible.",
     "Stay strictly faithful to the SOURCE. If the source is too short or unclear, do your best with what is given.",
     "",
@@ -55,6 +64,24 @@ function buildPrompt(src) {
     src,
     '"""',
   ].join(NL);
+}
+
+function buildMoreFlashcardsPrompt(src, existing) {
+  const lines = [
+    "You are NousMax, a study assistant. Write NEW active-recall flashcards (question/answer pairs) based ONLY on the SOURCE below.",
+    "- Questions test understanding, not trivia. Keep answers concise and accurate.",
+    "- Produce up to 6 cards.",
+    "Do NOT repeat or closely paraphrase any of these already-made questions:",
+  ];
+  const ex = Array.isArray(existing) ? existing.slice(0, 80) : [];
+  for (const qq of ex) lines.push("- " + String(qq));
+  lines.push("If the SOURCE genuinely has no more distinct, fair cards left, return an empty flashcards array.");
+  lines.push("");
+  lines.push("SOURCE:");
+  lines.push('"""');
+  lines.push(src);
+  lines.push('"""');
+  return lines.join(NL);
 }
 
 function buildMoreQuizPrompt(src, existing) {
@@ -134,6 +161,27 @@ function normalizeQuiz(arr) {
     .filter((q) => q.q && q.options.length === 4);
 }
 
+function normalizeCards(arr) {
+  return (Array.isArray(arr) ? arr : [])
+    .map((c) => ({ q: typeof c.q === "string" ? c.q : "", a: typeof c.a === "string" ? c.a : "" }))
+    .filter((c) => c.q && c.a);
+}
+
+function stripBullet(line) {
+  let t = line.trim();
+  const marks = ["-", "*", "+", "•", "·"];
+  while (t.length && marks.indexOf(t.charAt(0)) >= 0) t = t.slice(1).trim();
+  return t;
+}
+
+function normalizeSummary(s) {
+  if (Array.isArray(s)) return s.map((x) => String(x).trim()).filter(Boolean);
+  if (typeof s === "string" && s.trim()) {
+    return s.split(NL).map(stripBullet).filter(Boolean);
+  }
+  return [];
+}
+
 export async function generateStudySet(sourceText, apiKey) {
   const res = await runModels(buildPrompt(sourceText), SCHEMA, apiKey);
   const data = await res.json();
@@ -145,7 +193,8 @@ export async function generateStudySet(sourceText, apiKey) {
   } catch (e) {
     throw new Error("Could not parse the model's response. Please try again.");
   }
-  parsed.flashcards = Array.isArray(parsed.flashcards) ? parsed.flashcards : [];
+  parsed.summary = normalizeSummary(parsed.summary);
+  parsed.flashcards = normalizeCards(parsed.flashcards);
   parsed.quiz = normalizeQuiz(parsed.quiz);
   return parsed;
 }
@@ -162,4 +211,18 @@ export async function generateMoreQuiz(sourceText, existing, apiKey) {
     return [];
   }
   return normalizeQuiz(parsed.quiz);
+}
+
+export async function generateMoreFlashcards(sourceText, existing, apiKey) {
+  const res = await runModels(buildMoreFlashcardsPrompt(sourceText, existing), FLASHCARDS_SCHEMA, apiKey);
+  const data = await res.json();
+  const text = readText(data);
+  if (!text) return [];
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    return [];
+  }
+  return normalizeCards(parsed.flashcards);
 }
