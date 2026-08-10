@@ -1,6 +1,7 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "../globals.css";
+import { getSupabase, supabaseConfigured } from "../../lib/supabase";
 
 const SAMPLES = {
   Photosynthesis:
@@ -170,6 +171,40 @@ export default function Page() {
   const [tool, setTool] = useState("summary");
   const [srcUsed, setSrcUsed] = useState("");
   const [genId, setGenId] = useState(0);
+  const [session, setSession] = useState(null);
+  const [saveMsg, setSaveMsg] = useState("");
+
+  useEffect(() => {
+    const sb = getSupabase();
+    if (!sb) return;
+    sb.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => setSession(s));
+    return () => { if (sub && sub.subscription) sub.subscription.unsubscribe(); };
+  }, []);
+
+  const signIn = async () => {
+    const sb = getSupabase();
+    if (!sb) { setSaveMsg("Sign-in isn't set up yet."); return; }
+    await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin + "/generate" } });
+  };
+  const signOut = async () => { const sb = getSupabase(); if (sb) await sb.auth.signOut(); };
+
+  const saveSet = async () => {
+    const sb = getSupabase();
+    if (!sb) { setSaveMsg("Saving isn't set up yet."); return; }
+    if (!session) { signIn(); return; }
+    setSaveMsg("Saving…");
+    const { error } = await sb.from("study_sets").insert({
+      user_id: session.user.id,
+      title: out.title,
+      tool: tool,
+      summary: out.summary,
+      flashcards: out.flashcards,
+      quiz: out.quiz,
+      source: srcUsed,
+    });
+    setSaveMsg(error ? ("Couldn't save: " + error.message) : "Saved to your library ✓");
+  };
 
   const openYoutube = () => {
     const u = ytUrl.trim();
@@ -231,11 +266,26 @@ export default function Page() {
   return (
     <>
       <header className="topbar">
-        <div className="brand">
-          <a href="/" style={{ display: "inline-flex", alignItems: "center", gap: 10, textDecoration: "none", color: "inherit" }}>
-            <LogoMark size={30} />
-            <span>Nous<span className="grad">Max</span></span>
-          </a>
+        <div className="topbar-row">
+          <div className="brand">
+            <a href="/" style={{ display: "inline-flex", alignItems: "center", gap: 10, textDecoration: "none", color: "inherit" }}>
+              <LogoMark size={30} />
+              <span>Nous<span className="grad">Max</span></span>
+            </a>
+          </div>
+          {supabaseConfigured && (
+            <div className="authbox">
+              {session ? (
+                <>
+                  <a className="authlink" href="/library">My library</a>
+                  <span className="authuser">{session.user.email}</span>
+                  <button className="authbtn" onClick={signOut}>Sign out</button>
+                </>
+              ) : (
+                <button className="authbtn primary" onClick={signIn}>Sign in with Google</button>
+              )}
+            </div>
+          )}
         </div>
       </header>
 
@@ -367,6 +417,12 @@ export default function Page() {
                 {tool === "quiz" && <span className="stat"><b>{out.quiz.length}</b> quiz questions</span>}
                 <span className="stat"><b>~{readMin}</b> min of source</span>
               </div>
+              {supabaseConfigured && (
+                <div className="saverow">
+                  <button className="savebtn" onClick={saveSet}>{session ? "Save to library" : "Sign in to save"}</button>
+                  {saveMsg && <span className="savemsg">{saveMsg}</span>}
+                </div>
+              )}
             </section>
 
             {tool === "summary" && (
