@@ -21,6 +21,15 @@ function LogoMark({ size = 30 }) {
   );
 }
 
+function ToolIcon({ name }) {
+  const p = { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round" };
+  if (name === "summary")
+    return (<svg {...p}><path d="M7 3h7l5 5v13H7z" /><path d="M14 3v5h5" /><path d="M10 12h6" /><path d="M10 16h6" /></svg>);
+  if (name === "flashcards")
+    return (<svg {...p}><rect x="3" y="7" width="13" height="11" rx="2" /><path d="M8 4h11a2 2 0 0 1 2 2v9" /></svg>);
+  return (<svg {...p}><path d="M4 6h9" /><path d="M4 12h9" /><path d="M4 18h9" /><path d="M17 6l1.6 1.6L22 4" /></svg>);
+}
+
 async function extractPdf(file) {
   const pdfjs = await import(/* webpackIgnore: true */ PDFJS_URL);
   pdfjs.GlobalWorkerOptions.workerSrc = PDFWORKER_URL;
@@ -37,6 +46,12 @@ async function extractPdf(file) {
   return out.trim();
 }
 
+const TOOLS = [
+  { key: "summary", label: "Summary notes", desc: "Clean, structured notes you'd actually study from." },
+  { key: "flashcards", label: "Flashcards", desc: "Flip-card deck for fast active recall." },
+  { key: "quiz", label: "Quiz", desc: "Multiple-choice questions to test yourself." },
+];
+
 export default function Page() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,6 +62,15 @@ export default function Page() {
   const [drag, setDrag] = useState(false);
   const inputRef = useRef(null);
   const [ytUrl, setYtUrl] = useState("");
+  const [tools, setTools] = useState({ summary: true, flashcards: true, quiz: true });
+
+  const toggleTool = (k) => {
+    setTools((t) => {
+      const n = { ...t, [k]: !t[k] };
+      if (!n.summary && !n.flashcards && !n.quiz) return t;
+      return n;
+    });
+  };
 
   const openYoutube = () => {
     const u = ytUrl.trim();
@@ -101,6 +125,9 @@ export default function Page() {
     }
   };
 
+  const words = text.trim() ? text.trim().split(" ").filter(Boolean).length : 0;
+  const readMin = Math.max(1, Math.round(words / 180));
+
   return (
     <>
       <header className="topbar">
@@ -114,108 +141,157 @@ export default function Page() {
 
       <div className="wrap">
         <h1 className="display">Turn any notes into a <span className="amber">study set.</span></h1>
-        <p className="sub">Upload a PDF or notes file, or paste your text — NousMax builds a summary, flashcards and a quiz.</p>
+        <p className="sub">Add a source, pick your tools, and NousMax builds it — all in one place.</p>
 
-        <div
-          className={"drop" + (drag ? " over" : "")}
-          onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
-          onDragLeave={() => setDrag(false)}
-          onDrop={onDrop}
-          onClick={() => inputRef.current && inputRef.current.click()}
-        >
-          <input
-            ref={inputRef}
-            type="file"
-            accept=".pdf,.txt,.md,text/plain"
-            style={{ display: "none" }}
-            onChange={(e) => handleFile(e.target.files && e.target.files[0])}
-          />
-          {reading ? (
-            <span className="drop-main">Reading {fileName}…</span>
-          ) : fileName ? (
-            <span className="drop-main">✓ {fileName} — {text.length.toLocaleString()} characters loaded</span>
-          ) : (
-            <>
-              <span className="drop-main">Drop a PDF, .txt or .md here, or click to browse</span>
-              <span className="drop-sub">Up to 40 pages · your file is read in your browser</span>
-            </>
-          )}
-        </div>
+        <section className="sec">
+          <div className="eyebrow">01 · Add your source</div>
+          <div className="panel">
+            <div
+              className={"drop" + (drag ? " over" : "")}
+              onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+              onDragLeave={() => setDrag(false)}
+              onDrop={onDrop}
+              onClick={() => inputRef.current && inputRef.current.click()}
+            >
+              <input
+                ref={inputRef}
+                type="file"
+                accept=".pdf,.txt,.md,text/plain"
+                style={{ display: "none" }}
+                onChange={(e) => handleFile(e.target.files && e.target.files[0])}
+              />
+              {reading ? (
+                <span className="drop-main">Reading {fileName}…</span>
+              ) : fileName ? (
+                <span className="drop-main">✓ {fileName} — {text.length.toLocaleString()} characters loaded</span>
+              ) : (
+                <>
+                  <span className="drop-main">Drop a PDF, .txt or .md here, or click to browse</span>
+                  <span className="drop-sub">Up to 40 pages · your file is read in your browser</span>
+                </>
+              )}
+            </div>
 
-        <details className="ythelp">
-          <summary>Studying a YouTube video?</summary>
-          <div className="ythelp-body">
-            <p>YouTube blocks automatic transcript downloads, so grab it in two quick steps:</p>
-            <ol>
-              <li>Open the video, click <b>…more</b> under the title, then <b>Show transcript</b>.</li>
-              <li>Select the transcript text, copy it, and paste it in the box below.</li>
-            </ol>
-            <div className="ytrow">
-              <input className="yt" placeholder="Paste a YouTube link to open it" value={ytUrl} onChange={(e) => setYtUrl(e.target.value)} />
-              <button className="ytbtn" onClick={openYoutube} disabled={!ytUrl.trim()}>Open video ↗</button>
+            <details className="ythelp">
+              <summary>Studying a YouTube video?</summary>
+              <div className="ythelp-body">
+                <p>YouTube blocks automatic transcript downloads, so grab it in two quick steps:</p>
+                <ol>
+                  <li>Open the video, click <b>…more</b> under the title, then <b>Show transcript</b>.</li>
+                  <li>Select the transcript text, copy it, and paste it in the box below.</li>
+                </ol>
+                <div className="ytrow">
+                  <input className="yt" placeholder="Paste a YouTube link to open it" value={ytUrl} onChange={(e) => setYtUrl(e.target.value)} />
+                  <button className="ytbtn" onClick={openYoutube} disabled={!ytUrl.trim()}>Open video ↗</button>
+                </div>
+              </div>
+            </details>
+
+            <div className="samples">
+              <span className="samples-lbl">Or try a sample:</span>
+              {Object.keys(SAMPLES).map((k) => (
+                <button key={k} className="chip" onClick={() => { setFileName(""); setText(SAMPLES[k]); }}>{k}</button>
+              ))}
+            </div>
+
+            <textarea
+              placeholder="…or paste your notes here"
+              value={text}
+              onChange={(e) => { setText(e.target.value); if (fileName) setFileName(""); }}
+            />
+            <div className="hintrow">
+              <span className="count">{text.length.toLocaleString()} characters</span>
+              {words > 0 && <span className="count">· {words.toLocaleString()} words · ~{readMin} min read</span>}
             </div>
           </div>
-        </details>
+        </section>
 
-        <div className="samples">
-          <span className="samples-lbl">Or try a sample:</span>
-          {Object.keys(SAMPLES).map((k) => (
-            <button key={k} className="chip" onClick={() => { setFileName(""); setText(SAMPLES[k]); }}>{k}</button>
-          ))}
-        </div>
-
-        <textarea
-          placeholder="…or paste a paragraph of notes here"
-          value={text}
-          onChange={(e) => { setText(e.target.value); if (fileName) setFileName(""); }}
-        />
-        <div className="row">
-          <button className="gen" onClick={run} disabled={loading || reading || text.trim().length < 20}>
-            {loading ? "Generating…" : "Generate study set"}
-          </button>
-          <span className="count">{text.length.toLocaleString()} characters</span>
-        </div>
-
-        {err && <div className="err">{err}</div>}
+        <section className="sec">
+          <div className="eyebrow">02 · Choose your tools</div>
+          <div className="panel">
+            <div className="tools">
+              {TOOLS.map((t) => (
+                <button key={t.key} className={"tool" + (tools[t.key] ? " on" : "")} onClick={() => toggleTool(t.key)}>
+                  <span className="tool-top">
+                    <span className="ti"><ToolIcon name={t.key} /></span>
+                    <span className={"tick" + (tools[t.key] ? " on" : "")}>{tools[t.key] ? "✓" : ""}</span>
+                  </span>
+                  <span className="tool-label">{t.label}</span>
+                  <span className="tool-desc">{t.desc}</span>
+                </button>
+              ))}
+            </div>
+            <div className="row">
+              <button className="gen" onClick={run} disabled={loading || reading || text.trim().length < 20}>
+                {loading ? "Generating…" : "Generate study set"}
+              </button>
+              <span className="count">{text.trim().length < 20 ? "Add a source above to begin" : "Ready to generate"}</span>
+            </div>
+            {err && <div className="err">{err}</div>}
+          </div>
+        </section>
 
         {loading && (
-          <div className="grid">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="card">
-                <div className="skel" style={{ width: "40%" }} />
-                <div className="skel" /><div className="skel" /><div className="skel" style={{ width: "60%" }} />
-              </div>
-            ))}
-          </div>
+          <section className="sec">
+            <div className="eyebrow">Working…</div>
+            <div className="panel">
+              <div className="skel" style={{ width: "40%" }} />
+              <div className="skel" /><div className="skel" /><div className="skel" style={{ width: "70%" }} />
+            </div>
+          </section>
         )}
 
         {out && (
-          <div className="grid">
-            <div className="card">
-              <div className="cap">Summary · {out.title}</div>
-              <p className="sumtext">{out.summary}</p>
-            </div>
-            <div className="card">
-              <div className="cap">Flashcards</div>
-              {out.flashcards.map((f, i) => (
-                <div key={i} className="fc">
-                  <div className="q">{f.q}</div>
-                  <div className="a">{f.a}</div>
+          <>
+            <section className="sec">
+              <div className="eyebrow">03 · Your study set</div>
+              <div className="stats">
+                <span className="stat"><b>{out.flashcards.length}</b> flashcards</span>
+                <span className="stat"><b>{out.quiz.length}</b> quiz questions</span>
+                <span className="stat"><b>~{readMin}</b> min of source</span>
+              </div>
+            </section>
+
+            {tools.summary && (
+              <section className="sec">
+                <div className="eyebrow">Summary notes</div>
+                <div className="panel">
+                  <div className="cap">{out.title}</div>
+                  <p className="sumtext">{out.summary}</p>
                 </div>
-              ))}
-            </div>
-            <div className="card">
-              <div className="cap">Quiz</div>
-              {out.quiz.map((q, i) => (
-                <div key={i}>
-                  <div className="qq">{q.q}</div>
-                  {q.options.map((o, j) => (
-                    <div key={j} className={"opt" + (j === q.correct ? " ok" : "")}>{o}</div>
+              </section>
+            )}
+
+            {tools.flashcards && (
+              <section className="sec">
+                <div className="eyebrow">Flashcards</div>
+                <div className="panel">
+                  {out.flashcards.map((f, i) => (
+                    <div key={i} className="fc">
+                      <div className="q">{f.q}</div>
+                      <div className="a">{f.a}</div>
+                    </div>
                   ))}
                 </div>
-              ))}
-            </div>
-          </div>
+              </section>
+            )}
+
+            {tools.quiz && (
+              <section className="sec">
+                <div className="eyebrow">Quiz</div>
+                <div className="panel">
+                  {out.quiz.map((q, i) => (
+                    <div key={i} className="qblock">
+                      <div className="qq">{q.q}</div>
+                      {q.options.map((o, j) => (
+                        <div key={j} className={"opt" + (j === q.correct ? " ok" : "")}>{o}</div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
         )}
 
         <div className="foot">NousMax · generated with Google Gemini · your key stays on the server.</div>
