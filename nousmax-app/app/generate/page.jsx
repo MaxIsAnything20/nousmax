@@ -54,6 +54,13 @@ const TOOLS = [
   { key: "quiz", label: "Quiz", desc: "Multiple-choice questions to test yourself." },
 ];
 
+function firstName(session) {
+  if (!session) return "";
+  const m = session.user.user_metadata || {};
+  const n = m.given_name || m.full_name || m.name || session.user.email || "there";
+  return String(n).split(" ")[0];
+}
+
 function QuizPlayer({ quiz, sourceText }) {
   const [list, setList] = useState(quiz);
   const [i, setI] = useState(0);
@@ -392,6 +399,7 @@ export default function Page() {
       </header>
 
       <div className="wrap">
+        {session && <div style={{ fontSize: 15, fontWeight: 700, color: "var(--primary)", margin: "0 0 6px" }}>Hey {firstName(session)} 👋</div>}
         <h1 className="display">Turn any notes into a <span className="amber">study set.</span></h1>
         <p className="sub">Add a source, pick your tools, and NousMax builds it — all in one place.</p>
 
