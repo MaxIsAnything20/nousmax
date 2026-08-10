@@ -219,3 +219,17 @@ button.gen:disabled{ opacity:.55; cursor:default; box-shadow:none; }
 .startdiv{ display:flex; align-items:center; gap:12px; color:var(--cream-muted); font-size:12px; text-transform:uppercase; letter-spacing:1px; margin:5px 0; }
 .startdiv::before, .startdiv::after{ content:""; flex:1; height:1px; background:rgba(28,27,35,.12); }
 .startfine{ font-size:12.5px; color:var(--cream-muted); margin:20px 0 0; }
+
+/* flip-card flashcards */
+.deck-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.flashcard{ perspective:1400px; cursor:pointer; user-select:none; -webkit-user-select:none; }
+.flashcard-inner{ position:relative; width:100%; min-height:210px; transition:transform .55s cubic-bezier(.4,.2,.2,1); transform-style:preserve-3d; }
+.flashcard.flipped .flashcard-inner{ transform:rotateY(180deg); }
+.flashcard-face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:26px 24px; overflow:auto;
+  border-radius:16px; border:1px solid rgba(28,27,35,.1); box-shadow:0 16px 38px -26px rgba(40,25,90,.34); }
+.flashcard-face.front{ background:#fff; }
+.flashcard-face.back{ background:color-mix(in srgb,var(--primary) 9%,#fff); transform:rotateY(180deg); }
+.flashcard-label{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px; letter-spacing:1.4px;
+  text-transform:uppercase; color:var(--primary); margin-bottom:12px; }
+.flashcard-text{ font-size:17px; font-weight:650; line-height:1.45; color:var(--cream-ink); }
