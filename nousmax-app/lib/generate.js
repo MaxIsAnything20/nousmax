@@ -3,7 +3,7 @@
 // We try several free models in order, so hitting one model's daily quota
 // automatically falls through to the next instead of failing.
 
-const MODELS = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-2.5-flash", "gemini-flash-latest"];
+const MODELS = ["gemini-2.5-flash-lite", "gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-flash-latest", "gemini-flash-lite-latest"];
 const NL = String.fromCharCode(10);
 
 const SCHEMA = {
@@ -73,19 +73,20 @@ export async function generateStudySet(sourceText, apiKey) {
   let res = null;
   let lastStatus = 0;
   let lastDetail = "";
+  let sawQuota = false;
 
   for (const model of MODELS) {
-    res = await callModel(model, sourceText, apiKey);
-    if (res.ok) break;
-    lastStatus = res.status;
-    lastDetail = await res.text();
-    // Fall through to the next model only for rate-limit / quota errors.
-    if (res.status !== 429) break;
-    res = null;
+    const r = await callModel(model, sourceText, apiKey);
+    if (r.ok) { res = r; break; }
+    lastStatus = r.status;
+    lastDetail = await r.text();
+    if (r.status === 429) sawQuota = true;
+    // Skip to the next model if this one is rate-limited (429) or unavailable (404).
+    if (r.status !== 429 && r.status !== 404) break;
   }
 
-  if (!res || !res.ok) {
-    if (lastStatus === 429) {
+  if (!res) {
+    if (sawQuota) {
       throw new Error(
         "You've hit Google's free Gemini usage limit for now. The free quota resets daily (around midnight US Pacific time) — please try again later. For higher limits you can enable billing on your Google AI Studio key."
       );
