@@ -46,6 +46,14 @@ export default function Page() {
   const [reading, setReading] = useState(false);
   const [drag, setDrag] = useState(false);
   const inputRef = useRef(null);
+  const [ytUrl, setYtUrl] = useState("");
+
+  const openYoutube = () => {
+    const u = ytUrl.trim();
+    if (!u) return;
+    const full = u.indexOf("http") === 0 ? u : "https://" + u;
+    window.open(full, "_blank", "noopener");
+  };
 
   const handleFile = async (file) => {
     if (!file) return;
@@ -133,6 +141,21 @@ export default function Page() {
             </>
           )}
         </div>
+
+        <details className="ythelp">
+          <summary>Studying a YouTube video?</summary>
+          <div className="ythelp-body">
+            <p>YouTube blocks automatic transcript downloads, so grab it in two quick steps:</p>
+            <ol>
+              <li>Open the video, click <b>…more</b> under the title, then <b>Show transcript</b>.</li>
+              <li>Select the transcript text, copy it, and paste it in the box below.</li>
+            </ol>
+            <div className="ytrow">
+              <input className="yt" placeholder="Paste a YouTube link to open it" value={ytUrl} onChange={(e) => setYtUrl(e.target.value)} />
+              <button className="ytbtn" onClick={openYoutube} disabled={!ytUrl.trim()}>Open video ↗</button>
+            </div>
+          </div>
+        </details>
 
         <div className="samples">
           <span className="samples-lbl">Or try a sample:</span>
