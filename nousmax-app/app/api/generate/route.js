@@ -1,7 +1,8 @@
-import { generateStudySet, generateMoreQuiz } from "../../../lib/generate";
+import { generateStudySet, generateMoreQuiz, generateMoreFlashcards } from "../../../lib/generate";
 
-// POST { text }                              -> { title, summary, flashcards[], quiz[] }
-// POST { text, mode:"more-quiz", existing[] } -> { quiz[] }  (may be empty when exhausted)
+// POST { text }                                    -> { title, summary[], flashcards[], quiz[] }
+// POST { text, mode:"more-quiz", existing[] }       -> { quiz[] }       (may be empty when exhausted)
+// POST { text, mode:"more-flashcards", existing[] } -> { flashcards[] } (may be empty when exhausted)
 export async function POST(req) {
   try {
     const body = await req.json();
@@ -22,6 +23,10 @@ export async function POST(req) {
     if (body.mode === "more-quiz") {
       const quiz = await generateMoreQuiz(text.slice(0, 12000), body.existing || [], key);
       return Response.json({ quiz });
+    }
+    if (body.mode === "more-flashcards") {
+      const flashcards = await generateMoreFlashcards(text.slice(0, 12000), body.existing || [], key);
+      return Response.json({ flashcards });
     }
     const set = await generateStudySet(text.slice(0, 12000), key);
     return Response.json(set);
