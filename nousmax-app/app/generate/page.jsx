@@ -267,13 +267,14 @@ export default function Page() {
   const [srcUsed, setSrcUsed] = useState("");
   const [genId, setGenId] = useState(0);
   const [session, setSession] = useState(null);
+  const [authReady, setAuthReady] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
 
   useEffect(() => {
     const sb = getSupabase();
-    if (!sb) return;
-    sb.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => setSession(s));
+    if (!sb) { setAuthReady(true); return; }
+    sb.auth.getSession().then(({ data }) => { setSession(data.session); setAuthReady(true); });
+    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => { setSession(s); setAuthReady(true); });
     return () => { if (sub && sub.subscription) sub.subscription.unsubscribe(); };
   }, []);
 
@@ -287,7 +288,7 @@ export default function Page() {
   const saveSet = async () => {
     const sb = getSupabase();
     if (!sb) { setSaveMsg("Saving isn't set up yet."); return; }
-    if (!session) { signIn(); return; }
+    if (!session) { window.location.href = "/start"; return; }
     setSaveMsg("Saving…");
     const summaryText = Array.isArray(out.summary) ? out.summary.join(String.fromCharCode(10)) : out.summary;
     const { error } = await sb.from("study_sets").insert({
@@ -382,7 +383,7 @@ export default function Page() {
               <span>Nous<span className="grad">Max</span></span>
             </a>
           </div>
-          {supabaseConfigured && (
+          {supabaseConfigured && authReady && (
             <div className="authbox">
               {session ? (
                 <>
@@ -391,7 +392,7 @@ export default function Page() {
                   <button className="authbtn" onClick={signOut}>Sign out</button>
                 </>
               ) : (
-                <button className="authbtn primary" onClick={signIn}>Sign in with Google</button>
+                <a className="authbtn primary" href="/start">Sign in</a>
               )}
             </div>
           )}
