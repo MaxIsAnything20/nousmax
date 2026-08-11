@@ -332,3 +332,31 @@ button.gen:disabled{ opacity:.55; cursor:default; box-shadow:none; }
 .startlink:hover{ text-decoration:underline; }
 .startmsg{ font-size:13px; color:var(--cream-ink); background:color-mix(in srgb,var(--amber) 16%,#fff); border:1px solid color-mix(in srgb,var(--amber) 40%,#fff);
   border-radius:10px; padding:10px 12px; line-height:1.45; text-align:center; }
+
+/* ---------- Pricing page + plan badges ---------- */
+.cycletoggle { display:flex; gap:6px; justify-content:center; background:#fff; border:1px solid #e7e2d6; border-radius:999px; padding:5px; width:max-content; margin:0 auto 24px; }
+.cyclebtn { border:0; background:transparent; padding:9px 18px; border-radius:999px; font:inherit; font-weight:700; font-size:14px; color:var(--cream-muted); cursor:pointer; }
+.cyclebtn.on { background:var(--primary); color:#fff; }
+
+.pricegrid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:20px; max-width:760px; margin:0 auto; }
+@media (max-width:640px){ .pricegrid { grid-template-columns:1fr; } }
+.pricecard { position:relative; background:#fff; border:1px solid #e7e2d6; border-radius:20px; padding:28px 26px; display:flex; flex-direction:column; }
+.pricecard.pro { border:2px solid var(--primary); box-shadow:0 18px 40px -24px rgba(13,148,136,.55); }
+.pricebadge { position:absolute; top:-12px; right:22px; background:var(--amber); color:#3a2c05; font-size:12px; font-weight:800; padding:4px 12px; border-radius:999px; letter-spacing:.3px; }
+.priceplan { font-size:14px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--cream-muted); }
+.priceamt { font-size:44px; font-weight:800; color:var(--cream-ink); margin:6px 0 2px; line-height:1; }
+.priceper { font-size:16px; font-weight:600; color:var(--cream-muted); }
+.pricenote { font-size:13px; color:var(--primary); font-weight:700; margin-bottom:6px; }
+.pricelist { list-style:none; padding:0; margin:16px 0 22px; display:flex; flex-direction:column; gap:11px; }
+.pricelist li { position:relative; padding-left:26px; font-size:14.5px; color:#3a3833; line-height:1.4; }
+.pricelist li::before { content:"✓"; position:absolute; left:0; top:0; color:var(--primary); font-weight:800; }
+.pricebtn { display:inline-block; text-align:center; text-decoration:none; border:0; cursor:pointer; font:inherit; font-weight:800; font-size:15px; padding:13px 18px; border-radius:12px; margin-top:auto; }
+.pricebtn.primary { background:var(--primary); color:#fff; }
+.pricebtn.primary:disabled { background:#c7c2b6; cursor:default; }
+.pricebtn.ghost { background:#f4f1ea; color:var(--cream-ink); border:1px solid #e7e2d6; }
+
+.planpill { display:inline-block; vertical-align:middle; font-size:11px; font-weight:800; letter-spacing:.5px; padding:2px 9px; border-radius:999px; background:#ece7db; color:#6b6862; }
+.planpill.pro { background:var(--primary); color:#fff; }
+.upgradelink { display:inline-block; margin-top:6px; color:var(--primary); font-weight:700; font-size:13.5px; text-decoration:none; }
+.upgradelink:hover { text-decoration:underline; }
+.quiz-end.upsell { border:1px dashed var(--primary); background:#f0faf8; }
