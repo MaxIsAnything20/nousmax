@@ -25,6 +25,11 @@ function GoogleG() {
 
 export default function Start() {
   const [session, setSession] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [mode, setMode] = useState("signin");
+  const [msg, setMsg] = useState("");
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     const sb = getSupabase();
@@ -39,6 +44,29 @@ export default function Start() {
     const sb = getSupabase();
     if (!sb) { window.location.href = "/generate"; return; }
     await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.origin + "/generate" } });
+  };
+
+  const emailAuth = async () => {
+    const sb = getSupabase();
+    if (!sb) { setMsg("Accounts aren't set up yet."); return; }
+    if (!email.trim() || password.length < 6) { setMsg("Enter your email and a password of at least 6 characters."); return; }
+    setBusy(true); setMsg("");
+    try {
+      if (mode === "signup") {
+        const { data, error } = await sb.auth.signUp({ email: email.trim(), password: password, options: { emailRedirectTo: window.location.origin + "/generate" } });
+        if (error) { setMsg(error.message); }
+        else if (data.session) { window.location.href = "/generate"; }
+        else { setMsg("Almost there — check your email to confirm your account, then sign in."); }
+      } else {
+        const { error } = await sb.auth.signInWithPassword({ email: email.trim(), password: password });
+        if (error) { setMsg(error.message); }
+        else { window.location.href = "/generate"; }
+      }
+    } catch (e) {
+      setMsg(e.message || "Something went wrong.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -61,11 +89,22 @@ export default function Start() {
         ) : (
           <div className="startbtns">
             {supabaseConfigured && (
-              <button className="startbtn primary" onClick={google}><GoogleG /> Sign in with Google</button>
+              <button className="startbtn primary" onClick={google}><GoogleG /> {mode === "signup" ? "Sign up with Google" : "Sign in with Google"}</button>
             )}
+
             {supabaseConfigured && (
-              <button className="startbtn" onClick={google}><GoogleG /> Sign up with Google</button>
+              <>
+                <div className="startdiv">or use email</div>
+                <input className="startinput" type="email" placeholder="you@email.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+                <input className="startinput" type="password" placeholder="Password (6+ characters)" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={mode === "signup" ? "new-password" : "current-password"} />
+                <button className="startbtn primary" onClick={emailAuth} disabled={busy}>{busy ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}</button>
+                <button className="startlink" onClick={() => { setMsg(""); setMode(mode === "signup" ? "signin" : "signup"); }}>
+                  {mode === "signup" ? "Already have an account? Sign in" : "New here? Create an account"}
+                </button>
+                {msg && <div className="startmsg">{msg}</div>}
+              </>
             )}
+
             <div className="startdiv">or</div>
             <button className="startbtn ghost" onClick={guest}>Continue as a guest</button>
           </div>
