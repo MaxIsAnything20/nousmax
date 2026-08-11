@@ -157,7 +157,7 @@ export default function Profile() {
     Promise.all([
       sb.from("study_sets").select("*").order("created_at", { ascending: false }),
       sb.from("study_events").select("kind, created_at"),
-      sb.from("profiles").select("display_name, daily_goal, on_leaderboard").eq("id", session.user.id).maybeSingle(),
+      sb.from("profiles").select("display_name, daily_goal, on_leaderboard, plan").eq("id", session.user.id).maybeSingle(),
       sb.rpc("leaderboard"),
     ]).then((res) => {
       const s = res[0], ev = res[1], pr = res[2], lb = res[3];
@@ -263,6 +263,7 @@ export default function Profile() {
           </div>
           <div className="authbox">
             <a className="authlink" href="/generate">New study set</a>
+            {session && (profile && profile.plan === "pro" ? <a className="authlink" href="/pricing">Manage plan</a> : <a className="authlink" href="/pricing">Upgrade</a>)}
             {session && <button className="authbtn" onClick={signOut}>Sign out</button>}
           </div>
         </div>
@@ -286,7 +287,7 @@ export default function Profile() {
             <section className="profhead">
               <div className="profavatar">{initial}</div>
               <div className="profid">
-                <div className="profname">Hey {firstName(session)} 👋</div>
+                <div className="profname">Hey {firstName(session)} 👋 {profile && profile.plan === "pro" ? <span className="planpill pro">PRO</span> : <span className="planpill">FREE</span>}</div>
                 <div className="profsince">{session.user.email} · Member since {fmtDate(session.user.created_at)}</div>
               </div>
             </section>
