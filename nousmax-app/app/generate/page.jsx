@@ -3,6 +3,19 @@ import { useState, useRef, useEffect } from "react";
 import "../globals.css";
 import { getSupabase, supabaseConfigured } from "../../lib/supabase";
 import { logEvent } from "../../lib/activity";
+import { FREE_SAVED_SETS } from "../../lib/plan";
+
+async function authHeaders() {
+  const h = { "Content-Type": "application/json" };
+  try {
+    const sb = getSupabase();
+    if (sb) {
+      const { data } = await sb.auth.getSession();
+      if (data.session) h.Authorization = "Bearer " + data.session.access_token;
+    }
+  } catch (e) {}
+  return h;
+}
 
 const SAMPLES = {
   Photosynthesis:
@@ -90,7 +103,7 @@ function QuizPlayer({ quiz, sourceText }) {
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: await authHeaders(),
         body: JSON.stringify({ mode: "more-quiz", text: sourceText, existing: list.map((x) => x.q) }),
       });
       const data = await res.json();
@@ -193,7 +206,7 @@ function FlashcardDeck({ cards, sourceText }) {
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: await authHeaders(),
         body: JSON.stringify({ mode: "more-flashcards", text: sourceText, existing: list.map((x) => x.q) }),
       });
       const data = await res.json();
@@ -289,6 +302,16 @@ export default function Page() {
     const sb = getSupabase();
     if (!sb) { setSaveMsg("Saving isn't set up yet."); return; }
     if (!session) { window.location.href = "/start"; return; }
+    {
+      const { data: prof } = await sb.from("profiles").select("plan").eq("id", session.user.id).maybeSingle();
+      if (!prof || prof.plan !== "pro") {
+        const { count } = await sb.from("study_sets").select("id", { count: "exact", head: true }).eq("user_id", session.user.id);
+        if (typeof count === "number" && count >= FREE_SAVED_SETS) {
+          setSaveMsg("Free saves up to " + FREE_SAVED_SETS + " sets. Upgrade to Pro to save unlimited.");
+          return;
+        }
+      }
+    }
     setSaveMsg("Saving…");
     const summaryText = Array.isArray(out.summary) ? out.summary.join(String.fromCharCode(10)) : out.summary;
     const { error } = await sb.from("study_sets").insert({
@@ -355,14 +378,13 @@ export default function Page() {
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: await authHeaders(),
         body: JSON.stringify({ text }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong.");
       setOut(data);
       setGenId((g) => g + 1);
-      logEvent("generate");
     } catch (e) {
       setErr(e.message);
     } finally {
