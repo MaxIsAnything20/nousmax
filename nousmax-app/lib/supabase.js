@@ -14,7 +14,7 @@ export function getSupabase() {
   if (client) return client;
   if (!supabaseConfigured) return null;
   client = createClient(url, anon, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce" },
   });
   return client;
 }
