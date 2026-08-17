@@ -95,7 +95,7 @@ export default function Pricing() {
               <li>{FREE_DAILY_GENERATIONS} study sets per day</li>
               <li>Save up to {FREE_SAVED_SETS} sets in your library</li>
               <li>Summaries, quizzes &amp; flashcards</li>
-              <li>PDF, YouTube &amp; pasted notes</li>
+              <li>Paste-in notes</li>
               <li>Streaks, stats &amp; leaderboard</li>
             </ul>
             <a className="pricebtn ghost" href="/generate">{isPro ? "Use the generator" : "You're on Free"}</a>
@@ -110,7 +110,7 @@ export default function Pricing() {
               <li><b>Unlimited</b> study sets — no daily cap</li>
               <li><b>Unlimited</b> saved library</li>
               <li><b>Infinite flashcards</b> — keep generating more</li>
-              <li>Everything in Free</li>
+              <li><b>PDF &amp; YouTube</b> import</li>              <li>Everything in Free</li>
               <li>Priority new features</li>
             </ul>
             {isPro ? (
