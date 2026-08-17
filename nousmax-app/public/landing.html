@@ -12,6 +12,17 @@
   #boot .dot{width:34px;height:34px;border-radius:10px;margin:0 auto 14px;
     background:linear-gradient(150deg,#14b8a6,#0d7d6e);animation:sp 1s linear infinite;}
   @keyframes sp{to{transform:rotate(360deg);}}
+
+/* --- Mobile performance: drop continuous GPU-heavy effects on phones --- */
+@media (max-width:820px){
+  .sf .aurora, .sf .orb{ display:none !important; }
+  .sf .glass, .sf .glassx, .sf .flow.web .ftile-lg, .sf .tour-mask{ -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+  .sf .fc-a,.sf .fc-b,.sf .fc-c,.sf .fc-d,.sf .fr-a,.sf .fr-b,.sf .fr-c,.sf .fr-d,.sf .bob{ animation:none !important; }
+}
+@media (prefers-reduced-motion:reduce){
+  .sf .aurora, .sf .orb{ display:none !important; }
+  .sf .fc-a,.sf .fc-b,.sf .fc-c,.sf .fc-d,.sf .fr-a,.sf .fr-b,.sf .fr-c,.sf .fr-d,.sf .bob{ animation:none !important; }
+}
 </style>
 </head>
 <body>
