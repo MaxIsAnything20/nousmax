@@ -108,7 +108,7 @@ export async function POST(req) {
 
     return Response.json(set);
   } catch (e) {
-    return Response.json({ error: e.message || "Generation failed." }, { status: 500 });
+    console.error("generate error:", e);    return Response.json({ error: "Generation failed. Please try again." }, { status: 500 });
   }
 }
 
