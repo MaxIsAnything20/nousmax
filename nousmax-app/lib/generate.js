@@ -131,7 +131,10 @@ async function runModels(prompt, schema, apiKey) {
     lastStatus = r.status;
     lastDetail = await r.text();
     if (r.status === 429) sawQuota = true;
-    if (r.status !== 429 && r.status !== 404) break;
+    // Retry the NEXT model on transient/availability errors too — 429 (quota),
+    // 404 (missing model), and 500/502/503 (model temporarily overloaded).
+    // Only a hard client error (e.g. 400/403 bad key) should stop the chain.
+    if (![429, 404, 500, 502, 503].includes(r.status)) break;
   }
   if (sawQuota) {
     throw new Error(
