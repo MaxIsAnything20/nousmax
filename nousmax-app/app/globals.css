@@ -1,3 +1,18 @@
+
+/* ---------- Free-trial banner, source locks, upsell ---------- */
+.trialbar { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; background:color-mix(in srgb,var(--primary) 8%,#fff); border:1px solid color-mix(in srgb,var(--primary) 22%,#fff); border-radius:14px; padding:12px 16px; margin:0 0 18px; }
+.trialbar-txt { font-size:14px; color:var(--cream-ink); }
+.trialbtn { display:inline-block; text-decoration:none; background:var(--primary); color:#fff; font-weight:800; font-size:14px; padding:10px 16px; border-radius:10px; border:0; cursor:pointer; white-space:nowrap; }
+.trialbtn:hover { background:var(--primary2); }
+.trialbtn.sm { padding:8px 14px; font-size:13px; }
+.prolock { display:inline-block; margin-left:6px; font-size:9.5px; font-weight:800; letter-spacing:.4px; vertical-align:middle; padding:2px 5px; border-radius:5px; background:var(--amber); color:#3a2c05; }
+.srctab.on .prolock { background:#fff; color:var(--primary2); }
+.upgradesource { text-align:center; padding:30px 22px; border:1.5px dashed color-mix(in srgb,var(--primary) 40%,#fff); border-radius:14px; background:color-mix(in srgb,var(--primary) 5%,#fff); }
+.upgradesource-title { font-size:17px; font-weight:800; color:var(--cream-ink); margin-bottom:6px; }
+.upgradesource-sub { font-size:14px; color:var(--cream-muted); max-width:420px; margin:0 auto 16px; line-height:1.5; }
+.upgradesource-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.upgradesource-ghost { background:#fff; border:1px solid #e7e2d6; color:var(--cream-ink); font-weight:700; font-size:14px; padding:10px 16px; border-radius:10px; cursor:pointer; }
+.errcta { margin-top:10px; }
 :root{
   --cream:#f4f1ea; --cream-ink:#1c1b23; --cream-muted:#6b6862;
   --primary:#0d9488; --primary2:#0f766e; --accent:#14b8a6; --accent2:#2dd4bf; --ok:#14b8a6; --amber:#d9a521;
