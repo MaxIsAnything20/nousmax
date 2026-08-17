@@ -375,3 +375,28 @@ button.gen:disabled{ opacity:.55; cursor:default; box-shadow:none; }
 .upgradelink { display:inline-block; margin-top:6px; color:var(--primary); font-weight:700; font-size:13.5px; text-decoration:none; }
 .upgradelink:hover { text-decoration:underline; }
 .quiz-end.upsell { border:1px dashed var(--primary); background:#f0faf8; }
+
+/* ---------- Small-screen (phone) polish ---------- */
+@media (max-width:560px){
+  .topbar{ padding:16px 15px 0; }
+  .wrap{ padding:22px 15px 72px; }
+  h1.display{ letter-spacing:-1px; }
+  .sub{ font-size:15.5px; }
+  .quiz-nav{ gap:8px; }
+  .qnav{ padding:11px 14px; font-size:13.5px; }
+  .profavatar{ width:54px; height:54px; font-size:24px; }
+  .profname{ font-size:18px; }
+  .streaknum{ font-size:30px; }
+  .priceamt{ font-size:38px; }
+  .startcard{ padding:28px 20px; }
+  .lbrow{ grid-template-columns:26px 1fr 52px 46px; gap:6px; font-size:13px; }
+  .srctabs{ display:flex; width:100%; }
+  .srctab{ flex:1; text-align:center; padding:8px 10px; }
+}
+
+/* Extra-small phones */
+@media (max-width:380px){
+  .statgrid{ grid-template-columns:1fr; }
+  .badgegrid{ grid-template-columns:1fr; }
+}
+
