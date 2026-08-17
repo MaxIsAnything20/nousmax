@@ -15,6 +15,6 @@ export function isPro(planOrProfile) {
 }
 
 export const PRICE = {
-  monthly: { amount: "$5", period: "/month", note: "Billed monthly" },
-  yearly: { amount: "$40", period: "/year", note: "Two months free" },
+  monthly: { amount: "$6.99", period: "/month", note: "Billed monthly" },
+  yearly: { amount: "$69.99", period: "/year", note: "2 months free · save 17%" },
 };
