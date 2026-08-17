@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import "../globals.css";
 import { getSupabase, supabaseConfigured } from "../../lib/supabase";
 
-function LogoMark({ size = 34 }) {
+function LogoMark({ size = 30 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" aria-hidden="true">
       <path d="M22 74 L22 26 L54 74 L54 26" stroke="#0d9488" strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" />
@@ -69,45 +69,60 @@ export default function Start() {
     }
   };
 
+  const signup = mode === "signup";
+
   return (
     <div className="startwrap">
       <div className="startcard">
         <div className="startlogo">
-          <LogoMark size={34} />
+          <LogoMark size={30} />
           <span>Nous<span className="grad">Max</span></span>
         </div>
 
-        <h1 className="display">Let's get studying.</h1>
-        <p className="sub" style={{ margin: "0 auto 24px" }}>
-          Sign in to save your study sets and track progress — or jump straight in as a guest.
-        </p>
-
         {session ? (
-          <div className="startbtns">
-            <button className="startbtn primary" onClick={guest}>Continue as {session.user.email}</button>
-          </div>
+          <>
+            <h1 className="display">Welcome back</h1>
+            <p className="startsub">You're signed in. Jump back into studying.</p>
+            <div className="startform">
+              <button className="startbtn primary" onClick={guest}>Continue as {session.user.email}</button>
+            </div>
+          </>
         ) : (
-          <div className="startbtns">
-            {supabaseConfigured && (
-              <button className="startbtn primary" onClick={google}><GoogleG /> {mode === "signup" ? "Sign up with Google" : "Sign in with Google"}</button>
-            )}
+          <>
+            <h1 className="display">{signup ? "Create your account" : "Welcome back"}</h1>
+            <p className="startsub">
+              {signup ? "Start saving your study sets and building a streak." : "Sign in to save your sets and keep your streak going."}
+            </p>
 
-            {supabaseConfigured && (
-              <>
-                <div className="startdiv">or use email</div>
-                <input className="startinput" type="email" placeholder="you@email.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
-                <input className="startinput" type="password" placeholder="Password (6+ characters)" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={mode === "signup" ? "new-password" : "current-password"} />
-                <button className="startbtn primary" onClick={emailAuth} disabled={busy}>{busy ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}</button>
-                <button className="startlink" onClick={() => { setMsg(""); setMode(mode === "signup" ? "signin" : "signup"); }}>
-                  {mode === "signup" ? "Already have an account? Sign in" : "New here? Create an account"}
-                </button>
-                {msg && <div className="startmsg">{msg}</div>}
-              </>
-            )}
+            <div className="startform">
+              {supabaseConfigured && (
+                <button className="startbtn" onClick={google}><GoogleG /> Continue with Google</button>
+              )}
 
-            <div className="startdiv">or</div>
-            <button className="startbtn ghost" onClick={guest}>Continue as a guest</button>
-          </div>
+              {supabaseConfigured && (
+                <>
+                  <div className="startfield">
+                    <label className="startlabel">Email</label>
+                    <input className="startinput" type="email" placeholder="you@email.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+                  </div>
+                  <div className="startfield">
+                    <label className="startlabel">Password</label>
+                    <input className="startinput" type="password" placeholder="At least 6 characters" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={signup ? "new-password" : "current-password"} />
+                  </div>
+                  <button className="startbtn primary" onClick={emailAuth} disabled={busy}>{busy ? "Please wait…" : signup ? "Create account" : "Sign in"}</button>
+                  {msg && <div className="startmsg">{msg}</div>}
+                  <p className="startswitch">
+                    {signup ? "Already have an account? " : "New here? "}
+                    <button className="startlink" onClick={() => { setMsg(""); setMode(signup ? "signin" : "signup"); }}>
+                      {signup ? "Sign in" : "Create an account"}
+                    </button>
+                  </p>
+                </>
+              )}
+
+              <button className="startguest" onClick={guest}>Just exploring? Continue as a guest →</button>
+            </div>
+          </>
         )}
 
         <p className="startfine">Guests can build study sets but can't save them to a library.</p>
