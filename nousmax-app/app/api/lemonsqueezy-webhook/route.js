@@ -70,11 +70,11 @@ export async function POST(req) {
     else return Response.json({ error: "No user identifier on event." }, { status: 400 });
 
     const { error } = await query;
-    if (error) return Response.json({ error: error.message }, { status: 500 });
+    if (error) { console.error("webhook db error:", error); return Response.json({ error: "Update failed" }, { status: 500 }); }
 
     return Response.json({ ok: true, event: event, plan: plan });
   } catch (e) {
-    return Response.json({ error: e.message || "Webhook failed." }, { status: 500 });
+    console.error("webhook error:", e);    return Response.json({ error: "Webhook failed." }, { status: 500 });
   }
 }
 
