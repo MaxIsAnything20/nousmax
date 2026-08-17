@@ -400,3 +400,28 @@ button.gen:disabled{ opacity:.55; cursor:default; box-shadow:none; }
   .badgegrid{ grid-template-columns:1fr; }
 }
 
+/* ---------- Login page — clean centered ElevenLabs-style layout ---------- */
+.startwrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:28px 20px; }
+.startcard{ background:transparent; border:none; box-shadow:none; border-radius:0; padding:0; max-width:342px; width:100%; text-align:center; }
+.startlogo{ justify-content:center; margin-bottom:22px; }
+.startcard h1.display{ font-size:clamp(24px,4vw,29px); letter-spacing:-.8px; margin:0 0 6px; }
+.startsub{ text-align:center; font-size:14px; color:var(--cream-muted); line-height:1.5; margin:0 auto 24px; max-width:300px; }
+.startform{ display:flex; flex-direction:column; gap:14px; text-align:left; }
+.startbtn{ width:100%; display:inline-flex; align-items:center; justify-content:center; gap:10px; background:#fff; border:1px solid #e2ddd0; border-radius:11px; padding:12px 16px; font-size:14.5px; font-weight:650; color:var(--cream-ink); cursor:pointer; transition:border-color .15s ease; }
+.startbtn:hover{ border-color:var(--primary); transform:none; }
+.startbtn.primary{ background:var(--grad); color:#fff; border:none; font-weight:750; font-size:15px; box-shadow:0 10px 26px -12px var(--glow); }
+.startbtn.primary:hover{ filter:brightness(1.04); }
+.startbtn:disabled{ opacity:.6; cursor:default; }
+.startfield{ display:flex; flex-direction:column; gap:6px; }
+.startlabel{ font-size:13px; font-weight:600; color:var(--cream-ink); }
+.startinput{ width:100%; border:1px solid #ddd7c9; border-radius:10px; padding:11px 13px; font:inherit; font-size:14.5px; color:var(--cream-ink); background:#fff; outline:none; }
+.startinput:focus{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(13,148,136,.14); }
+.startswitch{ text-align:center; font-size:13.5px; color:var(--cream-muted); margin:2px 0 0; }
+.startlink{ background:none; border:none; color:var(--primary2); font-size:13.5px; font-weight:700; cursor:pointer; padding:0; }
+.startlink:hover{ text-decoration:underline; }
+.startguest{ display:block; width:100%; background:none; border:none; color:var(--cream-muted); font-size:13.5px; font-weight:600; cursor:pointer; margin-top:4px; padding:6px; }
+.startguest:hover{ color:var(--primary2); }
+.startmsg{ margin-top:2px; }
+.startfine{ text-align:center; font-size:12px; color:var(--cream-muted); margin:22px auto 0; max-width:300px; line-height:1.5; }
+
+
