@@ -84,7 +84,7 @@ export default function Pricing() {
 
         <div className="cycletoggle">
           <button className={"cyclebtn" + (cycle === "monthly" ? " on" : "")} onClick={() => setCycle("monthly")}>Monthly</button>
-          <button className={"cyclebtn" + (cycle === "yearly" ? " on" : "")} onClick={() => setCycle("yearly")}>Yearly · save 33%</button>
+          <button className={"cyclebtn" + (cycle === "yearly" ? " on" : "")} onClick={() => setCycle("yearly")}>Yearly · save 17%</button>
         </div>
 
         <div className="pricegrid">
