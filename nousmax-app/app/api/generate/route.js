@@ -1,6 +1,21 @@
 import { generateStudySet, generateMoreQuiz, generateMoreFlashcards } from "../../../lib/generate";
 import { createClient } from "@supabase/supabase-js";
-import { FREE_DAILY_GENERATIONS } from "../../../lib/plan";// Lightweight in-memory per-IP throttle for unauthenticated (guest) requests,// to blunt anonymous abuse of the Gemini-backed endpoint. Best-effort: it lives// in a single warm serverless instance, not a shared store.const GUEST_HITS = new Map();const GUEST_WINDOW_MS = 60 * 60 * 1000;const GUEST_MAX = 8;function guestRateLimited(req) {  const ip = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || "unknown";  const now = Date.now();  const arr = (GUEST_HITS.get(ip) || []).filter((t) => now - t < GUEST_WINDOW_MS);  if (arr.length >= GUEST_MAX) { GUEST_HITS.set(ip, arr); return true; }  arr.push(now); GUEST_HITS.set(ip, arr);  return false;}
+import { FREE_DAILY_GENERATIONS } from "../../../lib/plan";
+
+// Lightweight in-memory per-IP throttle for unauthenticated (guest) requests,
+// to blunt anonymous abuse of the Gemini-backed endpoint. Best-effort: it lives
+// in a single warm serverless instance, not a shared store.
+const GUEST_HITS = new Map();
+const GUEST_WINDOW_MS = 60 * 60 * 1000;
+const GUEST_MAX = 8;
+function guestRateLimited(req) {
+  const ip = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || "unknown";
+  const now = Date.now();
+  const arr = (GUEST_HITS.get(ip) || []).filter((t) => now - t < GUEST_WINDOW_MS);
+  if (arr.length >= GUEST_MAX) { GUEST_HITS.set(ip, arr); return true; }
+  arr.push(now); GUEST_HITS.set(ip, arr);
+  return false;
+}
 
 // POST { text }                                    -> { title, summary[], flashcards[], quiz[] }
 // POST { text, mode:"more-quiz", existing[] }       -> { quiz[] }       (may be empty when exhausted)
@@ -60,7 +75,14 @@ export async function POST(req) {
         user = null;
       }
     }
-    const pro = plan === "pro";    if (!user && guestRateLimited(req)) {      return Response.json(        { error: "You have hit the guest limit for now. Please sign in to keep generating.", limit: true },        { status: 429 }      );    }
+    const pro = plan === "pro";
+
+    if (!user && guestRateLimited(req)) {
+      return Response.json(
+        { error: "You have hit the guest limit for now. Please sign in to keep generating.", limit: true },
+        { status: 429 }
+      );
+    }
 
     if (body.mode === "more-quiz") {
       const quiz = await generateMoreQuiz(text.slice(0, 12000), body.existing || [], key);
@@ -108,7 +130,8 @@ export async function POST(req) {
 
     return Response.json(set);
   } catch (e) {
-    console.error("generate error:", e);    return Response.json({ error: "Generation failed. Please try again." }, { status: 500 });
+    console.error("generate error:", e);
+    return Response.json({ error: "Generation failed. Please try again." }, { status: 500 });
   }
 }
 
