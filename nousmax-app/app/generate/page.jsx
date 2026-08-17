@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import "../globals.css";
 import { getSupabase, supabaseConfigured } from "../../lib/supabase";
 import { logEvent } from "../../lib/activity";
-import { FREE_SAVED_SETS } from "../../lib/plan";
+import { FREE_DAILY_GENERATIONS, FREE_SAVED_SETS } from "../../lib/plan";
 
 async function authHeaders() {
   const h = { "Content-Type": "application/json" };
@@ -74,7 +74,7 @@ function firstName(session) {
   return String(n).split(" ")[0];
 }
 
-function QuizPlayer({ quiz, sourceText }) {
+function UpgradeSource({ kind, onPaste }) {  return (    <div className="upgradesource">      <div className="upgradesource-title">🔒 {kind} is a Pro feature</div>      <p className="upgradesource-sub">The free plan works with pasted notes. Upgrade to Pro to import straight from {kind}.</p>      <div className="upgradesource-actions">        <a className="trialbtn" href="/pricing">Upgrade to Pro →</a>        <button className="upgradesource-ghost" onClick={onPaste}>Paste text instead</button>      </div>    </div>  );}function QuizPlayer({ quiz, sourceText }) {
   const [list, setList] = useState(quiz);
   const [i, setI] = useState(0);
   const [answers, setAnswers] = useState(() => quiz.map(() => null));
@@ -275,19 +275,19 @@ export default function Page() {
   const [drag, setDrag] = useState(false);
   const inputRef = useRef(null);
   const [ytUrl, setYtUrl] = useState("");
-  const [src, setSrc] = useState("pdf");
+  const [src, setSrc] = useState("paste");
   const [tool, setTool] = useState("summary");
   const [srcUsed, setSrcUsed] = useState("");
   const [genId, setGenId] = useState(0);
   const [session, setSession] = useState(null);
-  const [authReady, setAuthReady] = useState(false);
+  const [authReady, setAuthReady] = useState(false);  const [plan, setPlan] = useState("free");
   const [saveMsg, setSaveMsg] = useState("");
 
   useEffect(() => {
     const sb = getSupabase();
-    if (!sb) { setAuthReady(true); return; }
-    sb.auth.getSession().then(({ data }) => { setSession(data.session); setAuthReady(true); });
-    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => { setSession(s); setAuthReady(true); });
+    if (!sb) { setAuthReady(true); return; }    const loadPlan = async (ss) => {      if (!ss) { setPlan("free"); return; }      try {        const { data } = await sb.from("profiles").select("plan").eq("id", ss.user.id).maybeSingle();        setPlan(data && data.plan ? data.plan : "free");      } catch (e) {}    };
+    sb.auth.getSession().then(({ data }) => { setSession(data.session); setAuthReady(true); loadPlan(data.session); });
+    const { data: sub } = sb.auth.onAuthStateChange((_e, s) => { setSession(s); setAuthReady(true); loadPlan(s); });
     return () => { if (sub && sub.subscription) sub.subscription.unsubscribe(); };
   }, []);
 
@@ -424,18 +424,18 @@ export default function Page() {
       <div className="wrap">
         {session && <div style={{ fontSize: 15, fontWeight: 700, color: "var(--primary)", margin: "0 0 6px" }}>Hey {firstName(session)} 👋</div>}
         <h1 className="display">Turn any notes into a <span className="amber">study set.</span></h1>
-        <p className="sub">Add a source, pick your tools, and NousMax builds it — all in one place.</p>
+        <p className="sub">Add a source, pick your tools, and NousMax builds it — all in one place.</p>        {supabaseConfigured && authReady && session && plan !== "pro" && (          <div className="trialbar">            <span className="trialbar-txt">On the <b>Free plan</b> — paste notes · {FREE_DAILY_GENERATIONS} study sets a day.</span>            <a className="trialbtn sm" href="/pricing">Upgrade to Pro</a>          </div>        )}
 
         <section className="sec">
           <div className="eyebrow">01 · Add your source</div>
           <div className="panel">
             <div className="srctabs">
-              <button className={"srctab" + (src === "pdf" ? " on" : "")} onClick={() => setSrc("pdf")}>PDF / file</button>
-              <button className={"srctab" + (src === "youtube" ? " on" : "")} onClick={() => setSrc("youtube")}>YouTube</button>
+              <button className={"srctab" + (src === "pdf" ? " on" : "")} onClick={() => setSrc("pdf")}>PDF / file{plan !== "pro" && <span className="prolock">PRO</span>}</button>
+              <button className={"srctab" + (src === "youtube" ? " on" : "")} onClick={() => setSrc("youtube")}>YouTube{plan !== "pro" && <span className="prolock">PRO</span>}</button>
               <button className={"srctab" + (src === "paste" ? " on" : "")} onClick={() => setSrc("paste")}>Paste text</button>
             </div>
 
-            {src === "pdf" && (
+            {plan !== "pro" && (src === "pdf" || src === "youtube") && (              <UpgradeSource kind={src === "pdf" ? "PDF import" : "YouTube import"} onPaste={() => setSrc("paste")} />            )}            {src === "pdf" && plan === "pro" && (
               <div
                 className={"drop" + (drag ? " over" : "")}
                 onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
@@ -463,7 +463,7 @@ export default function Page() {
               </div>
             )}
 
-            {src === "youtube" && (
+            {src === "youtube" && plan === "pro" && (
               <div className="srchelp">
                 <p>YouTube blocks automatic transcript downloads, so grab it in two quick steps:</p>
                 <ol>
@@ -527,7 +527,7 @@ export default function Page() {
               </button>
               <span className="count">{text.trim().length < 20 ? "Add a source above to begin" : "Ready to generate"}</span>
             </div>
-            {err && <div className="err">{err}</div>}
+            {err && <div className="err">{err}{err.indexOf("Upgrade to Pro") > -1 && <div className="errcta"><a className="trialbtn" href="/pricing">Upgrade to Pro →</a></div>}</div>}
           </div>
         </section>
 
