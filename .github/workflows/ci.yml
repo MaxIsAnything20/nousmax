@@ -19,6 +19,6 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: nousmax-app/package-lock.json
-      - run: npm ci
+      - run: npm install
       - run: npm run test
       - run: npm run build
