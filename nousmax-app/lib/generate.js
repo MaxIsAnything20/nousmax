@@ -6,6 +6,12 @@
 const MODELS = ["gemini-2.5-flash-lite", "gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-flash-latest", "gemini-flash-lite-latest"];
 const NL = String.fromCharCode(10);
 
+// Transient Gemini statuses worth retrying against the NEXT model in the chain
+// (429 quota, 404 missing model, 500/502/503 temporarily overloaded).
+export function isRetryableStatus(status) {
+  return [429, 404, 500, 502, 503].includes(status);
+}
+
 const QUIZ_ITEM = {
   type: "object",
   properties: {
@@ -134,7 +140,7 @@ async function runModels(prompt, schema, apiKey) {
     // Retry the NEXT model on transient/availability errors too — 429 (quota),
     // 404 (missing model), and 500/502/503 (model temporarily overloaded).
     // Only a hard client error (e.g. 400/403 bad key) should stop the chain.
-    if (![429, 404, 500, 502, 503].includes(r.status)) break;
+    if (!isRetryableStatus(r.status)) break;
   }
   if (sawQuota) {
     throw new Error(
@@ -153,7 +159,7 @@ function readText(data) {
   return data?.candidates?.[0]?.content?.parts?.[0]?.text;
 }
 
-function normalizeQuiz(arr) {
+export function normalizeQuiz(arr) {
   return (Array.isArray(arr) ? arr : [])
     .map((q) => ({
       q: q.q,
@@ -164,20 +170,20 @@ function normalizeQuiz(arr) {
     .filter((q) => q.q && q.options.length === 4);
 }
 
-function normalizeCards(arr) {
+export function normalizeCards(arr) {
   return (Array.isArray(arr) ? arr : [])
     .map((c) => ({ q: typeof c.q === "string" ? c.q : "", a: typeof c.a === "string" ? c.a : "" }))
     .filter((c) => c.q && c.a);
 }
 
-function stripBullet(line) {
+export function stripBullet(line) {
   let t = line.trim();
   const marks = ["-", "*", "+", "•", "·"];
   while (t.length && marks.indexOf(t.charAt(0)) >= 0) t = t.slice(1).trim();
   return t;
 }
 
-function normalizeSummary(s) {
+export function normalizeSummary(s) {
   if (Array.isArray(s)) return s.map((x) => String(x).trim()).filter(Boolean);
   if (typeof s === "string" && s.trim()) {
     return s.split(NL).map(stripBullet).filter(Boolean);
