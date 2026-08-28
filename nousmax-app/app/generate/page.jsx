@@ -270,6 +270,7 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [out, setOut] = useState(null);
+  const [cache, setCache] = useState({});
   const [fileName, setFileName] = useState("");
   const [reading, setReading] = useState(false);
   const [drag, setDrag] = useState(false);
@@ -384,6 +385,7 @@ export default function Page() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong.");
       setOut(data);
+      setCache((c) => ({ ...c, [tool]: { data, src: text } }));
       setGenId((g) => g + 1);
     } catch (e) {
       setErr(e.message);
@@ -512,7 +514,7 @@ export default function Page() {
           <div className="panel">
             <div className="tools">
               {TOOLS.map((t) => (
-                <button key={t.key} className={"tool" + (tool === t.key ? " on" : "")} onClick={() => { setTool(t.key); setOut(null); setErr(""); }}>
+                <button key={t.key} className={"tool" + (tool === t.key ? " on" : "")} onClick={() => { const cd = cache[t.key]; setTool(t.key); setOut(cd ? cd.data : null); setSrcUsed(cd ? cd.src : ""); setErr(""); }}>
                   <span className="tool-top">
                     <span className="ti"><ToolIcon name={t.key} /></span>
                     <span className={"tick" + (tool === t.key ? " on" : "")}>{tool === t.key ? "✓" : ""}</span>
