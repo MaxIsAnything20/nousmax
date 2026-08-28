@@ -379,7 +379,7 @@ export default function Page() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: await authHeaders(),
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, only: tool }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong.");
@@ -394,6 +394,7 @@ export default function Page() {
 
   const words = text.trim() ? text.trim().split(" ").filter(Boolean).length : 0;
   const readMin = Math.max(1, Math.round(words / 180));
+  const genLabel = "Generate " + (TOOLS.find((t) => t.key === tool)?.label || "study set").toLowerCase();
 
   return (
     <>
@@ -511,7 +512,7 @@ export default function Page() {
           <div className="panel">
             <div className="tools">
               {TOOLS.map((t) => (
-                <button key={t.key} className={"tool" + (tool === t.key ? " on" : "")} onClick={() => setTool(t.key)}>
+                <button key={t.key} className={"tool" + (tool === t.key ? " on" : "")} onClick={() => { setTool(t.key); setOut(null); setErr(""); }}>
                   <span className="tool-top">
                     <span className="ti"><ToolIcon name={t.key} /></span>
                     <span className={"tick" + (tool === t.key ? " on" : "")}>{tool === t.key ? "✓" : ""}</span>
@@ -523,7 +524,7 @@ export default function Page() {
             </div>
             <div className="row">
               <button className="gen" onClick={run} disabled={loading || reading || text.trim().length < 20}>
-                {loading ? "Generating…" : "Generate study set"}
+                {loading ? "Generating…" : genLabel}
               </button>
               <span className="count">{text.trim().length < 20 ? "Add a source above to begin" : "Ready to generate"}</span>
             </div>
