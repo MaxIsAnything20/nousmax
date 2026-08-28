@@ -235,3 +235,94 @@ export async function generateMoreFlashcards(sourceText, existing, apiKey) {
   }
   return normalizeCards(parsed.flashcards);
 }
+
+/* ---------- Single-type generation (one output at a time) ---------- */
+const SUMMARY_ONLY_SCHEMA = {
+  type: "object",
+  properties: {
+    title: { type: "string", description: "A short topic title (2-5 words)." },
+    summary: {
+      type: "array",
+      items: { type: "string" },
+      description: "Comprehensive study notes as bullet points. Cover essentially everything in the source: every key idea, definition, fact, name, date, formula, cause/effect and relationship. Each item is one clear, self-contained bullet.",
+    },
+  },
+  required: ["title", "summary"],
+};
+const QUIZ_ONLY_SCHEMA = {
+  type: "object",
+  properties: { title: { type: "string", description: "A short topic title (2-5 words)." }, quiz: { type: "array", items: QUIZ_ITEM } },
+  required: ["title", "quiz"],
+};
+const FLASHCARDS_ONLY_SCHEMA = {
+  type: "object",
+  properties: { title: { type: "string", description: "A short topic title (2-5 words)." }, flashcards: { type: "array", items: FLASHCARD_ITEM } },
+  required: ["title", "flashcards"],
+};
+
+function summaryPrompt(src) {
+  return [
+    "You are NousMax, a study assistant. From the SOURCE below, produce:",
+    "- title: a short topic title.",
+    "- summary: comprehensive study notes as an array of bullet points. Cover essentially EVERYTHING in the source so a student could revise from the bullets alone. Each bullet is one clear, self-contained point. Use as many bullets as the material needs.",
+    "Stay strictly faithful to the SOURCE.",
+    "",
+    "SOURCE:",
+    '"""',
+    src,
+    '"""',
+  ].join(NL);
+}
+function quizOnlyPrompt(src) {
+  return [
+    "You are NousMax, a study assistant. From the SOURCE below, produce:",
+    "- title: a short topic title.",
+    "- quiz: 4-6 multiple-choice questions. Each has EXACTLY 4 options, correct is the 0-based index of the right one, and explanation is one sentence on why that option is right. Make the wrong options plausible. Test understanding, not trivia.",
+    "Stay strictly faithful to the SOURCE.",
+    "",
+    "SOURCE:",
+    '"""',
+    src,
+    '"""',
+  ].join(NL);
+}
+function flashcardsOnlyPrompt(src) {
+  return [
+    "You are NousMax, a study assistant. From the SOURCE below, produce:",
+    "- title: a short topic title.",
+    "- flashcards: 8-10 active-recall question/answer pairs. Questions test understanding, not trivia. Keep answers concise and accurate.",
+    "Stay strictly faithful to the SOURCE.",
+    "",
+    "SOURCE:",
+    '"""',
+    src,
+    '"""',
+  ].join(NL);
+}
+
+async function parseOne(res) {
+  const data = await res.json();
+  const text = readText(data);
+  if (!text) throw new Error("The model returned no content. Please try again.");
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    throw new Error("Could not parse the model's response. Please try again.");
+  }
+}
+
+export async function generateSummaryOnly(sourceText, apiKey) {
+  const res = await runModels(summaryPrompt(sourceText), SUMMARY_ONLY_SCHEMA, apiKey);
+  const p = await parseOne(res);
+  return { title: typeof p.title === "string" ? p.title : "Study set", summary: normalizeSummary(p.summary) };
+}
+export async function generateQuizOnly(sourceText, apiKey) {
+  const res = await runModels(quizOnlyPrompt(sourceText), QUIZ_ONLY_SCHEMA, apiKey);
+  const p = await parseOne(res);
+  return { title: typeof p.title === "string" ? p.title : "Study set", quiz: normalizeQuiz(p.quiz) };
+}
+export async function generateFlashcardsOnly(sourceText, apiKey) {
+  const res = await runModels(flashcardsOnlyPrompt(sourceText), FLASHCARDS_ONLY_SCHEMA, apiKey);
+  const p = await parseOne(res);
+  return { title: typeof p.title === "string" ? p.title : "Study set", flashcards: normalizeCards(p.flashcards) };
+}
