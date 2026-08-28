@@ -1,4 +1,4 @@
-import { generateStudySet, generateMoreQuiz, generateMoreFlashcards } from "../../../lib/generate";
+import { generateStudySet, generateMoreQuiz, generateMoreFlashcards, generateSummaryOnly, generateQuizOnly, generateFlashcardsOnly } from "../../../lib/generate";
 import { createClient } from "@supabase/supabase-js";
 import { FREE_DAILY_GENERATIONS } from "../../../lib/plan";
 
@@ -119,7 +119,12 @@ export async function POST(req) {
       }
     }
 
-    const set = await generateStudySet(text.slice(0, 12000), key);
+    const only = body.only;
+    let set;
+    if (only === "summary") set = await generateSummaryOnly(text.slice(0, 12000), key);
+    else if (only === "quiz") set = await generateQuizOnly(text.slice(0, 12000), key);
+    else if (only === "flashcards") set = await generateFlashcardsOnly(text.slice(0, 12000), key);
+    else set = await generateStudySet(text.slice(0, 12000), key);
 
     // Authoritative activity log for signed-in users. This both powers the
     // daily cap above and feeds streaks/stats on the profile page, so the
